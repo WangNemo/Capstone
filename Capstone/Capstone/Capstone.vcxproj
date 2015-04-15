@@ -84,7 +84,11 @@
     <ClInclude Include="FilterBank.h" />
     <ClInclude Include="GammatoneFilter.h" />
     <ClInclude Include="Definitions.h" />
+    <ClInclude Include="Meddis.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Signal.h" />
+    <ClInclude Include="SignalBank.h" />
+    <ClInclude Include="SignalGrid.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="testing.h" />
@@ -95,7 +99,11 @@
     <ClCompile Include="AudioFile.cpp" />
     <ClCompile Include="FilterBank.cpp" />
     <ClCompile Include="GammatoneFilter.cpp" />
+    <ClCompile Include="Meddis.cpp" />
     <ClCompile Include="mexFunction.cpp" />
+    <ClCompile Include="Signal.cpp" />
+    <ClCompile Include="SignalBank.cpp" />
+    <ClCompile Include="SignalGrid.cpp" />
     <ClCompile Include="staticTools.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
