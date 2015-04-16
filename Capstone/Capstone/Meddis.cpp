@@ -2,20 +2,20 @@
 #include "Meddis.h"
 
 
-SignalBank* Meddis::filter(SignalBank& bm, int sampleRate, int channels, int samples)
+SignalBank* Meddis::filter(SignalBank& bm)
 {
 	//% initialize inner hair cells
-	double processAdj = PROCESS_RATE / sampleRate;
-	double replenishAdj = REPLENISH_RATE / sampleRate;
-	double returnAdj = RETURN_RATE / sampleRate;
-	double permAdj = perm3 / sampleRate;
-	double lossReturn = (LOSS_RATE + RETURN_RATE) / sampleRate;
+	double processAdj = PROCESS_RATE / bm.SAMPLE_RATE;
+	double replenishAdj = REPLENISH_RATE / bm.SAMPLE_RATE;
+	double returnAdj = RETURN_RATE / bm.SAMPLE_RATE;
+	double permAdj = perm3 / bm.SAMPLE_RATE;
+	double lossReturn = (LOSS_RATE + RETURN_RATE) / bm.SAMPLE_RATE;
 
 	//% inner hair cell transduction
-	SignalBank* meddisResult = new SignalBank(channels);
+	SignalBank* meddisResult = new SignalBank(bm.CHANNELS, bm.SAMPLE_RATE, bm.SAMPLES);
 	//SignalBank& meddisResult = *meddisResultPtr;
-	for (int channel = 0; channel < channels; channel++) {
-		Signal* sig = new Signal(samples);
+	for (int channel = 0; channel < bm.CHANNELS; channel++) {
+		Signal* sig = new Signal(bm.SAMPLES);
 		meddisResult->add(sig, channel);
 		//Signal& signal = *sig;
 
@@ -28,7 +28,7 @@ SignalBank* Meddis::filter(SignalBank& bm, int sampleRate, int channels, int sam
 
 		Signal& signal = bm[channel];
 		Signal& result = (*meddisResult)[channel];
-		for (int sample = 0; sample < samples; sample++) {
+		for (int sample = 0; sample < bm.SAMPLES; sample++) {
 			double sigPerm = (signal[sample] + perm1);
 			double permabilityAmt = (sigPerm > 0 ?
 				permAdj * sigPerm / (signal[sample] + perm1 + perm2)

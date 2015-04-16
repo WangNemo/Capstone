@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Meddis.h"
 #include "Definitions.h"
 #include "GammatoneFilter.h"

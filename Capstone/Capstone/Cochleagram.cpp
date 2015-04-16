@@ -2,12 +2,12 @@
 #include "Cochleagram.h"
 
 
-Cochleagram::Cochleagram(Signal& signal, int samples, int sampleRate)
+Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 {
 	bank = new FilterBank(CHANNELS, MIN_FREQ, MAX_FREQ, sampleRate);
 	meddis = new Meddis();
-	SignalBank* basilarMembrane = bank->filter(signal, samples);
-	cochleagram = meddis->filter(*basilarMembrane, sampleRate, CHANNELS, samples);
+	SignalBank* basilarMembrane = bank->filter(signal);
+	cochleagram = meddis->filter(*basilarMembrane);
 }
 
 

@@ -2,9 +2,7 @@
 
 #include <cmath>
 #include <iostream>
-
 #include "Signal.h"
-#include "SignalBank.h"
 
 #define MAX(x,y)     ( ( x ) > ( y ) ? ( x ) : ( y ) )
 #define MIN(x,y)     ( ( x ) < ( y ) ? ( x ) : ( y ) )
@@ -30,3 +28,4 @@ double* mexFunction(double* x, int nsamples, int cf, int fs);
 namespace staticTools{
 	Signal* makeWave(int length, int frequency);
 }
+

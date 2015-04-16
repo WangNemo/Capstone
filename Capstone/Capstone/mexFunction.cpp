@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Definitions.h";
+#include "Definitions.h"
 /*
 *=========================================================================
 * An efficient C implementation of the 4th order gammatone filter

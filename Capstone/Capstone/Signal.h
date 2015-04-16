@@ -3,11 +3,11 @@
 class Signal
 {
 public:
-	int samples;
+	int SAMPLES;
 	double* signal;
 	double& operator[](int channel);
 
-	Signal() {}
+	Signal() : SAMPLES(0){}
 	Signal(int samples);
 	~Signal();
 };

@@ -1,5 +1,7 @@
 #pragma once
 #include "Definitions.h"
+#include "SignalBank.h"
+
 class Meddis
 {
 private:
@@ -14,7 +16,7 @@ private:
 	const double TRANSMITTERS = 1;
 public:
 	Meddis() {};
-	SignalBank* filter(SignalBank& bm, int sampleRate, int channels, int samples);
+	SignalBank* filter(SignalBank& bm);
 	double** unmodifiedFilter(SignalBank& bm, int sampleRate, int channels, int samples);
 	~Meddis();
 };

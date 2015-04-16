@@ -1,6 +1,7 @@
 #pragma once
 #include "GammatoneFilter.h"
 #include "Definitions.h"
+#include "SignalBank.h"
 
 class FilterBank
 {
@@ -13,11 +14,11 @@ private:
 	int erbScaleToFreq(double erb);
 	double* logSpacedErbScale(double minErb, double maxErb);
 public:
-	const int CHANNELS, LOW, HIGH;
+	const int CHANNELS, LOW, HIGH, SAMPLE_RATE;
 	SignalBank* channels;
 
 	FilterBank(int channels, int lowFreq, int highFreq, int sampleRate);
-	SignalBank* filter(Signal& signal, int samples);
+	SignalBank* filter(Signal& signal);
 	~FilterBank();
 };
 
