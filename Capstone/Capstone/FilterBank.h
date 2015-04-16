@@ -11,13 +11,13 @@ private:
 	double erb(int frequency);
 	double freqToErbScale(int frequency);
 	int erbScaleToFreq(double erb);
-	Signal logSpacedErbScale(double minErb, double maxErb);
+	double* logSpacedErbScale(double minErb, double maxErb);
 public:
 	const int CHANNELS, LOW, HIGH;
-	Signal* channels;
+	SignalBank* channels;
 
 	FilterBank(int channels, int lowFreq, int highFreq, int sampleRate);
-	Signal* filter(Signal signal, int samples);
+	SignalBank* filter(Signal& signal, int samples);
 	~FilterBank();
 };
 

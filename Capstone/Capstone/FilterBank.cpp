@@ -21,10 +21,11 @@ FilterBank::FilterBank(int channels, int lowFreq, int highFreq, int sampleRate) 
 	delete[] erbScale;
 }
 
-Signal* FilterBank::filter(Signal signal, int samples){
-	channels = new Signal[CHANNELS];
+SignalBank* FilterBank::filter(Signal& signal, int samples){
+	channels = new SignalBank(CHANNELS);
 	for (int i = 0; i < CHANNELS; i++) {
-		channels[i] = bank->filter(signal, samples);
+		Signal* filtered = bank->filter(signal, samples);
+		channels->add(filtered, i);
 	}
 	return channels;
 }

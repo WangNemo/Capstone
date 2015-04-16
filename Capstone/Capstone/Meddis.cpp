@@ -2,7 +2,7 @@
 #include "Meddis.h"
 
 
-SignalBank Meddis::filter(SignalBank bm, int sampleRate, int channels, int samples)
+SignalBank* Meddis::filter(SignalBank& bm, int sampleRate, int channels, int samples)
 {
 	//% initialize inner hair cells
 	double processAdj = PROCESS_RATE / sampleRate;
@@ -12,18 +12,22 @@ SignalBank Meddis::filter(SignalBank bm, int sampleRate, int channels, int sampl
 	double lossReturn = (LOSS_RATE + RETURN_RATE) / sampleRate;
 
 	//% inner hair cell transduction
-	SignalBank meddisResult = new Signal[channels];//SignalBank(channels);
+	SignalBank* meddisResult = new SignalBank(channels);
 	//SignalBank& meddisResult = *meddisResultPtr;
 	for (int channel = 0; channel < channels; channel++) {
-		meddisResult[channel] = new double[samples];
+		Signal* sig = new Signal(samples);
+		meddisResult->add(sig, channel);
+		//Signal& signal = *sig;
+
+		//meddisResult[channel] = new double[samples];
 		double permability = perm3 * perm1 / (perm1 + perm2);
 		double cleftContents = TRANSMITTERS * REPLENISH_RATE * permability / 
 			(LOSS_RATE * permability + REPLENISH_RATE * (LOSS_RATE + RETURN_RATE));
 		double transmitter = cleftContents * (LOSS_RATE + RETURN_RATE) / permability;
 		double reprocessor = cleftContents *  RETURN_RATE / PROCESS_RATE;
 
-		Signal signal = bm[channel];
-		Signal result = meddisResult[channel];
+		Signal& signal = bm[channel];
+		Signal& result = (*meddisResult)[channel];
 		for (int sample = 0; sample < samples; sample++) {
 			double sigPerm = (signal[sample] + perm1);
 			double permabilityAmt = (sigPerm > 0 ?
@@ -47,7 +51,7 @@ SignalBank Meddis::filter(SignalBank bm, int sampleRate, int channels, int sampl
 	return meddisResult;
 }
 
-double** Meddis::unmodifiedFilter(SignalBank bm, int sampleRate, int channels, int samples)
+double** Meddis::unmodifiedFilter(SignalBank& bm, int sampleRate, int channels, int samples)
 {
 	//[numChan, sigLength] = size(r);     % number of channels and input signal length
 
@@ -81,7 +85,7 @@ double** Meddis::unmodifiedFilter(SignalBank bm, int sampleRate, int channels, i
 		double hair_q = hair_c*(med_l + med_r) / kt;
 		double hair_w = hair_c*med_r / med_x;
 
-		double* signal = bm[i];
+		double* signal = bm[i].signal;
 		double* result = meddisResult[i];
 		for (int j = 0; j < samples; j++) {
 			kt = ((signal[j] + med_a)>0 ?

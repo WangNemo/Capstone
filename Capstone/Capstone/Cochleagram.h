@@ -11,8 +11,8 @@ private:
 	Meddis* meddis;
 public:
 	static const int CHANNELS = 128, MAX_FREQ = 5500, MIN_FREQ = 80;
-	SignalBank cochleagram;
-	Cochleagram(Signal signal, int samples, int sampleRate);
+	SignalBank* cochleagram;
+	Cochleagram(Signal& signal, int samples, int sampleRate);
 	~Cochleagram();
 };
 

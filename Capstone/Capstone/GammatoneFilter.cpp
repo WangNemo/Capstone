@@ -25,8 +25,8 @@ GammatoneFilter::GammatoneFilter(int frequencyCenter, double bandwidth, int samp
 	GammatoneFilter::sinFreq = sin(radianTimeStep * frequencyCenter);
 }
 
-Signal GammatoneFilter::filter(Signal signal, int samples) {
-	Signal filteredSignal = new double[samples];
+Signal* GammatoneFilter::filter(Signal& signal, int samples) {
+	Signal* filteredSignal = new Signal(samples);//new double[samples];
 
 	Complex freqShift(1, 0);
 
@@ -44,7 +44,7 @@ Signal GammatoneFilter::filter(Signal signal, int samples) {
 			filteredSample.real * freqShift.real +
 			filteredSample.imaginary * freqShift.imaginary;
 
-		filteredSignal[sample] = shiftedBack * GammatoneFilter::gain;
+		(*filteredSignal)[sample] = shiftedBack * GammatoneFilter::gain;
 
 		double tempCos = freqShift.real;
 		freqShift.real = cosFreq * tempCos + sinFreq * freqShift.imaginary;
