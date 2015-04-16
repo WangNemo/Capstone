@@ -2,8 +2,6 @@
 
 #include <cmath>
 #include <iostream>
-#include "SignalBank.h"
-#include "SignalGrid.h"
 
 #define MAX(x,y)     ( ( x ) > ( y ) ? ( x ) : ( y ) )
 #define MIN(x,y)     ( ( x ) < ( y ) ? ( x ) : ( y ) )
@@ -28,7 +26,7 @@ struct Complex {
 	Complex() {}
 };
 
-double* mexFunction(double* x, int nsamples, int cf, int fs);
+double* mexFunction(Signal x, int nsamples, int cf, int fs);
 
 namespace staticTools{
 	Signal makeWave(int length, int frequency);
