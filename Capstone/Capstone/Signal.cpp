@@ -14,6 +14,16 @@ void Signal::zeroOut() {
 	std::fill_n(signal, SAMPLES, 0);
 }
 
+void Signal::reverse() {
+	for (int i = 0; i < SAMPLES / 2; i++) {
+		int reversei = SAMPLES - i;
+		double temp = signal[i];
+		signal[i] = signal[reversei];
+		signal[reversei] = signal[i];
+	}
+}
+
+
 Signal::~Signal(){
 	delete[] signal;
 }

@@ -25,7 +25,7 @@ namespace staticTools{
 
 		for (int i = 0; i < dataSize; i++) {
 			(*sig)[i] = data[i] / largestSample;
-			print (*sig)[i] << '\t' << data[i] end;
+			//print (*sig)[i] << '\t' << data[i] end;
 		}
 
 		delete[] data;

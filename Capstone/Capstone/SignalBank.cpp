@@ -12,6 +12,10 @@ Signal& SignalBank::operator[](int channel) {
 }
 
 void SignalBank::add(Signal* sig, int index) {
+	/*if (bank[index] != NULL) {
+		Signal* sig = bank[index];
+		delete bank[index];
+	}*/
 	bank[index] = sig;
 	//bank[index] = *sig;
 }

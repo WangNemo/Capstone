@@ -19,6 +19,8 @@ public:
 
 	FilterBank(int channels, int lowFreq, int highFreq, int sampleRate);
 	SignalBank* filter(Signal& signal);
+	void filter(SignalBank& signal);
+	Signal* reverse(SignalBank& inputBank);
 	~FilterBank();
 };
 

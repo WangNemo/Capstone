@@ -30,6 +30,29 @@ SignalBank* FilterBank::filter(Signal& signal){
 	return channels;
 }
 
+void FilterBank::filter(SignalBank& signal) {
+	for (int i = 0; i < CHANNELS; i++) {
+		signal[i].reverse();
+		Signal* filtered = (*bank)->filter(signal[i]);
+		signal.add(filtered, i);
+	}
+}
+
+
+Signal* FilterBank::reverse(SignalBank& inputBank) {
+	Signal* signal = new Signal(inputBank.SAMPLES, inputBank.SAMPLE_RATE);
+	for (int i = 0; i < CHANNELS; i++) {
+		Signal channel = inputBank[i];
+		channel.reverse();
+		Signal* unfiltered = (*bank)->filter(channel);
+		for (int sample = 0; sample < inputBank.SAMPLES; sample++) {
+			(*signal)[sample] += (*unfiltered)[sample];
+		}
+		delete unfiltered;
+	}
+	return signal;
+}
+
 double FilterBank::erb(int frequency){
 	return 24.7 * ( 4.37e-3 * frequency + 1);
 }
