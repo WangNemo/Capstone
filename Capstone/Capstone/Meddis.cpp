@@ -15,7 +15,7 @@ SignalBank* Meddis::filter(SignalBank& bm)
 	SignalBank* meddisResult = new SignalBank(bm.CHANNELS, bm.SAMPLE_RATE, bm.SAMPLES);
 	//SignalBank& meddisResult = *meddisResultPtr;
 	for (int channel = 0; channel < bm.CHANNELS; channel++) {
-		Signal* sig = new Signal(bm.SAMPLES);
+		Signal* sig = new Signal(bm.SAMPLES, bm.SAMPLE_RATE);
 		meddisResult->add(sig, channel);
 		//Signal& signal = *sig;
 
@@ -110,4 +110,5 @@ double** Meddis::unmodifiedFilter(SignalBank& bm, int sampleRate, int channels, 
 
 Meddis::~Meddis()
 {
+
 }

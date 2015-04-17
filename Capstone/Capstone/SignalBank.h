@@ -6,8 +6,7 @@
 class SignalBank
 {
 private: 
-	Signal** forDeleting;
-	Signal* bank;
+	Signal** bank;
 public:
 	const int CHANNELS, SAMPLE_RATE, SAMPLES;
 	SignalBank() : CHANNELS(0), SAMPLE_RATE(0), SAMPLES(0){};

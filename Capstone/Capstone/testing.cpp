@@ -4,7 +4,7 @@
 namespace test{
 
 	void testGammatoneFilter() {
-		Signal* randomWave = staticTools::makeWave(44100, 100);
+		Signal* randomWave = staticTools::makeWave(44100, 44100, 100);
 		GammatoneFilter filter(100, erb(100) * BW_CORRECTION, 44100);
 		Signal* myFilterResults = filter.filter(*randomWave);
 		double* otherFilterResults = mexFunction(randomWave->signal, 44100, 100, 44100);
@@ -20,7 +20,7 @@ namespace test{
 
 
 	void testMeddis() {
-		Signal* signal = staticTools::makeWave(44100, 100);
+		Signal* signal = staticTools::makeWave(44100, 44100, 100);
 		int sampleRate = 44100;
 		int samples = 44100;
 		int channels = 128;

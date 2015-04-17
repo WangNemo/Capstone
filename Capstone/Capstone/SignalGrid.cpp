@@ -17,7 +17,7 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 	for (int frame = 0; frame < FRAMES; frame++) {
 		SignalBank* bank = new SignalBank(CHANNELS, SAMPLE_RATE, SAMPLES);
 		for (int channel = 0; channel < CHANNELS; channel++) {
-			Signal* sig = new Signal(FRAME_SIZE);
+			Signal* sig = new Signal(FRAME_SIZE, SAMPLE_RATE);
 			for (int sample = 0; sample < FRAME_SIZE; sample++) {
 				(*sig)[sample] = signalBank[channel][sample + FRAME_OFFSET * frame];
 			}
@@ -25,26 +25,38 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 		}
 		grid[frame] = bank;
 	}
-	print FRAMES end;
+	//print FRAMES end;
 }
 
-double** SignalGrid::toSmrPower() {
+doubleGrid* SignalGrid::toSmrPower() {
 	double** powerGrid = new double*[FRAMES];
 	for (int frame = 0; frame < FRAMES; frame++) {
 		double* powerColumn = new double[CHANNELS];
+		powerGrid[frame] = powerColumn;
 		for (int channel = 0; channel < CHANNELS; channel++){
 			double power = 0;
 			for (int i = 0; i < FRAME_SIZE; i++) {
 				double sample = (*(grid[frame]))[channel][i];
+				if (sample > 65 || sample < 55) {
+					int a = 5;
+				}
 				power += sample * sample;
 			}
 			powerColumn[channel] = sqrt(power);
 		}
 	}
-	return powerGrid;
+	return new doubleGrid(powerGrid, FRAMES, CHANNELS);
 }
+
+void SignalGrid::deleteCell(int frame, int channel) {
+	(*(grid[frame]))[channel].zeroOut();
+}
+
 
 
 SignalGrid::~SignalGrid()
 {
+	for (int i = 0; i < FRAMES; i++) {
+		delete grid[i];
+	}
 }

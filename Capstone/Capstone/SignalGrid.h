@@ -12,7 +12,8 @@ public:
 
 	SignalBank& operator[](int frame);
 	SignalGrid(SignalBank& signalBank, int samplesPerFrame, int samplesFrameOverlap);
-	double** toSmrPower();
+	doubleGrid* toSmrPower();
+	void deleteCell(int frame, int channel);
 	~SignalGrid();
 };
 

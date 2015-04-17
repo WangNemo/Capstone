@@ -7,7 +7,7 @@ class FilterBank
 {
 private:
 	const float bandwidthCorrection = 1.019f;
-	GammatoneFilter* bank;
+	GammatoneFilter** bank;
 
 	double erb(int frequency);
 	double freqToErbScale(int frequency);

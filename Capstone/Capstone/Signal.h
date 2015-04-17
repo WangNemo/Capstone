@@ -3,12 +3,13 @@
 class Signal
 {
 public:
-	int SAMPLES;
+	int SAMPLES, SAMPLE_RATE;
 	double* signal;
-	double& operator[](int channel);
+	double& operator[](int sample);
 
-	Signal() : SAMPLES(0){}
-	Signal(int samples);
+	Signal() : SAMPLES(0), SAMPLE_RATE(0){}
+	Signal(int samples, int sampleRate);
+	void zeroOut();
 	~Signal();
 };
 

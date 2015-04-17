@@ -3,12 +3,105 @@
 #include "Definitions.h"
 
 namespace staticTools{
-	Signal* makeWave(int length, int frequency) {
-		Signal* wave = new Signal(length);//double[length];
+	using byte = unsigned char;
+
+	Signal* makeWave(int length, int sampleRate, int frequency) {
+		Signal* wave = new Signal(length, sampleRate);//double[length];
 
 		for (int i = 0; i < length; i++) {
 			(*wave)[i] = sin(PI * 2 * frequency * i / length);
 		}
 		return wave;
 	}
+
+	Signal* normalize(short* data, int dataSize) {
+		double largestSample = 0;
+
+		for (int i = 0; i < dataSize; i++) {
+			largestSample = largestSample > data[i] ? largestSample : data[i];
+		}
+
+		Signal* sig = new Signal(dataSize, 44100);
+
+		for (int i = 0; i < dataSize; i++) {
+			(*sig)[i] = data[i] / largestSample;
+			print (*sig)[i] << '\t' << data[i] end;
+		}
+
+		delete[] data;
+		return sig;
+	}
+
+	int seekToData(FILE* source) {
+
+		char descChars[5];
+
+		bool datafound = false;
+		bool firstTime = true;
+		int dataSize = 0;
+		while (!feof(source) && !datafound) {
+			fread(descChars, sizeof(char), 4, source);
+
+			if (!firstTime){
+				if (descChars[0] == 'd' && descChars[1] == 'a' && descChars[2] == 't' && descChars[3] == 'a') {
+					datafound = true;
+				}
+
+				fread(descChars, sizeof(char), 4, source);
+			}
+			if (datafound) {
+				std::cout << "";
+			}
+			int skip = firstTime ? 8 :
+				((descChars[0] & 0xFF)
+				| (descChars[1] & 0xFF) << 8
+				| (descChars[2] & 0xFF) << 16
+				| (descChars[3] & 0xFF) << 24);
+
+			if (datafound) {
+				dataSize = skip;
+			}
+			else {
+				fseek(source, skip, SEEK_CUR);
+			}
+			firstTime = false;
+		}
+		return dataSize;
+	}
+
+	Signal* readWav(std::string& fileName) {
+		FILE* file = fopen(fileName.c_str(), "rb");
+		print file << fileName end;
+		int dataSize = seekToData(file);
+		dataSize = dataSize / 2; // for 8 bit ints
+		short* data = new short[dataSize];
+		fread(data, sizeof(short), dataSize, file);
+		fclose(file);
+		Signal* sig = new Signal(dataSize, 44100);
+		for (int i = 0; i < dataSize; i++) {
+			(*sig)[i] = data[i];
+		}
+		delete[] data;
+		return sig;//normalize(data, dataSize);
+	}
+
+	//void readChunk(FILE* source, char* chunkName, byte* chunkBuffer) {
+	//	fseek(source, 0, SEEK_SET);
+
+	//	char* description = new char[5];
+	//	description[4] = '\0';
+	//	byte* chunkSize = new byte[4];
+
+	//	bool firstTime = true
+	//	while (true) {
+	//		fread(description, sizeof(char), 4, source);
+	//		if (!firstTime) {
+	//			if (description == chunkName) {
+	//				fread(chunkSize, sizeof(byte), 4, source);
+	//			}
+	//		}
+	//	}
+	//}
+
+
 }
