@@ -14,7 +14,7 @@ FilterBank::FilterBank(int channels, int lowFreq, int highFreq, int sampleRate) 
 	for (int i = 0; i < CHANNELS; i++) {
 		int frequency = erbScaleToFreq(erbScale[i]);
 		double bandwith = erb(frequency) * bandwidthCorrection;
-		//print i << "\t" << frequency << "\t" << erbScale[i] end;
+		//print i << "\t" << frequency << "\t" << erbScale[i] << "\t" << bandwith end;
 		bank[i] = new GammatoneFilter(frequency, bandwith, sampleRate);
 	}
 
@@ -24,7 +24,7 @@ FilterBank::FilterBank(int channels, int lowFreq, int highFreq, int sampleRate) 
 SignalBank* FilterBank::filter(Signal& signal){
 	channels = new SignalBank(CHANNELS, SAMPLE_RATE, signal.SAMPLES);
 	for (int i = 0; i < CHANNELS; i++) {
-		Signal* filtered = (*bank)->filter(signal);
+		Signal* filtered = bank[i]->filter(signal); //(*bank)->filter(signal);
 		channels->add(filtered, i);
 	}
 	return channels;

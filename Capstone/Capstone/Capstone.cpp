@@ -59,14 +59,38 @@ int main(int argc, char* argv[], char* envp[]) {
 	print argv[2] end;
 	std::string fileName(argv[1]);
 	std::string fileName2(argv[2]);
-	Signal* signal1 = staticTools::readWav(fileName2);
-	Signal* signal2 = staticTools::readWav(fileName);
+	Signal* signal1 = staticTools::readWav(fileName);
+	Signal* signal2 = staticTools::readWav(fileName2);
 
 	int sampleRate = 44100;
 	int channels = 128;
 
+	//GammatoneFilter filter(7500, 630, 44100);
+	//Signal* simpleFilt = filter.filter(*signal1);
+
+	//FilterBank bankb(256, 100, 20000, 44100);
+	//SignalBank* siggyb = bankb.filter(*signal1);
+
+
+	//double* resynthedbanksig1 = new double[siggyb->SAMPLES] {};
+	//for (int channel = 0; channel < 256; channel++) {
+	//	for (int sample = 0; sample < siggyb->SAMPLES; sample++) {
+	//		resynthedbanksig1[sample] += (*siggyb)[channel][sample];
+	//	}
+	//}
+
+	//FILE* results = fopen("Results.wav", "wb");
+
+	//for (int i = 0; i < 64; i++) {
+	//	std::string path = "Result" + std::to_string(i) + ".wav";
+	//	FILE* results = fopen(path.c_str(), "wb");
+	//	fwrite((*siggyb)[i].signal, sizeof(double), siggyb->SAMPLES, results);
+	//}
+	//fwrite(simpleFilt->signal, sizeof(double), simpleFilt->SAMPLES, results);
+	//fwrite(resynthedbanksig1, sizeof(double), simpleFilt->SAMPLES, results);
+
 	Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
-	//delete signal1;
+	//////delete signal1;
 	SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
 	delete coch1;
 	doubleGrid* powerGrid = grid1->toSmrPower();
@@ -91,31 +115,34 @@ int main(int argc, char* argv[], char* envp[]) {
 		print "" end;*/
 
 	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 1);
-	FilterBank bank(128, 5500, 80, 44100);
+
+
+	FilterBank bank(128, 8000, 100, 44100);
+	signal1->reverse();
 	SignalBank* siggyBank1 = bank.filter(*signal1);
-	bank.filter(*siggyBank1);
+	//bank.filter(*siggyBank1);
 	
 	for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
 		(*siggyBank1)[channel].reverse();
 	}
 
 	SignalGrid siggyGrid1 = SignalGrid(*siggyBank1, .020*sampleRate, .010*sampleRate);
-	for (int i = 0; i < idealBinaryMask1->ROWS; i++) {
-		for (int j = 0; j < idealBinaryMask1->COLUMNS; j++) {
-			if (!(*(idealBinaryMask1))(i, j))
-				siggyGrid1.deleteCell(i, j);
-		}
-	}
+	//for (int i = 0; i < idealBinaryMask1->ROWS; i++) {
+	//	for (int j = 0; j < idealBinaryMask1->COLUMNS; j++) {
+	//		if (!(*(idealBinaryMask1))(i, j))
+	//			siggyGrid1.deleteCell(i, j);
+	//	}
+	//}
 
 	SignalBank resynthesisBank(128, 44100, siggyBank1->SAMPLES);
 	for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
 		Signal* sigChan = new Signal(siggyBank1->SAMPLES, siggyBank1->SAMPLE_RATE);//new double[siggyBank1->SAMPLES] {};
-		for (int frame = 0; frame < siggyGrid1.FRAMES; frame++) {
+		for (int frame = 0; frame < siggyGrid1.FRAMES; frame += 2) {
 			int startSample = frame * siggyGrid1.FRAME_OFFSET;
 			for (int sample = startSample; sample < startSample + siggyGrid1.FRAME_SIZE; sample++) {
 				double samp = siggyGrid1[frame][channel][sample% siggyGrid1.FRAME_SIZE];
 				double presamp = (*sigChan)[sample];
-				(*sigChan)[sample] = samp + presamp;
+				(*sigChan)[sample] += samp + presamp;
 			}
 		}
 		resynthesisBank.add(sigChan, channel);

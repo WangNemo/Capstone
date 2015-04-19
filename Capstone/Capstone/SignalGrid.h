@@ -1,6 +1,7 @@
 #pragma once
 #include "Definitions.h"
 #include "SignalBank.h"
+#include "HanningWindow.h"
 
 class SignalGrid
 {

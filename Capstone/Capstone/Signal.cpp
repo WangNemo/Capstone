@@ -19,7 +19,7 @@ void Signal::reverse() {
 		int reversei = SAMPLES - i;
 		double temp = signal[i];
 		signal[i] = signal[reversei];
-		signal[reversei] = signal[i];
+		signal[reversei] = temp;
 	}
 }
 

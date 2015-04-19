@@ -76,5 +76,6 @@ double* mexFunction(double* x, int nsamples, int cf, int fs);
 namespace staticTools{
 	Signal* makeWave(int length, int sampleRate, int frequency);
 	Signal* readWav(std::string& fileName);
+	Signal* normalize(short* data, int dataSize);
 }
 

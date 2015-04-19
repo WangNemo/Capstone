@@ -81,8 +81,7 @@ namespace staticTools{
 		for (int i = 0; i < dataSize; i++) {
 			(*sig)[i] = data[i];
 		}
-		delete[] data;
-		return sig;//normalize(data, dataSize);
+		return normalize(data, dataSize);
 	}
 
 	//void readChunk(FILE* source, char* chunkName, byte* chunkBuffer) {

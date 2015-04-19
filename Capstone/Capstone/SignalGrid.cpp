@@ -11,8 +11,9 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 	FRAME_SIZE(frameSize), FRAME_OVERLAP(frameOverlap),	SAMPLES(signalBank.SAMPLES), 
 	SAMPLE_RATE(signalBank.SAMPLE_RATE), CHANNELS(signalBank.CHANNELS)
 {
-	FRAMES = (SAMPLES - FRAME_SIZE) / FRAME_OFFSET + 1;
+	FRAMES = FRAME_OFFSET == 0 ? SAMPLES / FRAME_SIZE : (SAMPLES - FRAME_SIZE) / FRAME_OFFSET + 1;
 	grid = new SignalBank*[FRAMES];
+	HanningWindow window(frameSize);
 
 	for (int frame = 0; frame < FRAMES; frame++) {
 		SignalBank* bank = new SignalBank(CHANNELS, SAMPLE_RATE, SAMPLES);
@@ -21,6 +22,7 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 			for (int sample = 0; sample < FRAME_SIZE; sample++) {
 				(*sig)[sample] = signalBank[channel][sample + FRAME_OFFSET * frame];
 			}
+			//window.filter(*sig);
 			bank->add(sig, channel);
 		}
 		grid[frame] = bank;
