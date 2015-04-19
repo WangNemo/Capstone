@@ -12,6 +12,14 @@
 #define print std::cout<<
 #define end <<std::endl
 
+
+double maxInArray(double* darray, int size); 
+
+double minInArray(double* darray, int size); 
+
+double avgInArray(double* darray, int size); 
+
+
 struct Complex {
 	double real = 0;
 	double imaginary = 0;
@@ -77,5 +85,6 @@ namespace staticTools{
 	Signal* makeWave(int length, int sampleRate, int frequency);
 	Signal* readWav(std::string& fileName);
 	Signal* normalize(short* data, int dataSize);
+	Signal* combine(Signal& s1, Signal& s2);
 }
 

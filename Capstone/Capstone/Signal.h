@@ -7,10 +7,11 @@ public:
 	double* signal;
 	double& operator[](int sample);
 
-	Signal() : SAMPLES(0), SAMPLE_RATE(0){}
+	//Signal() : SAMPLES(0), SAMPLE_RATE(0){}
 	Signal(int samples, int sampleRate);
 	void zeroOut();
 	void reverse();
+	void normalize();
 	~Signal();
 };
 

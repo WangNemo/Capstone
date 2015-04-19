@@ -16,10 +16,25 @@ void Signal::zeroOut() {
 
 void Signal::reverse() {
 	for (int i = 0; i < SAMPLES / 2; i++) {
-		int reversei = SAMPLES - i;
+		int reversei = SAMPLES - (i+1);
 		double temp = signal[i];
 		signal[i] = signal[reversei];
 		signal[reversei] = temp;
+	}
+}
+
+void Signal::normalize() {
+	double largest = 0;
+	for (int sample = 0; sample < SAMPLES; sample++) {
+		double sam = signal[sample];
+		if (sam > largest) {
+			largest = sam;
+		}
+	}
+
+	for (int sample = 0; sample < SAMPLES; sample++) {
+		double sam = signal[sample];
+		signal[sample] = sam / largest;
 	}
 }
 

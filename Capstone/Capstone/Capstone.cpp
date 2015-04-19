@@ -9,6 +9,23 @@
 #include "SignalBank.h"
 #include "SignalGrid.h"
 
+doubleGrid* diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
+	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
+	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
+
+	double** decibelGrid = new double*[combinedRows];
+	for (int frame = 0; frame < combinedRows; frame++) {
+		decibelGrid[frame] = new double[combinedCols];
+		for (int channel = 0; channel < combinedCols; channel++) {
+			double one = powerGrid1(frame, channel);
+			double two = powerGrid2(frame, channel);
+			double diff = one - two;
+			decibelGrid[frame][channel] = diff;
+		}
+	}
+	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
+}
+
 doubleGrid* gridOfRelativeDecibels(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
 	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
@@ -42,7 +59,7 @@ doubleGrid* gridOfRelativeDecibels(doubleGrid& powerGrid1, doubleGrid& powerGrid
 	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
 }
 
-boolGrid* createIdealBinaryMask(doubleGrid& decibelGrid, int decibelReq) {
+boolGrid* createIdealBinaryMask(doubleGrid& decibelGrid, double decibelReq) {
 	bool** binaryMask = new bool*[decibelGrid.ROWS];
 	for (int row = 0; row < decibelGrid.ROWS; row++) {
 		binaryMask[row] = new bool[decibelGrid.COLUMNS];
@@ -89,9 +106,17 @@ int main(int argc, char* argv[], char* envp[]) {
 	//fwrite(simpleFilt->signal, sizeof(double), simpleFilt->SAMPLES, results);
 	//fwrite(resynthedbanksig1, sizeof(double), simpleFilt->SAMPLES, results);
 
+
+
+	Signal* mixed = staticTools::combine(*signal1, *signal2);
+	mixed->normalize();
+	//FILE* mixF = fopen("Mixed.wav", "wb");
+	//fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
+
 	Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
 	//////delete signal1;
 	SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
+	print grid1->CHANNELS << '\t' << grid1->FRAMES end;
 	delete coch1;
 	doubleGrid* powerGrid = grid1->toSmrPower();
 	delete grid1;
@@ -99,13 +124,24 @@ int main(int argc, char* argv[], char* envp[]) {
 	Cochleagram* coch2 = new Cochleagram(*signal2, sampleRate);
 	delete signal2;
 	SignalGrid* grid2 = new SignalGrid(*(coch2->cochleagram), .020*sampleRate, .010*sampleRate);
+	print grid2->CHANNELS << '\t' << grid2->FRAMES end;
 	delete coch2;
 	doubleGrid* powerGrid2 = grid2->toSmrPower();
 	delete grid2;
 
-	doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	print powerGrid->COLUMNS << '\t' << powerGrid->ROWS end;
+	print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
+
+
+	doubleGrid* decibelGrid = diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
 	delete powerGrid;
 	delete powerGrid2;
+
+	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, -6);
+
+	print idealBinaryMask1->COLUMNS << '\t' << idealBinaryMask1->ROWS end;
+
+
 
 	/*for (int i = 0; i < decibelGrid->ROWS; i++) {
 		for (int j = 0; j < decibelGrid->COLUMNS; j++) {
@@ -114,66 +150,66 @@ int main(int argc, char* argv[], char* envp[]) {
 		}
 		print "" end;*/
 
-	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 1);
 
 
-	FilterBank bank(128, 8000, 100, 44100);
-	signal1->reverse();
+	FilterBank bank(channels, 100, 8000, 44100);
+	signal1->reverse(); // reversed inside the cochleagram <- no more
 	SignalBank* siggyBank1 = bank.filter(*signal1);
-	//bank.filter(*siggyBank1);
 	
 	for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
 		(*siggyBank1)[channel].reverse();
 	}
 
 	SignalGrid siggyGrid1 = SignalGrid(*siggyBank1, .020*sampleRate, .010*sampleRate);
-	//for (int i = 0; i < idealBinaryMask1->ROWS; i++) {
-	//	for (int j = 0; j < idealBinaryMask1->COLUMNS; j++) {
-	//		if (!(*(idealBinaryMask1))(i, j))
-	//			siggyGrid1.deleteCell(i, j);
-	//	}
-	//}
-
-	SignalBank resynthesisBank(128, 44100, siggyBank1->SAMPLES);
-	for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
-		Signal* sigChan = new Signal(siggyBank1->SAMPLES, siggyBank1->SAMPLE_RATE);//new double[siggyBank1->SAMPLES] {};
-		for (int frame = 0; frame < siggyGrid1.FRAMES; frame += 2) {
-			int startSample = frame * siggyGrid1.FRAME_OFFSET;
-			for (int sample = startSample; sample < startSample + siggyGrid1.FRAME_SIZE; sample++) {
-				double samp = siggyGrid1[frame][channel][sample% siggyGrid1.FRAME_SIZE];
-				double presamp = (*sigChan)[sample];
-				(*sigChan)[sample] += samp + presamp;
-			}
+	for (int frame = 0; frame < idealBinaryMask1->ROWS; frame++) {
+		for (int channel = 0; channel < idealBinaryMask1->COLUMNS; channel++) {
+			if (!(*(idealBinaryMask1))(frame, channel))
+				siggyGrid1.deleteCell(frame, channel);
 		}
-		resynthesisBank.add(sigChan, channel);
 	}
 
-	//FilterBank resynthBank(128, 50, 5500, siggyBank1->SAMPLE_RATE);
-	//Signal* resynthSig = new Signal();//resynthBank.reverse(resynthesisBank);
-	//resynthSig->reverse();
+	//FRAMES = SAMPLES / FRAME_SIZE + SAMPLES / FRAME_SIZE / 2 + (SAMPLES % FRAME_SIZE >= FRAME_OVERLAP ? 1 : 0);
+	int trueSamples = siggyGrid1.SAMPLES;//(siggyGrid1.FRAMES / 2 + (siggyGrid1.SAMPLES % siggyGrid1.FRAME_SIZE < siggyGrid1.FRAME_OVERLAP ? 1 : 0)) * siggyGrid1.FRAME_SIZE;
 
-	double* resynthesized = new double[siggyBank1->SAMPLES] {};
-	for (int channel = 0; channel < 128; channel++) {
-		for (int sample = 0; sample < siggyBank1->SAMPLES; sample++) {
+	SignalBank resynthesisBank(siggyGrid1.CHANNELS, siggyGrid1.SAMPLE_RATE, siggyGrid1.SAMPLES);
+	for (int i = 0; i < channels; i++) {
+		resynthesisBank.add(new Signal(siggyGrid1.SAMPLES, siggyGrid1.SAMPLE_RATE), i);
+	}
+
+	for (int frame = 0; frame < siggyGrid1.FRAMES; frame++) {
+		for (int channel = 0; channel < siggyGrid1.CHANNELS; channel++) {
+			for (int sample = 0; sample < siggyGrid1.FRAME_SIZE; sample++) {
+				resynthesisBank[channel][sample + siggyGrid1.FRAME_OFFSET * frame] += siggyGrid1[frame][channel][sample];
+			}
+		}
+	}
+
+	//SignalBank resynthesisBank(channels, 44100, trueSamples);
+	//for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
+	//	Signal* sigChan = new Signal(trueSamples, siggyBank1->SAMPLE_RATE);//new double[siggyBank1->SAMPLES] {};
+	//	for (int frame = 0; frame < siggyGrid1.FRAMES; frame++) {
+	//		//int startSample = frame * siggyGrid1.FRAME_OFFSET;
+	//		//for (int sample = startSample; sample < startSample + siggyGrid1.FRAME_SIZE; sample++) {
+	//		for (int sample = 0; sample < siggyGrid1.FRAME_SIZE; sample++) {
+	//			double samp = siggyGrid1[frame][channel][sample];
+	//			double presamp = (*sigChan)[sample + siggyGrid1.FRAME_OFFSET * frame];
+	//			(*sigChan)[sample + siggyGrid1.FRAME_OFFSET * frame] = samp +presamp;
+	//		}
+	//	}
+	//	resynthesisBank.add(sigChan, channel);
+	//}
+
+	Signal resynthesized(trueSamples, resynthesisBank.SAMPLE_RATE);
+	for (int channel = 0; channel < channels; channel++){//=2) {
+		for (int sample = 0; sample < trueSamples; sample++) {
 			resynthesized[sample] += resynthesisBank[channel][sample];
 		}
 	}
 
-	double largest = 0;
-	for (int sample = 0; sample < siggyBank1->SAMPLES; sample++) {
-		double sam = resynthesized[sample];
-		if (sam > largest) {
-			largest = sam;
-		}
-	}
-
-	for (int sample = 0; sample < siggyBank1->SAMPLES; sample++) {
-		double sam = resynthesized[sample];
-		resynthesized[sample] = sam / largest;
-	}
+	resynthesized.normalize();
 
 	FILE* results = fopen("Result.wav", "wb");
-	fwrite(resynthesized, sizeof(double), siggyBank1->SAMPLES, results);
+	fwrite(resynthesized.signal, sizeof(double), trueSamples, results);
 
 
 

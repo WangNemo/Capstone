@@ -2,6 +2,33 @@
 
 #include "Definitions.h"
 
+
+
+double maxInArray(double* darray, int size) {
+	double max = 0;
+	for (int i = 0; i < size; i++) {
+		if (darray[i] > max) max = darray[i];
+	}
+	return max;
+}
+
+double minInArray(double* darray, int size) {
+	double min = 0;
+	for (int i = 0; i < size; i++) {
+		if (darray[i] < min) min = darray[i];
+	}
+	return min;
+}
+
+double avgInArray(double* darray, int size) {
+	double avg = 0;
+	for (int i = 0; i < size; i++) {
+		avg += darray[i];
+	}
+	return avg / size;
+}
+
+
 namespace staticTools{
 	using byte = unsigned char;
 
@@ -83,6 +110,23 @@ namespace staticTools{
 		}
 		return normalize(data, dataSize);
 	}
+
+	Signal* combine(Signal& s1, Signal& s2) {
+		int size = MAX(s1.SAMPLES, s2.SAMPLES);
+		int overlap = MIN(s1.SAMPLES, s2.SAMPLES);
+		Signal* combo = new Signal(size, s1.SAMPLE_RATE);
+
+		for (int i = 0; i < overlap; i++) {
+			(*combo)[i] = s1[i] + s2[i];
+		}
+
+		Signal& largerSig = s1.SAMPLES > s2.SAMPLES ? s1 : s2;
+		for (int i = overlap; i < size; i++) {
+			(*combo)[i] = largerSig[i];
+		}
+		return combo;
+	}
+
 
 	//void readChunk(FILE* source, char* chunkName, byte* chunkBuffer) {
 	//	fseek(source, 0, SEEK_SET);
