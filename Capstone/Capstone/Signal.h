@@ -12,6 +12,8 @@ public:
 	void zeroOut();
 	void reverse();
 	void normalize();
+	void scale(double scalar);
+	Signal* minus(Signal& other);
 	~Signal();
 };
 

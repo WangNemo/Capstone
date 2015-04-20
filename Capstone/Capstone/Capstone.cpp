@@ -26,6 +26,22 @@ doubleGrid* diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
 }
 
+doubleGrid* simpleRatio(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
+	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
+	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
+
+	double** decibelGrid = new double*[combinedRows];
+	for (int frame = 0; frame < combinedRows; frame++) {
+		decibelGrid[frame] = new double[combinedCols];
+		for (int channel = 0; channel < combinedCols; channel++) {
+			double one = powerGrid1(frame, channel);
+			double two = powerGrid2(frame, channel);
+			decibelGrid[frame][channel] = one / two;
+		}
+	}
+	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
+}
+
 doubleGrid* gridOfRelativeDecibels(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
 	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
@@ -133,13 +149,13 @@ int main(int argc, char* argv[], char* envp[]) {
 	print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
 
 
-	doubleGrid* decibelGrid = diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	doubleGrid* decibelGrid = simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
 	delete powerGrid;
 	delete powerGrid2;
 
-	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, -6);
+	//boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, -6);
 
-	print idealBinaryMask1->COLUMNS << '\t' << idealBinaryMask1->ROWS end;
+	//print idealBinaryMask1->COLUMNS << '\t' << idealBinaryMask1->ROWS end;
 
 
 
@@ -153,18 +169,19 @@ int main(int argc, char* argv[], char* envp[]) {
 
 
 	FilterBank bank(channels, 100, 8000, 44100);
-	signal1->reverse(); // reversed inside the cochleagram <- no more
-	SignalBank* siggyBank1 = bank.filter(*signal1);
+	//mixed->reverse(); // reversed inside the cochleagram <- no more
+	SignalBank* siggyBank1 = bank.filter(*mixed);
 	
-	for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
-		(*siggyBank1)[channel].reverse();
-	}
+	//for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
+	//	(*siggyBank1)[channel].reverse();
+	//}
 
 	SignalGrid siggyGrid1 = SignalGrid(*siggyBank1, .020*sampleRate, .010*sampleRate);
-	for (int frame = 0; frame < idealBinaryMask1->ROWS; frame++) {
-		for (int channel = 0; channel < idealBinaryMask1->COLUMNS; channel++) {
-			if (!(*(idealBinaryMask1))(frame, channel))
-				siggyGrid1.deleteCell(frame, channel);
+	for (int frame = 0; frame < decibelGrid->ROWS; frame++) {
+		for (int channel = 0; channel < decibelGrid->COLUMNS; channel++) {
+			siggyGrid1[frame][channel].scale((*decibelGrid)(frame, channel));
+			/*if (!(*(idealBinaryMask1))(frame, channel))
+				siggyGrid1.deleteCell(frame, channel);*/
 		}
 	}
 

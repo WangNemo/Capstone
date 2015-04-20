@@ -13,9 +13,9 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 
 	cochleagram = basilarMembrane;
 	delete bank;
-	cochleagram = meddis->filter(*basilarMembrane);
-	delete meddis;
-	delete basilarMembrane;
+	//cochleagram = meddis->filter(*basilarMembrane);
+	//delete meddis;
+	//delete basilarMembrane;
 }
 
 

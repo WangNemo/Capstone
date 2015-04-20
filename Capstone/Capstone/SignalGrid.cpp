@@ -22,7 +22,7 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 		for (int channel = 0; channel < CHANNELS; channel++) {
 			Signal* sig = new Signal(FRAME_SIZE, SAMPLE_RATE);
 			for (int sample = 0; sample < FRAME_SIZE; sample++) {
-				(*sig)[sample] = signalBank[channel][sample + FRAME_OFFSET * frame];// *(*window.window)[sample];
+				(*sig)[sample] = signalBank[channel][sample + FRAME_OFFSET * frame] * (*window.window)[sample];
 			}
 			//window.filter(*sig);
 			bank->add(sig, channel);

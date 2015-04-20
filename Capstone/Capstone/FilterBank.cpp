@@ -32,7 +32,6 @@ SignalBank* FilterBank::filter(Signal& signal){
 
 void FilterBank::filter(SignalBank& signal) {
 	for (int i = 0; i < CHANNELS; i++) {
-		signal[i].reverse();
 		Signal* filtered = (*bank)->filter(signal[i]);
 		signal.add(filtered, i);
 	}

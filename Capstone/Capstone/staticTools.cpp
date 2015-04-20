@@ -5,7 +5,7 @@
 
 
 double maxInArray(double* darray, int size) {
-	double max = 0;
+	double max = -9999999999;
 	for (int i = 0; i < size; i++) {
 		if (darray[i] > max) max = darray[i];
 	}
@@ -13,7 +13,7 @@ double maxInArray(double* darray, int size) {
 }
 
 double minInArray(double* darray, int size) {
-	double min = 0;
+	double min = 99999999999;
 	for (int i = 0; i < size; i++) {
 		if (darray[i] < min) min = darray[i];
 	}

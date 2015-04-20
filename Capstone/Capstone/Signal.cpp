@@ -2,6 +2,8 @@
 #include "Signal.h"
 #include <array>
 
+#include "Definitions.h"
+
 double& Signal::operator[](int sample) {
 	return signal[sample];
 }
@@ -24,19 +26,37 @@ void Signal::reverse() {
 }
 
 void Signal::normalize() {
-	double largest = 0;
+	double largest = -1000000;
 	for (int sample = 0; sample < SAMPLES; sample++) {
 		double sam = signal[sample];
 		if (sam > largest) {
 			largest = sam;
 		}
 	}
-
+	//print largest end;
 	for (int sample = 0; sample < SAMPLES; sample++) {
 		double sam = signal[sample];
 		signal[sample] = sam / largest;
 	}
 }
+
+void Signal::scale(double scalar) {
+	for (int sample = 0; sample < SAMPLES; sample++) {
+		double sam = signal[sample];
+		signal[sample] = sam * scalar;
+	}
+}
+
+
+Signal* Signal::minus(Signal& other) {
+	int length = MAX(other.SAMPLES, SAMPLES);
+	Signal* s = new Signal(length, SAMPLE_RATE);
+	for (int i = 0; i < length; i++) {
+		(*s).signal[i] = signal[i] - other[i];
+	}
+	return s;
+}
+
 
 
 Signal::~Signal(){
