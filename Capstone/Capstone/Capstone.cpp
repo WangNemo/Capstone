@@ -36,7 +36,7 @@ doubleGrid* simpleRatio(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 		for (int channel = 0; channel < combinedCols; channel++) {
 			double one = powerGrid1(frame, channel);
 			double two = powerGrid2(frame, channel);
-			decibelGrid[frame][channel] = two < .001 ? 200 : one / two;
+			decibelGrid[frame][channel] = sqrt(two < .001 ? 200 : one / two);
 		}
 	}
 	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
@@ -183,7 +183,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	//print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
 
 
-	doubleGrid* decibelGrid = simpleRatio(*powerGrid2, *powerGrid);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	doubleGrid* decibelGrid = simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
 	delete powerGrid;
 	delete powerGrid2;
 
