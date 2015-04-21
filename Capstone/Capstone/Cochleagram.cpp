@@ -16,10 +16,16 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	//}
 
 	cochleagram = basilarMembrane;
-	//delete bank;
-	//cochleagram = meddis->filter(*basilarMembrane);
-	//delete meddis;
-	//delete basilarMembrane;
+	for (int i = 0; i < CHANNELS; i++) {
+		(*basilarMembrane)[i].scale(100);
+	}
+	delete bank;
+	cochleagram = meddis->filter(*basilarMembrane);
+	for (int i = 0; i < CHANNELS; i++) {
+		print minInArray((*cochleagram)[i].signal, CHANNELS) << '\t' << maxInArray((*cochleagram)[i].signal, CHANNELS) << '\t' << avgInArray((*cochleagram)[i].signal, CHANNELS) end;
+	}
+	delete meddis;
+	delete basilarMembrane;
 }
 
 

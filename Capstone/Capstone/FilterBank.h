@@ -7,13 +7,13 @@ class FilterBank
 {
 private:
 	const float bandwidthCorrection = 1.019f;
-	GammatoneFilter** bank;
 
 	double erb(int frequency);
 	double freqToErbScale(int frequency);
 	int erbScaleToFreq(double erb);
 	double* logSpacedErbScale(double minErb, double maxErb);
 public:
+	GammatoneFilter** bank;
 	const int CHANNELS, LOW, HIGH, SAMPLE_RATE;
 	SignalBank* channels;
 

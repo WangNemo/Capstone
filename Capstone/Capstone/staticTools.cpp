@@ -23,6 +23,7 @@ double minInArray(double* darray, int size) {
 double avgInArray(double* darray, int size) {
 	double avg = 0;
 	for (int i = 0; i < size; i++) {
+		double value = darray[i];
 		avg += darray[i];
 	}
 	return avg / size;

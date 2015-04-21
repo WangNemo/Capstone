@@ -42,12 +42,9 @@ Signal* FilterBank::reverse(SignalBank& inputBank) {
 	Signal* signal = new Signal(inputBank.SAMPLES, inputBank.SAMPLE_RATE);
 	for (int i = 0; i < CHANNELS; i++) {
 		Signal channel = inputBank[i];
-		channel.reverse();
-		Signal* unfiltered = (*bank)->filter(channel);
-		for (int sample = 0; sample < inputBank.SAMPLES; sample++) {
-			(*signal)[sample] += (*unfiltered)[sample];
-		}
-		delete unfiltered;
+		inputBank[i].reverse();
+		inputBank.add((*bank)->filter(inputBank[i]), i);
+		inputBank[i].reverse();
 	}
 	return signal;
 }

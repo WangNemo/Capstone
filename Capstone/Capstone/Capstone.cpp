@@ -8,6 +8,7 @@
 #include "testing.h"
 #include "SignalBank.h"
 #include "SignalGrid.h"
+#include "GammatoneFilter.h"
 
 doubleGrid* diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
@@ -112,7 +113,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	signal1->trim(signal2->SAMPLES);
 
 	int sampleRate = 44100;
-	int channels = 32;
+	int channels = 150;
 
 	//GammatoneFilter filter(7500, 630, 44100);
 	//Signal* simpleFilt = filter.filter(*signal1);
@@ -142,17 +143,11 @@ int main(int argc, char* argv[], char* envp[]) {
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
 	mixed->normalize();
-	FILE* mixF = fopen("Mixed.wav", "wb");
-	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
+	//FILE* mixF = fopen("Mixed.wav", "wb");
+	//fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
-	signal1->reverse(); 
-
-	
 	Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
 
-	for (int channel = 0; channel < coch1->CHANNELS; channel++) {
-		(*(coch1->cochleagram))[channel].reverse();
-	}
 	//////delete signal1;
 	SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
 	print grid1->CHANNELS << '\t' << grid1->FRAMES end;
@@ -161,11 +156,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	delete grid1;
 
 
-	signal2->reverse();
 	Cochleagram* coch2 = new Cochleagram(*signal2, sampleRate);
-	for (int channel = 0; channel < coch1->CHANNELS; channel++) {
-		(*(coch2->cochleagram))[channel].reverse();
-	}
 	delete signal2;
 	SignalGrid* grid2 = new SignalGrid(*(coch2->cochleagram), .020*sampleRate, .010*sampleRate);
 	print grid2->CHANNELS << '\t' << grid2->FRAMES end;
@@ -188,7 +179,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	delete powerGrid2;
 
 
-	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 3);
+	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, .01);
 
 	for (int i = 0; i < decibelGrid->ROWS; i++) {
 		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
@@ -197,9 +188,51 @@ int main(int argc, char* argv[], char* envp[]) {
 
 
 
-
 	FilterBank bank(channels, 100, 8000, 44100);
 	SignalBank* mixedBank = bank.filter(*mixed);
+
+	for (int i = 0; i < channels; i++) {
+		(*mixedBank)[i].reverse();
+		(*mixedBank).add((*(bank.bank[i])).filter((*mixedBank)[i]), i);
+		(*mixedBank)[i].reverse();
+	}
+
+	//Signal siggySum(mixed->SAMPLES, mixed->SAMPLE_RATE);
+	//for (int i = 0; i < channels; i++) {
+	//	for (int s = 0; s < mixed->SAMPLES; s++) {
+	//		siggySum[s] += (*mixedBank)[i][s];
+	//	}
+	//}
+	//siggySum.reverse();
+	//mixedBank = bank.filter(siggySum);
+	//for (int i = 0; i < channels; i++) {
+	//	(*mixedBank)[i].reverse();
+	//}
+
+	//Signal siggySum2(mixed->SAMPLES, mixed->SAMPLE_RATE);
+	//for (int i = 0; i < channels; i++) {
+	//	for (int s = 0; s < mixed->SAMPLES; s++) {
+	//		siggySum2[s] += (*mixedBank)[i][s];
+	//	}
+	//}
+	////siggySum2.reverse();
+	//siggySum2.normalize();
+
+	//FILE* results2 = fopen("Result.wav", "wb");
+	//fwrite(siggySum2.signal, sizeof(double), siggySum2.SAMPLES, results2);
+
+	//return 0;
+
+	//bank.reverse(*mixedBank);
+	//for (int i = 0; i < channels; i++) {
+	//	(*mixedBank)[i].reverse();
+	//}
+	//FilterBank newbank(channels, 100, 8000, 44100);
+
+	//newbank.filter(*mixedBank);
+	//for (int i = 0; i < channels; i++) {
+	//	(*mixedBank)[i].reverse();
+	//}
 	
 	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
 	for (int frame = 0; frame < decibelGrid->ROWS; frame++) {
