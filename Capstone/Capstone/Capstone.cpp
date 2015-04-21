@@ -112,7 +112,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	signal1->trim(signal2->SAMPLES);
 
 	int sampleRate = 44100;
-	int channels = 128;
+	int channels = 32;
 
 	//GammatoneFilter filter(7500, 630, 44100);
 	//Signal* simpleFilt = filter.filter(*signal1);
@@ -183,16 +183,16 @@ int main(int argc, char* argv[], char* envp[]) {
 	//print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
 
 
-	doubleGrid* decibelGrid = simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid2, *powerGrid); //simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
 	delete powerGrid;
 	delete powerGrid2;
 
 
-	//boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 1);
+	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 3);
 
-	//for (int i = 0; i < decibelGrid->ROWS; i++) {
-	//	print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
-	//}
+	for (int i = 0; i < decibelGrid->ROWS; i++) {
+		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
+	}
 
 
 
@@ -204,9 +204,9 @@ int main(int argc, char* argv[], char* envp[]) {
 	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
 	for (int frame = 0; frame < decibelGrid->ROWS; frame++) {
 		for (int channel = 0; channel < decibelGrid->COLUMNS; channel++) {
-			mixedGrid[frame][channel].scale((*decibelGrid)(frame, channel));
-			//if (!(*(idealBinaryMask1))(frame, channel))
-				//mixedGrid.deleteCell(frame, channel);
+			//mixedGrid[frame][channel].scale((*decibelGrid)(frame, channel));
+			if (!(*(idealBinaryMask1))(frame, channel))
+				mixedGrid.deleteCell(frame, channel);
 		}
 	}
 	for (int frame = decibelGrid->ROWS; frame < mixedGrid.FRAMES; frame++) {
