@@ -48,6 +48,12 @@ void Signal::scale(double scalar) {
 }
 
 
+void Signal::trim(int samples) {
+	for (int sample = samples; sample < SAMPLES; sample++) {
+		signal[sample] = 0;
+	}
+}
+
 Signal* Signal::minus(Signal& other) {
 	int length = MAX(other.SAMPLES, SAMPLES);
 	Signal* s = new Signal(length, SAMPLE_RATE);
@@ -56,7 +62,6 @@ Signal* Signal::minus(Signal& other) {
 	}
 	return s;
 }
-
 
 
 Signal::~Signal(){

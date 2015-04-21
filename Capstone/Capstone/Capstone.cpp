@@ -36,7 +36,7 @@ doubleGrid* simpleRatio(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 		for (int channel = 0; channel < combinedCols; channel++) {
 			double one = powerGrid1(frame, channel);
 			double two = powerGrid2(frame, channel);
-			decibelGrid[frame][channel] = one / two;
+			decibelGrid[frame][channel] = two < .001 ? 200 : one / two;
 		}
 	}
 	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
@@ -52,9 +52,6 @@ doubleGrid* gridOfRelativeDecibels(doubleGrid& powerGrid1, doubleGrid& powerGrid
 		for (int channel = 0; channel < combinedCols; channel++) {
 			double one = powerGrid1(frame, channel);
 			double two = powerGrid2(frame, channel);
-			if (two > 1800 || two < 1750) {
-				int a = 0;
-			}
 			if (one == 0 || two == 0) {
 				decibelGrid[frame][channel] = one > two ? 1000 : -1000;
 			}
@@ -62,13 +59,30 @@ doubleGrid* gridOfRelativeDecibels(doubleGrid& powerGrid1, doubleGrid& powerGrid
 				double decibel = 20 * log10(
 					one / two
 					);
-				if (decibel > .1) {
-					int a = 1;
-				}
-				if (decibel < -.1) {
-					int a = 1;
-				}
 				decibelGrid[frame][channel] = decibel;
+			}
+		}
+	}
+	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
+}
+
+doubleGrid* gridOfRelativeDecibelRatios(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
+	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
+	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
+
+	double** decibelGrid = new double*[combinedRows];
+	for (int frame = 0; frame < combinedRows; frame++) {
+		decibelGrid[frame] = new double[combinedCols];
+		for (int channel = 0; channel < combinedCols; channel++) {
+			double one = powerGrid1(frame, channel);
+			double two = powerGrid2(frame, channel);
+			if (one == 0 || two == 0) {
+				decibelGrid[frame][channel] = one > two ? 1000 : -1000;
+			}
+			else {
+				double decibel1 = 20 * log10(one);
+				double decibel2 = 20 * log10(two);
+				decibelGrid[frame][channel] = decibel1 / decibel2;
 			}
 		}
 	}
@@ -94,6 +108,8 @@ int main(int argc, char* argv[], char* envp[]) {
 	std::string fileName2(argv[2]);
 	Signal* signal1 = staticTools::readWav(fileName);
 	Signal* signal2 = staticTools::readWav(fileName2);
+
+	signal1->trim(signal2->SAMPLES);
 
 	int sampleRate = 44100;
 	int channels = 128;
@@ -126,10 +142,17 @@ int main(int argc, char* argv[], char* envp[]) {
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
 	mixed->normalize();
-	//FILE* mixF = fopen("Mixed.wav", "wb");
-	//fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
+	FILE* mixF = fopen("Mixed.wav", "wb");
+	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
+	signal1->reverse(); 
+
+	
 	Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
+
+	for (int channel = 0; channel < coch1->CHANNELS; channel++) {
+		(*(coch1->cochleagram))[channel].reverse();
+	}
 	//////delete signal1;
 	SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
 	print grid1->CHANNELS << '\t' << grid1->FRAMES end;
@@ -137,7 +160,12 @@ int main(int argc, char* argv[], char* envp[]) {
 	doubleGrid* powerGrid = grid1->toSmrPower();
 	delete grid1;
 
+
+	signal2->reverse();
 	Cochleagram* coch2 = new Cochleagram(*signal2, sampleRate);
+	for (int channel = 0; channel < coch1->CHANNELS; channel++) {
+		(*(coch2->cochleagram))[channel].reverse();
+	}
 	delete signal2;
 	SignalGrid* grid2 = new SignalGrid(*(coch2->cochleagram), .020*sampleRate, .010*sampleRate);
 	print grid2->CHANNELS << '\t' << grid2->FRAMES end;
@@ -145,58 +173,63 @@ int main(int argc, char* argv[], char* envp[]) {
 	doubleGrid* powerGrid2 = grid2->toSmrPower();
 	delete grid2;
 
-	print powerGrid->COLUMNS << '\t' << powerGrid->ROWS end;
-	print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
+	//for (int i = 0; i < powerGrid2->ROWS; i++) {
+	//	print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) end;
+	//	print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) end;
+	//}
 
 
-	doubleGrid* decibelGrid = simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	//print powerGrid->COLUMNS << '\t' << powerGrid->ROWS end;
+	//print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
+
+
+	doubleGrid* decibelGrid = simpleRatio(*powerGrid2, *powerGrid);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
 	delete powerGrid;
 	delete powerGrid2;
 
-	//boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, -6);
 
-	//print idealBinaryMask1->COLUMNS << '\t' << idealBinaryMask1->ROWS end;
+	//boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 1);
+
+	//for (int i = 0; i < decibelGrid->ROWS; i++) {
+	//	print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
+	//}
 
 
-
-	/*for (int i = 0; i < decibelGrid->ROWS; i++) {
-		for (int j = 0; j < decibelGrid->COLUMNS; j++) {
-		print (int)(*decibelGrid)(i, j);
-		}
-		}
-		print "" end;*/
 
 
 
 	FilterBank bank(channels, 100, 8000, 44100);
-	//mixed->reverse(); // reversed inside the cochleagram <- no more
-	SignalBank* siggyBank1 = bank.filter(*mixed);
+	SignalBank* mixedBank = bank.filter(*mixed);
 	
-	//for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
-	//	(*siggyBank1)[channel].reverse();
-	//}
-
-	SignalGrid siggyGrid1 = SignalGrid(*siggyBank1, .020*sampleRate, .010*sampleRate);
+	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
 	for (int frame = 0; frame < decibelGrid->ROWS; frame++) {
 		for (int channel = 0; channel < decibelGrid->COLUMNS; channel++) {
-			siggyGrid1[frame][channel].scale((*decibelGrid)(frame, channel));
-			/*if (!(*(idealBinaryMask1))(frame, channel))
-				siggyGrid1.deleteCell(frame, channel);*/
+			mixedGrid[frame][channel].scale((*decibelGrid)(frame, channel));
+			//if (!(*(idealBinaryMask1))(frame, channel))
+				//mixedGrid.deleteCell(frame, channel);
+		}
+	}
+	for (int frame = decibelGrid->ROWS; frame < mixedGrid.FRAMES; frame++) {
+		for (int channel = decibelGrid->COLUMNS; channel < mixedGrid.CHANNELS; channel++) {
+			mixedGrid[frame][channel].scale(0);
+			/*if (!(*(idealBinaryMask1))(frame, channel))*/
+			//mixedGrid.deleteCell(frame, channel);
 		}
 	}
 
-	//FRAMES = SAMPLES / FRAME_SIZE + SAMPLES / FRAME_SIZE / 2 + (SAMPLES % FRAME_SIZE >= FRAME_OVERLAP ? 1 : 0);
-	int trueSamples = siggyGrid1.SAMPLES;//(siggyGrid1.FRAMES / 2 + (siggyGrid1.SAMPLES % siggyGrid1.FRAME_SIZE < siggyGrid1.FRAME_OVERLAP ? 1 : 0)) * siggyGrid1.FRAME_SIZE;
 
-	SignalBank resynthesisBank(siggyGrid1.CHANNELS, siggyGrid1.SAMPLE_RATE, siggyGrid1.SAMPLES);
+	//FRAMES = SAMPLES / FRAME_SIZE + SAMPLES / FRAME_SIZE / 2 + (SAMPLES % FRAME_SIZE >= FRAME_OVERLAP ? 1 : 0);
+	int trueSamples = mixedGrid.SAMPLES;//(siggyGrid1.FRAMES / 2 + (siggyGrid1.SAMPLES % siggyGrid1.FRAME_SIZE < siggyGrid1.FRAME_OVERLAP ? 1 : 0)) * siggyGrid1.FRAME_SIZE;
+
+	SignalBank resynthesisBank(mixedGrid.CHANNELS, mixedGrid.SAMPLE_RATE, mixedGrid.SAMPLES);
 	for (int i = 0; i < channels; i++) {
-		resynthesisBank.add(new Signal(siggyGrid1.SAMPLES, siggyGrid1.SAMPLE_RATE), i);
+		resynthesisBank.add(new Signal(mixedGrid.SAMPLES, mixedGrid.SAMPLE_RATE), i);
 	}
 
-	for (int frame = 0; frame < siggyGrid1.FRAMES; frame++) {
-		for (int channel = 0; channel < siggyGrid1.CHANNELS; channel++) {
-			for (int sample = 0; sample < siggyGrid1.FRAME_SIZE; sample++) {
-				resynthesisBank[channel][sample + siggyGrid1.FRAME_OFFSET * frame] += siggyGrid1[frame][channel][sample];
+	for (int frame = 0; frame < mixedGrid.FRAMES; frame++) {
+		for (int channel = 0; channel < mixedGrid.CHANNELS; channel++) {
+			for (int sample = 0; sample < mixedGrid.FRAME_SIZE; sample++) {
+				resynthesisBank[channel][sample + mixedGrid.FRAME_OFFSET * frame] += mixedGrid[frame][channel][sample];
 			}
 		}
 	}

@@ -14,6 +14,7 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 	//FRAMES = SAMPLES / FRAME_SIZE + SAMPLES / FRAME_SIZE / 2 + (SAMPLES % FRAME_SIZE >= FRAME_OVERLAP ? 1 : 0);
 
 	FRAMES = FRAME_OFFSET == 0 ? SAMPLES / FRAME_SIZE : (SAMPLES - FRAME_SIZE) / FRAME_OFFSET + 1;
+	//FRAMES -= 5;
 	grid = new SignalBank*[FRAMES];
 	HanningWindow window(frameSize);
 
@@ -41,9 +42,6 @@ doubleGrid* SignalGrid::toSmrPower() {
 			double power = 0;
 			for (int i = 0; i < FRAME_SIZE; i++) {
 				double sample = (*(grid[frame]))[channel][i];
-				if (sample > 65 || sample < 55) {
-					int a = 5;
-				}
 				power += sample * sample;
 			}
 			powerColumn[channel] = sqrt(power);

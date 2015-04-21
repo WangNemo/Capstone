@@ -13,6 +13,7 @@ public:
 	void reverse();
 	void normalize();
 	void scale(double scalar);
+	void trim(int samples);
 	Signal* minus(Signal& other);
 	~Signal();
 };

@@ -11,8 +11,12 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	Meddis* meddis = new Meddis();
 	SignalBank* basilarMembrane = bank->filter(signal);
 
+	//for (int i = 0; i < CHANNELS; i++) {
+	//	(*basilarMembrane)[i].normalize();
+	//}
+
 	cochleagram = basilarMembrane;
-	delete bank;
+	//delete bank;
 	//cochleagram = meddis->filter(*basilarMembrane);
 	//delete meddis;
 	//delete basilarMembrane;
