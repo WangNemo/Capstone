@@ -47,6 +47,7 @@ Signal* FilterBank::reverse(SignalBank& inputBank) {
 		inputBank[i].reverse();
 	}
 	return signal;
+
 }
 
 double FilterBank::erb(int frequency){

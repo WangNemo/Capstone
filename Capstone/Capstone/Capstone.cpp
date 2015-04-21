@@ -113,7 +113,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	signal1->trim(signal2->SAMPLES);
 
 	int sampleRate = 44100;
-	int channels = 150;
+	int channels = 32;
 
 	//GammatoneFilter filter(7500, 630, 44100);
 	//Signal* simpleFilt = filter.filter(*signal1);
@@ -179,7 +179,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	delete powerGrid2;
 
 
-	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, .01);
+	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 0);//.05);
 
 	for (int i = 0; i < decibelGrid->ROWS; i++) {
 		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;

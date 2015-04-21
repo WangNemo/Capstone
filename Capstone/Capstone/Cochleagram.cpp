@@ -16,6 +16,11 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	//}
 
 	cochleagram = basilarMembrane;
+	//for (int i = 0; i < CHANNELS; i++) {
+	//	(*basilarMembrane)[i].reverse();
+	//	(*basilarMembrane).add((*((*bank).bank[i])).filter((*basilarMembrane)[i]), i);
+	//	(*basilarMembrane)[i].reverse();
+	//}
 	for (int i = 0; i < CHANNELS; i++) {
 		(*basilarMembrane)[i].scale(100);
 	}
