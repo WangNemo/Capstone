@@ -109,46 +109,22 @@ int main(int argc, char* argv[], char* envp[]) {
 	std::string fileName2(argv[2]);
 	Signal* signal1 = staticTools::readWav(fileName);
 	Signal* signal2 = staticTools::readWav(fileName2);
-
-	signal1->trim(signal2->SAMPLES);
+	int shorter = MIN(signal2->SAMPLES, signal1->SAMPLES);
+	signal1->trim(shorter);
+	signal2->trim(shorter);
 
 	int sampleRate = 44100;
 	int channels = 32;
 
-	//GammatoneFilter filter(7500, 630, 44100);
-	//Signal* simpleFilt = filter.filter(*signal1);
-
-	//FilterBank bankb(256, 100, 20000, 44100);
-	//SignalBank* siggyb = bankb.filter(*signal1);
-
-
-	//double* resynthedbanksig1 = new double[siggyb->SAMPLES] {};
-	//for (int channel = 0; channel < 256; channel++) {
-	//	for (int sample = 0; sample < siggyb->SAMPLES; sample++) {
-	//		resynthedbanksig1[sample] += (*siggyb)[channel][sample];
-	//	}
-	//}
-
-	//FILE* results = fopen("Results.wav", "wb");
-
-	//for (int i = 0; i < 64; i++) {
-	//	std::string path = "Result" + std::to_string(i) + ".wav";
-	//	FILE* results = fopen(path.c_str(), "wb");
-	//	fwrite((*siggyb)[i].signal, sizeof(double), siggyb->SAMPLES, results);
-	//}
-	//fwrite(simpleFilt->signal, sizeof(double), simpleFilt->SAMPLES, results);
-	//fwrite(resynthedbanksig1, sizeof(double), simpleFilt->SAMPLES, results);
-
-
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
 	mixed->normalize();
-	//FILE* mixF = fopen("Mixed.wav", "wb");
-	//fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
+	FILE* mixF = fopen("Mixed.wav", "wb");
+	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
 	Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
 
-	//////delete signal1;
+	delete signal1;
 	SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
 	print grid1->CHANNELS << '\t' << grid1->FRAMES end;
 	delete coch1;
@@ -174,16 +150,18 @@ int main(int argc, char* argv[], char* envp[]) {
 	//print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
 
 
-	doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid2, *powerGrid); //simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid, *powerGrid2); //simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	doubleGrid* decibelGrid2 = gridOfRelativeDecibels(*powerGrid2, *powerGrid);
 	delete powerGrid;
 	delete powerGrid2;
 
 
-	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 0);//.05);
+	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 0);
+	boolGrid* idealBinaryMask2 = createIdealBinaryMask(*decibelGrid2, 0);
 
-	for (int i = 0; i < decibelGrid->ROWS; i++) {
+	/*for (int i = 0; i < decibelGrid->ROWS; i++) {
 		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
-	}
+	}*/
 
 
 
@@ -197,117 +175,20 @@ int main(int argc, char* argv[], char* envp[]) {
 		(*mixedBank)[i].reverse();
 	}
 
-	//Signal siggySum(mixed->SAMPLES, mixed->SAMPLE_RATE);
-	//for (int i = 0; i < channels; i++) {
-	//	for (int s = 0; s < mixed->SAMPLES; s++) {
-	//		siggySum[s] += (*mixedBank)[i][s];
-	//	}
-	//}
-	//siggySum.reverse();
-	//mixedBank = bank.filter(siggySum);
-	//for (int i = 0; i < channels; i++) {
-	//	(*mixedBank)[i].reverse();
-	//}
 
-	//Signal siggySum2(mixed->SAMPLES, mixed->SAMPLE_RATE);
-	//for (int i = 0; i < channels; i++) {
-	//	for (int s = 0; s < mixed->SAMPLES; s++) {
-	//		siggySum2[s] += (*mixedBank)[i][s];
-	//	}
-	//}
-	////siggySum2.reverse();
-	//siggySum2.normalize();
-
-	//FILE* results2 = fopen("Result.wav", "wb");
-	//fwrite(siggySum2.signal, sizeof(double), siggySum2.SAMPLES, results2);
-
-	//return 0;
-
-	//bank.reverse(*mixedBank);
-	//for (int i = 0; i < channels; i++) {
-	//	(*mixedBank)[i].reverse();
-	//}
-	//FilterBank newbank(channels, 100, 8000, 44100);
-
-	//newbank.filter(*mixedBank);
-	//for (int i = 0; i < channels; i++) {
-	//	(*mixedBank)[i].reverse();
-	//}
 	
 	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
-	for (int frame = 0; frame < decibelGrid->ROWS; frame++) {
-		for (int channel = 0; channel < decibelGrid->COLUMNS; channel++) {
-			//mixedGrid[frame][channel].scale((*decibelGrid)(frame, channel));
-			if (!(*(idealBinaryMask1))(frame, channel))
-				mixedGrid.deleteCell(frame, channel);
-		}
-	}
-	for (int frame = decibelGrid->ROWS; frame < mixedGrid.FRAMES; frame++) {
-		for (int channel = decibelGrid->COLUMNS; channel < mixedGrid.CHANNELS; channel++) {
-			mixedGrid[frame][channel].scale(0);
-			/*if (!(*(idealBinaryMask1))(frame, channel))*/
-			//mixedGrid.deleteCell(frame, channel);
-		}
-	}
+	Signal* resynthesized = mixedGrid.resynthesize(*idealBinaryMask1);
+
+	FILE* results = fopen("Result1.wav", "wb");
+	fwrite(resynthesized->signal, sizeof(double), resynthesized->SAMPLES, results);
 
 
-	//FRAMES = SAMPLES / FRAME_SIZE + SAMPLES / FRAME_SIZE / 2 + (SAMPLES % FRAME_SIZE >= FRAME_OVERLAP ? 1 : 0);
-	int trueSamples = mixedGrid.SAMPLES;//(siggyGrid1.FRAMES / 2 + (siggyGrid1.SAMPLES % siggyGrid1.FRAME_SIZE < siggyGrid1.FRAME_OVERLAP ? 1 : 0)) * siggyGrid1.FRAME_SIZE;
+	SignalGrid mixedGrid2 = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
+	Signal* resynthesized2 = mixedGrid2.resynthesize(*idealBinaryMask2);
 
-	SignalBank resynthesisBank(mixedGrid.CHANNELS, mixedGrid.SAMPLE_RATE, mixedGrid.SAMPLES);
-	for (int i = 0; i < channels; i++) {
-		resynthesisBank.add(new Signal(mixedGrid.SAMPLES, mixedGrid.SAMPLE_RATE), i);
-	}
+	FILE* results2 = fopen("Result2.wav", "wb");
+	fwrite(resynthesized2->signal, sizeof(double), resynthesized2->SAMPLES, results2);
 
-	for (int frame = 0; frame < mixedGrid.FRAMES; frame++) {
-		for (int channel = 0; channel < mixedGrid.CHANNELS; channel++) {
-			for (int sample = 0; sample < mixedGrid.FRAME_SIZE; sample++) {
-				resynthesisBank[channel][sample + mixedGrid.FRAME_OFFSET * frame] += mixedGrid[frame][channel][sample];
-			}
-		}
-	}
-
-	//SignalBank resynthesisBank(channels, 44100, trueSamples);
-	//for (int channel = 0; channel < siggyBank1->CHANNELS; channel++) {
-	//	Signal* sigChan = new Signal(trueSamples, siggyBank1->SAMPLE_RATE);//new double[siggyBank1->SAMPLES] {};
-	//	for (int frame = 0; frame < siggyGrid1.FRAMES; frame++) {
-	//		//int startSample = frame * siggyGrid1.FRAME_OFFSET;
-	//		//for (int sample = startSample; sample < startSample + siggyGrid1.FRAME_SIZE; sample++) {
-	//		for (int sample = 0; sample < siggyGrid1.FRAME_SIZE; sample++) {
-	//			double samp = siggyGrid1[frame][channel][sample];
-	//			double presamp = (*sigChan)[sample + siggyGrid1.FRAME_OFFSET * frame];
-	//			(*sigChan)[sample + siggyGrid1.FRAME_OFFSET * frame] = samp +presamp;
-	//		}
-	//	}
-	//	resynthesisBank.add(sigChan, channel);
-	//}
-
-	Signal resynthesized(trueSamples, resynthesisBank.SAMPLE_RATE);
-	for (int channel = 0; channel < channels; channel++){//=2) {
-		for (int sample = 0; sample < trueSamples; sample++) {
-			resynthesized[sample] += resynthesisBank[channel][sample];
-		}
-	}
-
-	resynthesized.normalize();
-
-	FILE* results = fopen("Result.wav", "wb");
-	fwrite(resynthesized.signal, sizeof(double), trueSamples, results);
-
-
-
-	//decibelGrid->negate();
-	//boolGrid* idealBinaryMask2 = createIdealBinaryMask(*decibelGrid, 1);
-
-	//for (int i = 0; i < idealBinaryMask1->ROWS; i++) {
-	//	for (int j = 0; j < idealBinaryMask1->COLUMNS; j++) {
-	//		print (*idealBinaryMask1)(i, j);
-	//	}
-	//	for (int k = 0; k < 1000000; k++) {
-	//		int a = 5;
-	//		a--;
-	//	}
-	//}
-	//print "" end;
 }
 

@@ -28,7 +28,7 @@ void Signal::reverse() {
 void Signal::normalize() {
 	double largest = -1000000;
 	for (int sample = 0; sample < SAMPLES; sample++) {
-		double sam = signal[sample];
+		double sam = abs(signal[sample]);
 		if (sam > largest) {
 			largest = sam;
 		}
