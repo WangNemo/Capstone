@@ -13,6 +13,8 @@ public:
 
 	SignalBank& operator[](int frame);
 	SignalGrid(SignalBank& signalBank, int samplesPerFrame, int samplesFrameOverlap);
+	SignalGrid(int frames, int channels, int samples, int sampleRate, int frameSize, int overlap, int offset);
+	void addBank(SignalBank* bank, int index);
 	doubleGrid* toSmrPower();
 	void deleteCell(int frame, int channel);
 	Signal* resynthesize(boolGrid& mask);

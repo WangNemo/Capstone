@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="Cochleagram.h" />
     <ClInclude Include="AudioFile.h" />
+    <ClInclude Include="Correlogram.h" />
     <ClInclude Include="FilterBank.h" />
     <ClInclude Include="GammatoneFilter.h" />
     <ClInclude Include="Definitions.h" />
@@ -98,6 +99,7 @@
     <ClCompile Include="Capstone.cpp" />
     <ClCompile Include="Cochleagram.cpp" />
     <ClCompile Include="AudioFile.cpp" />
+    <ClCompile Include="Correlogram.cpp" />
     <ClCompile Include="FilterBank.cpp" />
     <ClCompile Include="GammatoneFilter.cpp" />
     <ClCompile Include="HanningWindow.cpp" />

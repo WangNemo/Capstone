@@ -22,13 +22,24 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 		for (int channel = 0; channel < CHANNELS; channel++) {
 			Signal* sig = new Signal(FRAME_SIZE, SAMPLE_RATE);
 			for (int sample = 0; sample < FRAME_SIZE; sample++) {
-				(*sig)[sample] = signalBank[channel][sample + FRAME_OFFSET * frame] * (*window.window)[sample];
+				(*sig)[sample] = signalBank[channel][sample + FRAME_OFFSET * frame] * window[sample];
 			}
 			bank->add(sig, channel);
 		}
 		grid[frame] = bank;
 	}
 }
+
+SignalGrid::SignalGrid(int frames, int channels, int samples, int sampleRate, int frameSize, int overlap, int offset)
+	: FRAMES(frames), CHANNELS(channels), SAMPLES(samples), SAMPLE_RATE(sampleRate),
+	FRAME_SIZE(frameSize), FRAME_OFFSET(offset), FRAME_OVERLAP(overlap){
+	grid = new SignalBank*[FRAMES];
+}
+
+void SignalGrid::addBank(SignalBank* bank, int index) {
+	grid[index] = bank;
+}
+
 
 doubleGrid* SignalGrid::toSmrPower() {
 	double** powerGrid = new double*[FRAMES];

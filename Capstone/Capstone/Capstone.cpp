@@ -4,11 +4,13 @@
 #include "stdafx.h"
 #include "definitions.h"
 #include<fstream>
+#include <string>
 
 #include "testing.h"
 #include "SignalBank.h"
 #include "SignalGrid.h"
 #include "GammatoneFilter.h"
+#include "Correlogram.h"
 
 doubleGrid* diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
@@ -108,6 +110,9 @@ int main(int argc, char* argv[], char* envp[]) {
 	std::string fileName(argv[1]);
 	std::string fileName2(argv[2]);
 	Signal* signal1 = staticTools::readWav(fileName);
+
+
+
 	Signal* signal2 = staticTools::readWav(fileName2);
 	int shorter = MIN(signal2->SAMPLES, signal1->SAMPLES);
 	signal1->trim(shorter);
@@ -122,48 +127,69 @@ int main(int argc, char* argv[], char* envp[]) {
 	FILE* mixF = fopen("Mixed.wav", "wb");
 	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
-	Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
+	Cochleagram* cochMix = new Cochleagram(*mixed, sampleRate);
+	Correlogram* correl = new Correlogram(*cochMix->cochleagram, 20, 10);
 
-	delete signal1;
-	SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
-	print grid1->CHANNELS << '\t' << grid1->FRAMES end;
-	delete coch1;
-	doubleGrid* powerGrid = grid1->toSmrPower();
-	delete grid1;
+	
+	//return 0;
 
+	////Signal* corr = mixed->autoCorrelate(100);
+	////corr->normalize();
+	////FILE* corrTest = fopen("corrTest.wav", "wb");
+	////fwrite(corr->signal, sizeof(double), corr->SAMPLES, corrTest);
 
-	Cochleagram* coch2 = new Cochleagram(*signal2, sampleRate);
-	delete signal2;
-	SignalGrid* grid2 = new SignalGrid(*(coch2->cochleagram), .020*sampleRate, .010*sampleRate);
-	print grid2->CHANNELS << '\t' << grid2->FRAMES end;
-	delete coch2;
-	doubleGrid* powerGrid2 = grid2->toSmrPower();
-	delete grid2;
+	//return 0;
 
-	//for (int i = 0; i < powerGrid2->ROWS; i++) {
-	//	print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) end;
-	//	print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) end;
-	//}
+	//Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
 
-
-	//print powerGrid->COLUMNS << '\t' << powerGrid->ROWS end;
-	//print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
+	//delete signal1;
+	//SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
+	//print grid1->CHANNELS << '\t' << grid1->FRAMES end;
+	//delete coch1;
+	//doubleGrid* powerGrid = grid1->toSmrPower();
+	//delete grid1;
 
 
-	doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid, *powerGrid2); //simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
-	doubleGrid* decibelGrid2 = gridOfRelativeDecibels(*powerGrid2, *powerGrid);
-	delete powerGrid;
-	delete powerGrid2;
+	//Cochleagram* coch2 = new Cochleagram(*signal2, sampleRate);
+	//delete signal2;
+	//SignalGrid* grid2 = new SignalGrid(*(coch2->cochleagram), .020*sampleRate, .010*sampleRate);
+	//print grid2->CHANNELS << '\t' << grid2->FRAMES end;
+	//delete coch2;
+	//doubleGrid* powerGrid2 = grid2->toSmrPower();
+	//delete grid2;
+
+	////for (int i = 0; i < powerGrid2->ROWS; i++) {
+	////	print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) end;
+	////	print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) end;
+	////}
 
 
-	boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 0);
-	boolGrid* idealBinaryMask2 = createIdealBinaryMask(*decibelGrid2, 0);
-
-	/*for (int i = 0; i < decibelGrid->ROWS; i++) {
-		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
-	}*/
+	////print powerGrid->COLUMNS << '\t' << powerGrid->ROWS end;
+	////print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
 
 
+	//doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid, *powerGrid2); //simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
+	//doubleGrid* decibelGrid2 = gridOfRelativeDecibels(*powerGrid2, *powerGrid);
+	//delete powerGrid;
+	//delete powerGrid2;
+
+
+	//boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 0);
+	//boolGrid* idealBinaryMask2 = createIdealBinaryMask(*decibelGrid2, 0);
+
+	///*for (int i = 0; i < decibelGrid->ROWS; i++) {
+	//	print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
+	//}*/
+
+
+	bool** binaryMask = new bool*[correl->T_FGrid->FRAMES];
+	for (int row = 0; row < correl->T_FGrid->FRAMES; row++) {
+		binaryMask[row] = new bool[correl->T_FGrid->CHANNELS];
+		for (int col = 0; col < correl->T_FGrid->CHANNELS; col++) {
+			binaryMask[row][col] = (*correl->T_FGrid)[row][col][0] > 0;
+		}
+	}
+	boolGrid* idealBinaryMask1 = new boolGrid(binaryMask, correl->T_FGrid->FRAMES, correl->T_FGrid->CHANNELS);
 
 
 	FilterBank bank(channels, 100, 8000, 44100);
@@ -184,11 +210,11 @@ int main(int argc, char* argv[], char* envp[]) {
 	fwrite(resynthesized->signal, sizeof(double), resynthesized->SAMPLES, results);
 
 
-	SignalGrid mixedGrid2 = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
-	Signal* resynthesized2 = mixedGrid2.resynthesize(*idealBinaryMask2);
+	//SignalGrid mixedGrid2 = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
+	//Signal* resynthesized2 = mixedGrid2.resynthesize(*idealBinaryMask2);
 
-	FILE* results2 = fopen("Result2.wav", "wb");
-	fwrite(resynthesized2->signal, sizeof(double), resynthesized2->SAMPLES, results2);
+	//FILE* results2 = fopen("Result2.wav", "wb");
+	//fwrite(resynthesized2->signal, sizeof(double), resynthesized2->SAMPLES, results2);
 
 }
 

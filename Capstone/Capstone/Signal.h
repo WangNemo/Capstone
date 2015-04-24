@@ -2,6 +2,8 @@
 
 class Signal
 {
+private: 
+	double getCorrelation(int startingSample, Signal& window, int lag);
 public:
 	int SAMPLES, SAMPLE_RATE;
 	double* signal;
@@ -14,7 +16,9 @@ public:
 	void normalize();
 	void scale(double scalar);
 	void trim(int samples);
+	void add(Signal& other);
 	Signal* minus(Signal& other);
+	Signal* autoCorrelate(int lagMS, int startingMS, Signal& window, double threshold);
 	~Signal();
 };
 

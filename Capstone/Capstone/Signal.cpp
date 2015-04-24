@@ -54,6 +54,13 @@ void Signal::trim(int samples) {
 	}
 }
 
+void Signal::add(Signal& other) {
+	for (int i = 0; i < SAMPLES; i++) {
+		signal[i] += other[i];
+	}
+}
+
+
 Signal* Signal::minus(Signal& other) {
 	int length = MAX(other.SAMPLES, SAMPLES);
 	Signal* s = new Signal(length, SAMPLE_RATE);
@@ -62,6 +69,33 @@ Signal* Signal::minus(Signal& other) {
 	}
 	return s;
 }
+
+Signal* Signal::autoCorrelate(int lagMS, int startingMS, Signal& window, double threshold) {
+	int lagSamples = (lagMS * SAMPLE_RATE) / 1000;
+	int startingSample = (startingMS * SAMPLE_RATE) / 1000;
+	double noTimeDelay = getCorrelation(startingSample, window, 0);
+	Signal* correlation = new Signal(lagSamples, SAMPLE_RATE);
+
+	if (noTimeDelay < threshold) {
+		print noTimeDelay end;
+		return correlation;
+	}
+
+	(*correlation)[0] = noTimeDelay;
+	for (int lag = 1; lag < lagSamples; lag++) {
+		(*correlation)[lag] = getCorrelation(startingSample, window, lag);
+	}
+	return correlation;
+}
+
+double Signal::getCorrelation(int startingSample, Signal& window, int lag) {
+	double sample = 0;
+	for (int i = 0; i < window.SAMPLES; i++) {
+		sample += signal[i + startingSample] * signal[startingSample + i + lag] * window[i];
+	}
+	return sample;
+}
+
 
 
 Signal::~Signal(){

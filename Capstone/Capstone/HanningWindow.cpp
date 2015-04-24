@@ -21,6 +21,10 @@ void HanningWindow::filter(Signal& signal) {
 	}
 }
 
+double& HanningWindow::operator[](int sample) {
+	return (*window)[sample];
+}
+
 
 
 HanningWindow::~HanningWindow()
