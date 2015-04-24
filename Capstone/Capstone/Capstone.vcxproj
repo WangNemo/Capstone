@@ -82,10 +82,12 @@
     <ClInclude Include="Cochleagram.h" />
     <ClInclude Include="AudioFile.h" />
     <ClInclude Include="Correlogram.h" />
+    <ClInclude Include="crossCorrelationSegmentation.h" />
     <ClInclude Include="FilterBank.h" />
     <ClInclude Include="GammatoneFilter.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="HanningWindow.h" />
+    <ClInclude Include="IdealBinaryMask.h" />
     <ClInclude Include="Meddis.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Signal.h" />
@@ -100,9 +102,11 @@
     <ClCompile Include="Cochleagram.cpp" />
     <ClCompile Include="AudioFile.cpp" />
     <ClCompile Include="Correlogram.cpp" />
+    <ClCompile Include="crossCorrelationSegmentation.cpp" />
     <ClCompile Include="FilterBank.cpp" />
     <ClCompile Include="GammatoneFilter.cpp" />
     <ClCompile Include="HanningWindow.cpp" />
+    <ClCompile Include="IdealBinaryMask.cpp" />
     <ClCompile Include="Meddis.cpp" />
     <ClCompile Include="mexFunction.cpp" />
     <ClCompile Include="Signal.cpp" />

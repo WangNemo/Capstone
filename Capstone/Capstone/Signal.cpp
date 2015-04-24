@@ -38,6 +38,26 @@ void Signal::normalize() {
 		double sam = signal[sample];
 		signal[sample] = sam / largest;
 	}
+
+}
+
+void Signal::zeroMeanStandardVariance() {
+
+	double average = avgInArray(signal, SAMPLES);
+
+	if (abs(average) > .01) {
+		for (int i = 0; i < SAMPLES; i++) {
+			signal[i] -= average;
+		}
+	}
+
+	double standardDerivation = staticTools::standardDeviation(*this, average);
+	if (abs(standardDerivation) > .01) {
+		for (int i = 0; i < SAMPLES; i++) {
+			signal[i] /= standardDerivation;
+		}
+	}
+
 }
 
 void Signal::scale(double scalar) {
@@ -49,6 +69,7 @@ void Signal::scale(double scalar) {
 
 
 void Signal::trim(int samples) {
+	SAMPLES = samples;
 	for (int sample = samples; sample < SAMPLES; sample++) {
 		signal[sample] = 0;
 	}
@@ -77,7 +98,7 @@ Signal* Signal::autoCorrelate(int lagMS, int startingMS, Signal& window, double 
 	Signal* correlation = new Signal(lagSamples, SAMPLE_RATE);
 
 	if (noTimeDelay < threshold) {
-		print noTimeDelay end;
+		//print noTimeDelay end;
 		return correlation;
 	}
 
@@ -85,6 +106,7 @@ Signal* Signal::autoCorrelate(int lagMS, int startingMS, Signal& window, double 
 	for (int lag = 1; lag < lagSamples; lag++) {
 		(*correlation)[lag] = getCorrelation(startingSample, window, lag);
 	}
+	correlation->zeroMeanStandardVariance();
 	return correlation;
 }
 

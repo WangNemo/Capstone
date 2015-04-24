@@ -14,6 +14,7 @@ public:
 	void zeroOut();
 	void reverse();
 	void normalize();
+	void zeroMeanStandardVariance();
 	void scale(double scalar);
 	void trim(int samples);
 	void add(Signal& other);

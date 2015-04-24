@@ -128,6 +128,14 @@ namespace staticTools{
 		return combo;
 	}
 
+	double standardDeviation(Signal& signal, double mean) {
+		double sum = 0;
+		for (int i = 0; i < signal.SAMPLES; i++) {
+			sum += pow((signal[i] - mean), 2);
+		}
+		return sqrt(sum / signal.SAMPLES);
+	}
+
 
 	//void readChunk(FILE* source, char* chunkName, byte* chunkBuffer) {
 	//	fseek(source, 0, SEEK_SET);

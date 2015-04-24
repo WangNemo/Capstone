@@ -63,6 +63,12 @@
     <ClInclude Include="Correlogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="crossCorrelationSegmentation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IdealBinaryMask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -108,6 +114,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Correlogram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="crossCorrelationSegmentation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IdealBinaryMask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

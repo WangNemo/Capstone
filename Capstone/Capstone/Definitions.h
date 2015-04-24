@@ -60,6 +60,31 @@ public:
 	}
 };
 
+class intGrid {
+public:
+	int const ROWS, COLUMNS;
+	int** grid;
+	int operator()(int row, int col) {
+		if (row >= ROWS || col >= COLUMNS)
+			return 0;
+		else return grid[row][col];
+	}
+
+	intGrid(int** grid, int rows, int cols) : grid(grid), ROWS(rows), COLUMNS(cols) {
+
+	}
+
+	void set(int row, int col, int value) {
+		grid[row][col] = value;
+	}
+
+	~intGrid(){
+		for (int i = 0; i < ROWS; i++) {
+			delete grid[i];
+		}
+	}
+};
+
 class boolGrid {
 public:
 	int const ROWS, COLUMNS;
@@ -86,5 +111,6 @@ namespace staticTools{
 	Signal* readWav(std::string& fileName);
 	Signal* normalize(short* data, int dataSize);
 	Signal* combine(Signal& s1, Signal& s2);
+	double standardDeviation(Signal& signal, double mean);
 }
 
