@@ -11,6 +11,7 @@
 #include "SignalGrid.h"
 #include "GammatoneFilter.h"
 #include "Correlogram.h"
+#include "crossCorrelationSegmentation.h"
 
 doubleGrid* diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
@@ -123,14 +124,19 @@ int main(int argc, char* argv[], char* envp[]) {
 
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
+	mixed->trim(44100);
 	mixed->normalize();
 	FILE* mixF = fopen("Mixed.wav", "wb");
 	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
 	Cochleagram* cochMix = new Cochleagram(*mixed, sampleRate);
+	//signal1->trim(4410);
+	//Cochleagram* sigMix = new Cochleagram(*signal1, sampleRate);
 	Correlogram* correl = new Correlogram(*cochMix->cochleagram, 20, 10);
-
+	print correl->T_FGrid->FRAMES end;
+	crossCorrelationSegmentation segmentation(*correl->T_FGrid);
 	
+	//boolGrid* idealBinaryMask = correl->toBinaryMask();
 	//return 0;
 
 	////Signal* corr = mixed->autoCorrelate(100);
@@ -182,16 +188,6 @@ int main(int argc, char* argv[], char* envp[]) {
 	//}*/
 
 
-	bool** binaryMask = new bool*[correl->T_FGrid->FRAMES];
-	for (int row = 0; row < correl->T_FGrid->FRAMES; row++) {
-		binaryMask[row] = new bool[correl->T_FGrid->CHANNELS];
-		for (int col = 0; col < correl->T_FGrid->CHANNELS; col++) {
-			binaryMask[row][col] = (*correl->T_FGrid)[row][col][0] > 0;
-		}
-	}
-	boolGrid* idealBinaryMask1 = new boolGrid(binaryMask, correl->T_FGrid->FRAMES, correl->T_FGrid->CHANNELS);
-
-
 	FilterBank bank(channels, 100, 8000, 44100);
 	SignalBank* mixedBank = bank.filter(*mixed);
 
@@ -201,14 +197,32 @@ int main(int argc, char* argv[], char* envp[]) {
 		(*mixedBank)[i].reverse();
 	}
 
+	print "groups: " << segmentation.groups end;
+	SignalBank resynthBank(segmentation.groups - 1, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
+	for (int group = 1; group < segmentation.groups; group++) {
+		print group end;
+		boolGrid* idealBinaryMask = segmentation.getBinaryMask(group);
 
-	
-	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
-	Signal* resynthesized = mixedGrid.resynthesize(*idealBinaryMask1);
+		SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
+		Signal* resynthesized = mixedGrid.resynthesize(*idealBinaryMask);
 
-	FILE* results = fopen("Result1.wav", "wb");
-	fwrite(resynthesized->signal, sizeof(double), resynthesized->SAMPLES, results);
+		/*FILE* results = fopen(("Result" + std::to_string(group) + ".wav").c_str(), "wb");
+		fwrite(resynthesized->signal, sizeof(double), resynthesized->SAMPLES, results);
+		fclose(results);*/
+		resynthBank.add(resynthesized, group - 1);
+		//delete idealBinaryMask;
+		//delete resynthesized;
+	}
 
+	Signal result(mixedBank->SAMPLES, 44100);
+	for (int chan = 0; chan < resynthBank.CHANNELS; chan++) {
+		for (int i = 0; i < resynthBank.SAMPLES; i++) {
+			result[i] += resynthBank[chan][i];
+		}
+	}
+
+	FILE* results = fopen("Result.wav", "wb");
+	fwrite(result.signal, sizeof(double), result.SAMPLES, results);
 
 	//SignalGrid mixedGrid2 = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
 	//Signal* resynthesized2 = mixedGrid2.resynthesize(*idealBinaryMask2);

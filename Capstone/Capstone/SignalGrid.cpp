@@ -12,8 +12,8 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 	SAMPLE_RATE(signalBank.SAMPLE_RATE), CHANNELS(signalBank.CHANNELS)
 {
 
-	FRAMES = FRAME_OFFSET == 0 ? SAMPLES / FRAME_SIZE : (SAMPLES - FRAME_SIZE) / FRAME_OFFSET + 1;
-	//FRAMES -= 5;
+	//FRAMES = FRAME_OFFSET == 0 ? SAMPLES / FRAME_SIZE : (SAMPLES - FRAME_SIZE) / FRAME_OFFSET + 1;
+	FRAMES = (SAMPLES - frameSize) / FRAME_OFFSET;
 	grid = new SignalBank*[FRAMES];
 	HanningWindow window(frameSize);
 
@@ -71,6 +71,8 @@ Signal* SignalGrid::resynthesize(boolGrid& mask) {
 			//mixedGrid[frame][channel].scale((*decibelGrid)(frame, channel));
 			if (!(mask)(frame, channel))
 				deleteCell(frame, channel);
+			//else
+			//	print "frame: " << frame << "\tchannel: " << channel end;
 		}
 	}
 	for (int frame = mask.ROWS; frame < FRAMES; frame++) {
@@ -99,7 +101,7 @@ Signal* SignalGrid::resynthesize(boolGrid& mask) {
 		}
 	}
 
-	resynthesized->normalize();
+	//resynthesized->normalize();
 	return resynthesized;
 }
 

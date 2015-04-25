@@ -70,6 +70,14 @@ public:
 		else return grid[row][col];
 	}
 
+	intGrid(int rows, int cols, int defaultValue) : ROWS(rows), COLUMNS(cols) {
+		grid = new int*[ROWS];
+		for (int i = 0; i < ROWS; i++) {
+			grid[i] = new int[COLUMNS];
+			std::fill_n(grid[i], COLUMNS, defaultValue);
+		}
+	}
+
 	intGrid(int** grid, int rows, int cols) : grid(grid), ROWS(rows), COLUMNS(cols) {
 
 	}
