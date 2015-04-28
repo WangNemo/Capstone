@@ -188,41 +188,61 @@ int main(int argc, char* argv[], char* envp[]) {
 	//}*/
 
 
-	FilterBank bank(channels, 100, 8000, 44100);
-	SignalBank* mixedBank = bank.filter(*mixed);
+	//FilterBank bank(channels, 100, 8000, 44100);
+	//SignalBank* mixedBank = bank.filter(*mixed);
 
-	for (int i = 0; i < channels; i++) {
-		(*mixedBank)[i].reverse();
-		(*mixedBank).add((*(bank.bank[i])).filter((*mixedBank)[i]), i);
-		(*mixedBank)[i].reverse();
-	}
+	//for (int i = 0; i < channels; i++) {
+	//	(*mixedBank)[i].reverse();
+	//	(*mixedBank).add((*(bank.bank[i])).filter((*mixedBank)[i]), i);
+	//	(*mixedBank)[i].reverse();
+	//}
 
-	print "groups: " << segmentation.groups end;
-	SignalBank resynthBank(segmentation.groups - 1, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
-	for (int group = 1; group < segmentation.groups; group++) {
-		print group end;
-		boolGrid* idealBinaryMask = segmentation.getBinaryMask(group);
 
-		SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
-		Signal* resynthesized = mixedGrid.resynthesize(*idealBinaryMask);
+	std::fstream of("Map.txt", std::ios::out);
+	segmentation.writeSegmentText(of);
 
-		/*FILE* results = fopen(("Result" + std::to_string(group) + ".wav").c_str(), "wb");
-		fwrite(resynthesized->signal, sizeof(double), resynthesized->SAMPLES, results);
-		fclose(results);*/
-		resynthBank.add(resynthesized, group - 1);
-		//delete idealBinaryMask;
-		//delete resynthesized;
-	}
+	//print "groups: " << segmentation.groups end;
+	////SignalBank resynthBank(segmentation.groups - 1, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
+	//for (int group = 1; group < segmentation.groups - 1; group++) {
+	//	print group end;
+	//	boolGrid* idealBinaryMask = segmentation.getBinaryMask(group);
 
-	Signal result(mixedBank->SAMPLES, 44100);
-	for (int chan = 0; chan < resynthBank.CHANNELS; chan++) {
-		for (int i = 0; i < resynthBank.SAMPLES; i++) {
-			result[i] += resynthBank[chan][i];
-		}
-	}
+	//	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
+	//	Signal* resynthesized = mixedGrid.resynthesize(*idealBinaryMask);
 
-	FILE* results = fopen("Result.wav", "wb");
-	fwrite(result.signal, sizeof(double), result.SAMPLES, results);
+	//	FILE* results = fopen(("64group" + std::to_string(9999-group) + ".wav").c_str(), "wb");
+	//	fwrite(resynthesized->signal, sizeof(double), resynthesized->SAMPLES, results);
+	//	fclose(results);
+	//	//resynthBank.add(resynthesized, group - 1);
+	//	delete idealBinaryMask;
+	//	delete resynthesized;
+	//}
+
+
+
+
+	//SignalBank resynthBank(segmentation.groups - 1, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
+	//for (int group = 1; group < segmentation.groups - 1; group++) {
+	//	print group end;
+	//	boolGrid* idealBinaryMask = segmentation.getBinaryMask(group);
+
+	//	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
+	//	Signal* resynthesized = mixedGrid.resynthesize(*idealBinaryMask);
+
+	//	resynthBank.add(resynthesized, group - 1);
+	//	//delete idealBinaryMask;
+	//	//delete resynthesized;
+	//}
+
+	//Signal result(mixedBank->SAMPLES, 44100);
+	//for (int chan = 0; chan < resynthBank.CHANNELS; chan++) {
+	//	for (int i = 0; i < resynthBank.SAMPLES; i++) {
+	//		result[i] += resynthBank[chan][i];
+	//	}
+	//}
+
+	//FILE* results = fopen("Result.4.wav", "wb");
+	//fwrite(result.signal, sizeof(double), result.SAMPLES, results);
 
 	//SignalGrid mixedGrid2 = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
 	//Signal* resynthesized2 = mixedGrid2.resynthesize(*idealBinaryMask2);

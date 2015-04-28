@@ -5,81 +5,82 @@
 crossCorrelationSegmentation::crossCorrelationSegmentation(SignalGrid& correlogram)
 	: correlogram(correlogram)
 {
-	segmentGrid = new intGrid(correlogram.FRAMES, correlogram.CHANNELS, UNASSIGNED);
-	for (int row = 0; row < correlogram.FRAMES; row++) {
-		for (int col = 0; col < correlogram.CHANNELS; col++) {
+	segmentGrid = new intGrid(correlogram.CHANNELS, correlogram.FRAMES, UNASSIGNED);
+	for (int row = 0; row < correlogram.CHANNELS; row++) {
+		for (int col = 0; col < correlogram.FRAMES; col++) {
 			traverse(row, col);
 		}
 		//print row end;
 	}
 }
 
-void crossCorrelationSegmentation::traverse(int row, int col) {
-	Signal& thisCorrelation = correlogram[row][col];
+void crossCorrelationSegmentation::traverse(int channel, int frame) {
+	Signal& thisCorrelation = correlogram[frame][channel];
 	if (thisCorrelation[0] == 0){
-		segmentGrid->set(row, col, 0);
+		segmentGrid->set(channel, frame, 0);
+		return;
 	}
-	int group = (*segmentGrid)(row, col);
+	int group = (*segmentGrid)(channel, frame);
 	bool matchFound = false;
-	int nextRow = row - 1;
-	int nextCol = col + 0;
-	double threshold = .5;
+	int nextFrame = frame - 1;
+	int nextChannel = channel + 0;
+	double threshold = .95;
 
-	if (nextRow >= 0) {
-		if ((*segmentGrid)(nextRow, nextCol) == UNASSIGNED) {
-			Signal& nextCorrelation = correlogram[nextRow][nextCol];
+	if (nextFrame >= 0) {
+		if ((*segmentGrid)(nextChannel, nextFrame) == UNASSIGNED) {
+			Signal& nextCorrelation = correlogram[nextFrame][nextChannel];
 			double relation = crossCorrelation(thisCorrelation, nextCorrelation);
 			if (relation > threshold) {
 				if (!matchFound) group = group > UNASSIGNED ? group : ++groups;
-				(*segmentGrid).set(row, col, group);
-				(*segmentGrid).set(nextRow, nextCol, group);
-				traverse(nextRow, nextCol);
+				(*segmentGrid).set(channel, frame, group);
+				(*segmentGrid).set(nextChannel, nextFrame, group);
+				traverse(nextChannel, nextFrame);
 				matchFound = true;
 			}
 		}
 	}
 
-	nextRow = row + 1;
-	if (nextRow < correlogram.FRAMES) {
-		if ((*segmentGrid)(nextRow, nextCol) == UNASSIGNED) {
-			Signal& nextCorrelation = correlogram[nextRow][nextCol];
+	nextFrame = frame + 1;
+	if (nextFrame < correlogram.FRAMES) {
+		if ((*segmentGrid)(nextChannel, nextFrame) == UNASSIGNED) {
+			Signal& nextCorrelation = correlogram[nextFrame][nextChannel];
 			double relation = crossCorrelation(thisCorrelation, nextCorrelation);
 			if (relation > threshold) {
 				if (!matchFound) group = group > UNASSIGNED ? group : ++groups;
-				(*segmentGrid).set(row, col, group);
-				(*segmentGrid).set(nextRow, nextCol, group);
-				traverse(nextRow, nextCol);
+				(*segmentGrid).set(channel, frame, group);
+				(*segmentGrid).set(nextChannel, nextFrame, group);
+				traverse(nextChannel, nextFrame);
 				matchFound = true;
 			}
 		}
 	}
 
-	nextRow = row;
-	nextCol = col + 1;
-	if (nextCol >= 0) {
-		if ((*segmentGrid)(nextRow, nextCol) == UNASSIGNED) {
-			Signal& nextCorrelation = correlogram[nextRow][nextCol];
+	nextFrame = frame;
+	nextChannel = channel + 1;
+	if (nextChannel < correlogram.CHANNELS) {
+		if ((*segmentGrid)(nextChannel, nextFrame) == UNASSIGNED) {
+			Signal& nextCorrelation = correlogram[nextFrame][nextChannel];
 			double relation = crossCorrelation(thisCorrelation, nextCorrelation);
 			if (relation > threshold) {
 				if (!matchFound) group = group > UNASSIGNED ? group : ++groups;
-				(*segmentGrid).set(row, col, group);
-				(*segmentGrid).set(nextRow, nextCol, group);
-				traverse(nextRow, nextCol);
+				(*segmentGrid).set(channel, frame, group);
+				(*segmentGrid).set(nextChannel, nextFrame, group);
+				traverse(nextChannel, nextFrame);
 				matchFound = true;
 			}
 		}
 	}
 
-	nextCol = col - 1;
-	if (nextCol < correlogram.CHANNELS) {
-		if ((*segmentGrid)(nextRow, nextCol) == UNASSIGNED) {
-			Signal& nextCorrelation = correlogram[nextRow][nextCol];
+	nextChannel = channel - 1;
+	if (nextChannel > 0) {
+		if ((*segmentGrid)(nextChannel, nextFrame) == UNASSIGNED) {
+			Signal& nextCorrelation = correlogram[nextFrame][nextChannel];
 			double relation = crossCorrelation(thisCorrelation, nextCorrelation);
 			if (relation > threshold) {
 				if (!matchFound) group = group > UNASSIGNED ? group : ++groups;
-				(*segmentGrid).set(row, col, group);
-				(*segmentGrid).set(nextRow, nextCol, group);
-				traverse(nextRow, nextCol);
+				(*segmentGrid).set(channel, frame, group);
+				(*segmentGrid).set(nextChannel, nextFrame, group);
+				traverse(nextChannel, nextFrame);
 				matchFound = true;
 			}
 		}
@@ -116,8 +117,21 @@ boolGrid* crossCorrelationSegmentation::getBinaryMask(int group) {
 	return idealBinaryMask1;
 }
 
-
-
+void crossCorrelationSegmentation::writeSegmentText(std::ostream& os)
+{
+	for (int i = segmentGrid->ROWS - 1; i >= 0 ; --i)
+	{
+		for (int j = 0; j < segmentGrid->COLUMNS; ++j)
+		{
+			int length = std::to_string((*segmentGrid)(i, j)).length();
+			os << (*segmentGrid)(i, j);
+			for (int x = 0; x < 5 - length; x++) {
+				os << " ";
+			}
+		}
+		os << "\n";
+	}
+}
 
 crossCorrelationSegmentation::~crossCorrelationSegmentation()
 {

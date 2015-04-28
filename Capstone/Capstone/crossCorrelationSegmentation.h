@@ -13,10 +13,11 @@ public:
 
 	SignalGrid& correlogram;
 	intGrid* segmentGrid;
-	int groups = 1;
+	int groups = 0;
 
 	crossCorrelationSegmentation(SignalGrid& correlogram);
 	boolGrid* getBinaryMask(int group);
+	void writeSegmentText(std::ostream& os);
 	~crossCorrelationSegmentation();
 };
 
