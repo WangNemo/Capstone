@@ -42,23 +42,23 @@ void SignalGrid::addBank(SignalBank* bank, int index) {
 
 
 doubleGrid* SignalGrid::toSmrPower() {
-	double** powerGrid = new double*[FRAMES];
-	for (int frame = 0; frame < FRAMES; frame++) {
-		double* powerColumn = new double[CHANNELS];
-		powerGrid[frame] = powerColumn;
-		for (int channel = 0; channel < CHANNELS; channel++){
+	double** powerGrid = new double*[CHANNELS];
+	for (int channel = 0; channel < CHANNELS; channel++){
+		double* powerColumn = new double[FRAMES];
+		powerGrid[channel] = powerColumn;
+		for (int frame = 0; frame < FRAMES; frame++) {
 			double power = 0;
 			for (int i = 0; i < FRAME_SIZE; i++) {
 				double sample = (*(grid[frame]))[channel][i];
 				power += sample * sample;
 			}
-			powerColumn[channel] = sqrt(power);
+			powerColumn[frame] = sqrt(power);
 		}
 	}
 	/*for (int i = 0; i < FRAMES; i++) {
 		print minInArray(powerGrid[i], CHANNELS) << '\t' << maxInArray(powerGrid[i], CHANNELS) << '\t' << avgInArray(powerGrid[i], CHANNELS) end;
 	}*/
-	return new doubleGrid(powerGrid, FRAMES, CHANNELS);
+	return new doubleGrid(powerGrid, CHANNELS, FRAMES);
 }
 
 void SignalGrid::deleteCell(int frame, int channel) {
@@ -66,17 +66,17 @@ void SignalGrid::deleteCell(int frame, int channel) {
 }
 
 Signal* SignalGrid::resynthesize(boolGrid& mask) {
-	for (int frame = 0; frame < mask.ROWS; frame++) {
-		for (int channel = 0; channel < mask.COLUMNS; channel++) {
+	for (int channel = 0; channel < mask.ROWS; channel++) {
+		for (int frame = 0; frame < mask.COLUMNS; frame++) {
 			//mixedGrid[frame][channel].scale((*decibelGrid)(frame, channel));
-			if (!(mask)(frame, channel))
+			if (!(mask)(channel, frame))
 				deleteCell(frame, channel);
-			//else
-			//	print "frame: " << frame << "\tchannel: " << channel end;
+			/*else
+				print "frame: " << frame << "\tchannel: " << channel end;*/
 		}
 	}
-	for (int frame = mask.ROWS; frame < FRAMES; frame++) {
-		for (int channel = mask.COLUMNS; channel < CHANNELS; channel++) {
+	for (int frame = mask.COLUMNS; frame < FRAMES; frame++) {
+		for (int channel = mask.ROWS; channel < CHANNELS; channel++) {
 			deleteCell(frame, channel);
 		}
 	}

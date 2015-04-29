@@ -12,97 +12,7 @@
 #include "GammatoneFilter.h"
 #include "Correlogram.h"
 #include "crossCorrelationSegmentation.h"
-
-doubleGrid* diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
-	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
-	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
-
-	double** decibelGrid = new double*[combinedRows];
-	for (int frame = 0; frame < combinedRows; frame++) {
-		decibelGrid[frame] = new double[combinedCols];
-		for (int channel = 0; channel < combinedCols; channel++) {
-			double one = powerGrid1(frame, channel);
-			double two = powerGrid2(frame, channel);
-			double diff = one - two;
-			decibelGrid[frame][channel] = diff;
-		}
-	}
-	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
-}
-
-doubleGrid* simpleRatio(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
-	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
-	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
-
-	double** decibelGrid = new double*[combinedRows];
-	for (int frame = 0; frame < combinedRows; frame++) {
-		decibelGrid[frame] = new double[combinedCols];
-		for (int channel = 0; channel < combinedCols; channel++) {
-			double one = powerGrid1(frame, channel);
-			double two = powerGrid2(frame, channel);
-			decibelGrid[frame][channel] = sqrt(two < .001 ? 200 : one / two);
-		}
-	}
-	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
-}
-
-doubleGrid* gridOfRelativeDecibels(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
-	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
-	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
-
-	double** decibelGrid = new double*[combinedRows];
-	for (int frame = 0; frame < combinedRows; frame++) {
-		decibelGrid[frame] = new double[combinedCols];
-		for (int channel = 0; channel < combinedCols; channel++) {
-			double one = powerGrid1(frame, channel);
-			double two = powerGrid2(frame, channel);
-			if (one == 0 || two == 0) {
-				decibelGrid[frame][channel] = one > two ? 1000 : -1000;
-			}
-			else {
-				double decibel = 20 * log10(
-					one / two
-					);
-				decibelGrid[frame][channel] = decibel;
-			}
-		}
-	}
-	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
-}
-
-doubleGrid* gridOfRelativeDecibelRatios(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
-	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
-	int combinedCols = MIN(powerGrid1.COLUMNS, powerGrid2.COLUMNS);
-
-	double** decibelGrid = new double*[combinedRows];
-	for (int frame = 0; frame < combinedRows; frame++) {
-		decibelGrid[frame] = new double[combinedCols];
-		for (int channel = 0; channel < combinedCols; channel++) {
-			double one = powerGrid1(frame, channel);
-			double two = powerGrid2(frame, channel);
-			if (one == 0 || two == 0) {
-				decibelGrid[frame][channel] = one > two ? 1000 : -1000;
-			}
-			else {
-				double decibel1 = 20 * log10(one);
-				double decibel2 = 20 * log10(two);
-				decibelGrid[frame][channel] = decibel1 / decibel2;
-			}
-		}
-	}
-	return new doubleGrid(decibelGrid, combinedRows, combinedCols);
-}
-
-boolGrid* createIdealBinaryMask(doubleGrid& decibelGrid, double decibelReq) {
-	bool** binaryMask = new bool*[decibelGrid.ROWS];
-	for (int row = 0; row < decibelGrid.ROWS; row++) {
-		binaryMask[row] = new bool[decibelGrid.COLUMNS];
-		for (int col = 0; col < decibelGrid.COLUMNS; col++) {
-			binaryMask[row][col] = decibelGrid(row, col) >= decibelReq;
-		}
-	}
-	return new boolGrid(binaryMask, decibelGrid.ROWS, decibelGrid.COLUMNS);
-}
+#include "IdealBinaryMask.h"
 
 int main(int argc, char* argv[], char* envp[]) {
 	print argv[0] end;
@@ -119,6 +29,12 @@ int main(int argc, char* argv[], char* envp[]) {
 	signal1->trim(shorter);
 	signal2->trim(shorter);
 
+	IdealBinaryMask mask(*signal1, *signal2);
+	mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
+	mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);
+
+	return 0;
+	print "error" end;
 	int sampleRate = 44100;
 	int channels = 32;
 
@@ -146,56 +62,9 @@ int main(int argc, char* argv[], char* envp[]) {
 
 	//return 0;
 
-	//Cochleagram* coch1 = new Cochleagram(*signal1, sampleRate);
-
-	//delete signal1;
-	//SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*sampleRate, .010*sampleRate);
-	//print grid1->CHANNELS << '\t' << grid1->FRAMES end;
-	//delete coch1;
-	//doubleGrid* powerGrid = grid1->toSmrPower();
-	//delete grid1;
+	//Cochleagram* cochMix = new Cochleagram(*mixed, signal1.SAMPLE_RATE);
 
 
-	//Cochleagram* coch2 = new Cochleagram(*signal2, sampleRate);
-	//delete signal2;
-	//SignalGrid* grid2 = new SignalGrid(*(coch2->cochleagram), .020*sampleRate, .010*sampleRate);
-	//print grid2->CHANNELS << '\t' << grid2->FRAMES end;
-	//delete coch2;
-	//doubleGrid* powerGrid2 = grid2->toSmrPower();
-	//delete grid2;
-
-	////for (int i = 0; i < powerGrid2->ROWS; i++) {
-	////	print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) end;
-	////	print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) end;
-	////}
-
-
-	////print powerGrid->COLUMNS << '\t' << powerGrid->ROWS end;
-	////print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
-
-
-	//doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid, *powerGrid2); //simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
-	//doubleGrid* decibelGrid2 = gridOfRelativeDecibels(*powerGrid2, *powerGrid);
-	//delete powerGrid;
-	//delete powerGrid2;
-
-
-	//boolGrid* idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 0);
-	//boolGrid* idealBinaryMask2 = createIdealBinaryMask(*decibelGrid2, 0);
-
-	///*for (int i = 0; i < decibelGrid->ROWS; i++) {
-	//	print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
-	//}*/
-
-
-	//FilterBank bank(channels, 100, 8000, 44100);
-	//SignalBank* mixedBank = bank.filter(*mixed);
-
-	//for (int i = 0; i < channels; i++) {
-	//	(*mixedBank)[i].reverse();
-	//	(*mixedBank).add((*(bank.bank[i])).filter((*mixedBank)[i]), i);
-	//	(*mixedBank)[i].reverse();
-	//}
 
 
 	std::fstream of("Map.txt", std::ios::out);
@@ -219,9 +88,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	//}
 
 
-
-
-	//SignalBank resynthBank(segmentation.groups - 1, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
+	//SignalBank resynthBank(segmentation->ROWS, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
 	//for (int group = 1; group < segmentation.groups - 1; group++) {
 	//	print group end;
 	//	boolGrid* idealBinaryMask = segmentation.getBinaryMask(group);
@@ -240,6 +107,8 @@ int main(int argc, char* argv[], char* envp[]) {
 	//		result[i] += resynthBank[chan][i];
 	//	}
 	//}
+
+
 
 	//FILE* results = fopen("Result.4.wav", "wb");
 	//fwrite(result.signal, sizeof(double), result.SAMPLES, results);
