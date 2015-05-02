@@ -91,6 +91,13 @@ Signal* Signal::minus(Signal& other) {
 	return s;
 }
 
+void Signal::save(std::string& path) {
+	FILE* file = fopen(path.c_str(), "wb");
+	fwrite(signal, sizeof(double), SAMPLES, file);
+	fclose(file);
+}
+
+
 Signal* Signal::autoCorrelate(int lagMS, int startingMS, Signal& window, double threshold) {
 	int lagSamples = (lagMS * SAMPLE_RATE) / 1000;
 	int startingSample = (startingMS * SAMPLE_RATE) / 1000;
@@ -108,6 +115,16 @@ Signal* Signal::autoCorrelate(int lagMS, int startingMS, Signal& window, double 
 	}
 	correlation->zeroMeanStandardVariance();
 	return correlation;
+}
+double Signal::crossCorrelate(Signal& other) {
+	if (signal[0] == 0 || other[0] == 0)
+		return 0;
+
+	double sum = 0;
+	for (int i = 0; i < SAMPLES - 1; i++) {
+		sum += signal[i] * other[i + 1];
+	}
+	return sum / SAMPLES;
 }
 
 double Signal::getCorrelation(int startingSample, Signal& window, int lag) {

@@ -5,12 +5,13 @@
 crossCorrelationSegmentation::crossCorrelationSegmentation(SignalGrid& correlogram)
 	: correlogram(correlogram)
 {
+	print "cross correlation" end;
 	segmentGrid = new intGrid(correlogram.CHANNELS, correlogram.FRAMES, UNASSIGNED);
 	for (int row = 0; row < correlogram.CHANNELS; row++) {
 		for (int col = 0; col < correlogram.FRAMES; col++) {
 			traverse(row, col);
 		}
-		//print row end;
+		print row end;
 	}
 }
 
@@ -24,7 +25,7 @@ void crossCorrelationSegmentation::traverse(int channel, int frame) {
 	bool matchFound = false;
 	int nextFrame = frame - 1;
 	int nextChannel = channel + 0;
-	double threshold = .95;
+	double threshold = .90;
 
 	if (nextFrame >= 0) {
 		if ((*segmentGrid)(nextChannel, nextFrame) == UNASSIGNED) {

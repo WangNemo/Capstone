@@ -11,16 +11,12 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	Meddis* meddis = new Meddis();
 	SignalBank* basilarMembrane = bank->filter(signal);
 
-	//for (int i = 0; i < CHANNELS; i++) {
-	//	(*basilarMembrane)[i].normalize();
-	//}
+	/*for (int i = 0; i < CHANNELS; i++) {
+		(*basilarMembrane)[i].normalize();
+	}*/
 
 	cochleagram = basilarMembrane;
-	//for (int i = 0; i < CHANNELS; i++) {
-	//	(*basilarMembrane)[i].reverse();
-	//	(*basilarMembrane).add((*((*bank).bank[i])).filter((*basilarMembrane)[i]), i);
-	//	(*basilarMembrane)[i].reverse();
-	//}
+
 	for (int i = 0; i < CHANNELS; i++) {
 		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) end;
 		//(*cochleagram)[i].normalize();

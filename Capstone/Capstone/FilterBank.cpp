@@ -22,6 +22,7 @@ FilterBank::FilterBank(int channels, int lowFreq, int highFreq, int sampleRate) 
 }
 
 SignalBank* FilterBank::filter(Signal& signal){
+	print "filterbank" end;
 	channels = new SignalBank(CHANNELS, SAMPLE_RATE, signal.SAMPLES);
 	for (int i = 0; i < CHANNELS; i++) {
 		Signal* filtered = bank[i]->filter(signal); //(*bank)->filter(signal);

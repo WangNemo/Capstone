@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "definitions.h"
 #include<fstream>
-#include <string>
 
 #include "testing.h"
 #include "SignalBank.h"
@@ -13,6 +12,8 @@
 #include "Correlogram.h"
 #include "crossCorrelationSegmentation.h"
 #include "IdealBinaryMask.h"
+#include "Oscillator.h"
+#include "LEGION.h"
 
 int main(int argc, char* argv[], char* envp[]) {
 	print argv[0] end;
@@ -23,21 +24,10 @@ int main(int argc, char* argv[], char* envp[]) {
 	Signal* signal1 = staticTools::readWav(fileName);
 
 
-
 	Signal* signal2 = staticTools::readWav(fileName2);
 	int shorter = MIN(signal2->SAMPLES, signal1->SAMPLES);
 	signal1->trim(shorter);
 	signal2->trim(shorter);
-
-	IdealBinaryMask mask(*signal1, *signal2);
-	mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
-	mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);
-
-	return 0;
-	print "error" end;
-	int sampleRate = 44100;
-	int channels = 32;
-
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
 	mixed->trim(44100);
@@ -45,7 +35,42 @@ int main(int argc, char* argv[], char* envp[]) {
 	FILE* mixF = fopen("Mixed.wav", "wb");
 	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
-	Cochleagram* cochMix = new Cochleagram(*mixed, sampleRate);
+	Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
+	Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
+	
+	LEGION* l = new LEGION(*coresdfa.T_FGrid);
+	return 0;
+	//for (int i = 7; i >= 0; i--) {
+	//	FILE* mixF = fopen(("corr" + std::to_string(8 - i)+  ".wav").c_str(), "wb");
+	//	fwrite((*coresdfa.T_FGrid)[97][i].signal, sizeof(double), (*coresdfa.T_FGrid)[97][i].SAMPLES, mixF);
+	//}
+
+	IdealBinaryMask mask(*signal1, *signal2);
+	std::fstream of1("ibm1.txt", std::ios::out);
+	mask.writeBinaryMask(of1, mask.idealBinaryMask1);
+	std::fstream of2("ibm2.txt", std::ios::out);
+	mask.writeBinaryMask(of2, mask.idealBinaryMask2);
+	//mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
+	//mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);
+
+	return 0;
+	//IdealBinaryMask mask(*signal1, *signal2);
+	//std::fstream of1("ibm1.txt", std::ios::out);
+	//mask.writeBinaryMask(of1, mask.idealBinaryMask1);
+	//std::fstream of2("ibm2.txt", std::ios::out);
+	//mask.writeBinaryMask(of2, mask.idealBinaryMask2);
+
+	///*mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
+	//mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);*/
+
+	//return 0;
+
+
+	//
+	//FILE* mixF = fopen("Mixed.wav", "wb");
+	//fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
+
+	Cochleagram* cochMix = new Cochleagram(*mixed, mixed->SAMPLE_RATE);
 	//signal1->trim(4410);
 	//Cochleagram* sigMix = new Cochleagram(*signal1, sampleRate);
 	Correlogram* correl = new Correlogram(*cochMix->cochleagram, 20, 10);

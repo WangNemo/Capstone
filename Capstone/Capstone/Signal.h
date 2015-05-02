@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 
 class Signal
 {
@@ -18,8 +20,10 @@ public:
 	void scale(double scalar);
 	void trim(int samples);
 	void add(Signal& other);
+	void save(std::string& path);
 	Signal* minus(Signal& other);
 	Signal* autoCorrelate(int lagMS, int startingMS, Signal& window, double threshold);
+	double crossCorrelate(Signal& other);
 	~Signal();
 };
 

@@ -86,6 +86,22 @@ void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask) {
 	delete result;
 }
 
+void IdealBinaryMask::writeBinaryMask(std::ostream& os, boolGrid* mask) {
+	for (int i = mask->ROWS - 1; i >= 0; --i)
+	{
+		for (int j = 0; j < mask->COLUMNS; j++)
+		{
+			int length = std::to_string((*mask)(i, j)).length();
+			os << (*mask)(i, j);
+			for (int x = 0; x < 2 - length; x++) {
+				os << " ";
+			}
+		}
+		os << "\n";
+	}
+}
+
+
 
 doubleGrid* IdealBinaryMask::diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);
