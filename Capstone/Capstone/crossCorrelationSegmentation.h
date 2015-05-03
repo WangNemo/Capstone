@@ -17,7 +17,7 @@ public:
 
 	crossCorrelationSegmentation(SignalGrid& correlogram);
 	boolGrid* getBinaryMask(int group);
-	void writeSegmentText(std::ostream& os);
+	void writeSegmentText(std::string name);
 	~crossCorrelationSegmentation();
 };
 

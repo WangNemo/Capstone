@@ -118,20 +118,9 @@ boolGrid* crossCorrelationSegmentation::getBinaryMask(int group) {
 	return idealBinaryMask1;
 }
 
-void crossCorrelationSegmentation::writeSegmentText(std::ostream& os)
+void crossCorrelationSegmentation::writeSegmentText(std::string name)
 {
-	for (int i = segmentGrid->ROWS - 1; i >= 0 ; --i)
-	{
-		for (int j = 0; j < segmentGrid->COLUMNS; ++j)
-		{
-			int length = std::to_string((*segmentGrid)(i, j)).length();
-			os << (*segmentGrid)(i, j);
-			for (int x = 0; x < 5 - length; x++) {
-				os << " ";
-			}
-		}
-		os << "\n";
-	}
+	segmentGrid->toFile(name, 5);
 }
 
 crossCorrelationSegmentation::~crossCorrelationSegmentation()

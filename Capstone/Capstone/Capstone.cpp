@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "definitions.h"
-#include<fstream>
 
 #include "testing.h"
 #include "SignalBank.h"
@@ -13,6 +12,7 @@
 #include "crossCorrelationSegmentation.h"
 #include "IdealBinaryMask.h"
 #include <ctime>
+#include "LEGION.h"
 
 int main(int argc, char* argv[], char* envp[]) {
 	srand(static_cast <unsigned> (time(0)));
@@ -50,8 +50,12 @@ int main(int argc, char* argv[], char* envp[]) {
 
 	Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
 	Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
+	//std::fstream ofsas("silentMask.txt", std::ios::out);
+	//boolGrid* mask41 = coresdfa.toBinaryMask();
+	//IdealBinaryMask::writeBinaryMask(ofsas, mask41);
 
-
+	LEGION* lo = new LEGION(*coresdfa.T_FGrid);
+	lo->run();
 
 
 	return 0;
@@ -107,8 +111,7 @@ int main(int argc, char* argv[], char* envp[]) {
 
 
 
-	std::fstream of("Map.txt", std::ios::out);
-	segmentation.writeSegmentText(of);
+	segmentation.writeSegmentText("Map.txt");
 
 	//print "groups: " << segmentation.groups end;
 	////SignalBank resynthBank(segmentation.groups - 1, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);

@@ -38,7 +38,7 @@ void LEGIONold::initializeGrid(SignalGrid& correlogram){
 			double randX = rand() / (RAND_MAX / .8);
 			double randY = rand() / (RAND_MAX / .8);
 			double noise = staticTools::nonZeroGaussianRandom(.01);
-			neuralGrid[channel][frame] = new OscillatorOld(.2, .5, noise,
+			neuralGrid[channel][frame] = new OscillatorOld(randX, randY, noise,
 				correlogram[frame][channel][0] > powerThreshold ? .2 : -5,
 				neighbors);
 		}

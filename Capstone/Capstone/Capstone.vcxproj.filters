@@ -81,6 +81,15 @@
     <ClInclude Include="Connection%28old%29.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Oscillator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LEGION.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Connection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -144,6 +153,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Connection%28old%29.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Oscillator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LEGION.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

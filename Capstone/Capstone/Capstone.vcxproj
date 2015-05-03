@@ -82,6 +82,7 @@
     <ClInclude Include="Cochleagram.h" />
     <ClInclude Include="AudioFile.h" />
     <ClInclude Include="Connection%28old%29.h" />
+    <ClInclude Include="Connection.h" />
     <ClInclude Include="Correlogram.h" />
     <ClInclude Include="crossCorrelationSegmentation.h" />
     <ClInclude Include="FilterBank.h" />
@@ -91,8 +92,10 @@
     <ClInclude Include="HanningWindow.h" />
     <ClInclude Include="IdealBinaryMask.h" />
     <ClInclude Include="LEGION%28old%29.h" />
+    <ClInclude Include="LEGION.h" />
     <ClInclude Include="Meddis.h" />
     <ClInclude Include="Oscillator%28old%29.h" />
+    <ClInclude Include="Oscillator.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Signal.h" />
     <ClInclude Include="SignalBank.h" />
@@ -106,6 +109,7 @@
     <ClCompile Include="Cochleagram.cpp" />
     <ClCompile Include="AudioFile.cpp" />
     <ClCompile Include="Connection%28old%29.cpp" />
+    <ClCompile Include="Connection.cpp" />
     <ClCompile Include="Correlogram.cpp" />
     <ClCompile Include="crossCorrelationSegmentation.cpp" />
     <ClCompile Include="FilterBank.cpp" />
@@ -114,9 +118,11 @@
     <ClCompile Include="HanningWindow.cpp" />
     <ClCompile Include="IdealBinaryMask.cpp" />
     <ClCompile Include="LEGION%28old%29.cpp" />
+    <ClCompile Include="LEGION.cpp" />
     <ClCompile Include="Meddis.cpp" />
     <ClCompile Include="mexFunction.cpp" />
     <ClCompile Include="Oscillator%28old%29.cpp" />
+    <ClCompile Include="Oscillator.cpp" />
     <ClCompile Include="Signal.cpp" />
     <ClCompile Include="SignalBank.cpp" />
     <ClCompile Include="SignalGrid.cpp" />

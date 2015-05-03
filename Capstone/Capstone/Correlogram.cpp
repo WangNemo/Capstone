@@ -22,14 +22,14 @@ Correlogram::Correlogram(SignalBank& cochleagram, int frameSize, int frameOffset
 }
 
 boolGrid* Correlogram::toBinaryMask() {
-	bool** binaryMask = new bool*[T_FGrid->FRAMES];
-	for (int row = 0; row < T_FGrid->FRAMES; row++) {
-		binaryMask[row] = new bool[T_FGrid->CHANNELS];
-		for (int col = 0; col < T_FGrid->CHANNELS; col++) {
-			binaryMask[row][col] = (*T_FGrid)[row][col][0] > 0;
+	bool** binaryMask = new bool*[T_FGrid->CHANNELS];
+	for (int row = 0; row < T_FGrid->CHANNELS; row++) {
+		binaryMask[row] = new bool[T_FGrid->FRAMES];
+		for (int col = 0; col < T_FGrid->FRAMES; col++) {
+			binaryMask[row][col] = (*T_FGrid)[col][row][0] > 0;
 		}
 	}
-	boolGrid* idealBinaryMask1 = new boolGrid(binaryMask, T_FGrid->FRAMES, T_FGrid->CHANNELS);
+	boolGrid* idealBinaryMask1 = new boolGrid(binaryMask, T_FGrid->CHANNELS, T_FGrid->FRAMES);
 	return idealBinaryMask1;
 }
 

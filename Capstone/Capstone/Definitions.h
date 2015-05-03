@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "Signal.h"
 
 #define MAX(x,y)     ( ( x ) > ( y ) ? ( x ) : ( y ) )
@@ -11,6 +12,11 @@
 #define PI 3.1415926535897932384626433832795
 #define print std::cout<<
 #define end <<std::endl
+
+#define SPIKING 1
+#define SPIKE_THRESHOLD -1
+#define MINIMUM_ACTIVITY -2
+#define STEP .1
 
 
 double maxInArray(double* darray, int size); 
@@ -84,6 +90,22 @@ public:
 
 	void set(int row, int col, int value) {
 		grid[row][col] = value;
+	}
+
+	void toFile(std::string path, int width = 1) {
+		std::fstream os(path, std::ios::out);
+		for (int i = ROWS - 1; i >= 0; --i)
+		{
+			for (int j = 0; j < COLUMNS; ++j)
+			{
+				int length = std::to_string((*this)(i, j)).length();
+				os << (*this)(i, j);
+				for (int x = 0; x < width - length; x++) {
+					os << " ";
+				}
+			}
+			os << "\n";
+		}
 	}
 
 	~intGrid(){

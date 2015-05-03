@@ -5,7 +5,7 @@ class OscillatorOld;
 
 class ConnectionOld {
 private:
-	double threshold;
+	double threshold = -.5;
 public:
 	OscillatorOld* one;
 	OscillatorOld* two;

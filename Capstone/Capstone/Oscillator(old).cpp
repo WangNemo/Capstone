@@ -35,7 +35,7 @@ void OscillatorOld::update(double stepSize) {
 	prevInhi = inhibition;
 	prevExit = excitement;
 
-	double input = potential > .1 || inputValue < 0 ? inputValue : 0;
+	double input = potential > .1 ? inputValue : 0;
 
 	double adjustment = input + neighborWeights + randomNoise;// input > 0 ? randomNoise : 0;
 
