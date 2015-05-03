@@ -37,7 +37,7 @@ void LEGION::initializeGrid(SignalGrid& correlogram){
 
 			double randX = rand() / (RAND_MAX / .8);
 			double randY = rand() / (RAND_MAX / .8);
-			double noise = staticTools::nonZeroGaussianRandom(.02);
+			double noise = staticTools::nonZeroGaussianRandom(.01);
 			neuralGrid[channel][frame] = new Oscillator(randX, randY, noise, 
 				correlogram[frame][channel][0] > powerThreshold ? .2 : -5,
 				neighbors);
@@ -74,6 +74,7 @@ void LEGION::createConnections(SignalGrid& correlogram) {
 }
 
 void LEGION::calculateNeighborWeights(){
+	double potentialThreshold = .75;
 	double globalInhibition = isAnOscillatorSpiking() ? .5 : 0;
 		//globalInhibitor->inhibition > .5 ? .5 : 0;
 
@@ -92,7 +93,8 @@ void LEGION::calculateNeighborWeights(){
 			}
 			if (frame > 0) {
 				directions[left] = timeConnections[channel][frame - 1]->getWeightOne();
-				potential += (timeConnections[channel][frame - 1]->one->excitement > spikeThreshold);
+				potential += (timeConnections[channel][frame - 1]->one->excitement > spikeThreshold) 
+					- potentialThreshold;
 				if (timeConnections[channel][frame - 1]->one->excitement > spikeThreshold) {
 					int a = 5;
 				}
@@ -102,7 +104,8 @@ void LEGION::calculateNeighborWeights(){
 			}
 			if (frame < FRAMES - 1) {
 				directions[right] = timeConnections[channel][frame]->getWeightTwo();
-				potential += (timeConnections[channel][frame]->two->excitement > spikeThreshold);
+				potential += (timeConnections[channel][frame]->two->excitement > spikeThreshold)
+					- potentialThreshold;
 				if (timeConnections[channel][frame]->two->excitement > spikeThreshold) {
 					int a = 5;
 				}
@@ -122,7 +125,6 @@ void LEGION::calculateNeighborWeights(){
 			}
 
 			osc.updateNeighborWeights(weights, globalInhibition);
-			potential -= spikeThreshold;
 			osc.updatePotential(potential, stepSize);
 
 			delete[] weights;
@@ -133,8 +135,15 @@ void LEGION::calculateNeighborWeights(){
 bool LEGION::isAnOscillatorSpiking() {
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		for (int frame = 0; frame < FRAMES; frame++) {
-			if (neuralGrid[channel][frame]->excitement > spikeThreshold)
+			if (neuralGrid[channel][frame]->excitement > spikeThreshold) {
+				if (neuralGrid[channel][frame]->potential < 25) {
+					int a = 5;
+				}
+				if (neuralGrid[channel][frame]->neighborWeights < .5) {
+					int a = 5;
+				}
 				return true;
+			}
 		}
 	}
 	return false;
@@ -168,11 +177,10 @@ void LEGION::run(int phases) {
 				calculateNeighborWeights();
 				int active = update();
 				if (active > maxJump) maxJump = active;
-				if (active > 1 && !printedSub) {
+				if (active > 5 && !printedSub) {
 					printedSub = true;
 					print "\t\t" << active end;
-					if (phase > 30)
-						saveActiveText(std::to_string(phase) + "spikes" + std::to_string(active) + ".txt");
+					saveActiveText(std::to_string(phase) + "spikes" + std::to_string(active) + ".txt");
 				}
 			}
 		}

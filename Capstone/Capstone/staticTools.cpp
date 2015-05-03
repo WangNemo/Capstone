@@ -1,7 +1,7 @@
 #include "stdafx.h"
+#include <random>
 
 #include "Definitions.h"
-
 
 
 double maxInArray(double* darray, int size) {
@@ -136,8 +136,12 @@ namespace staticTools{
 		return sqrt(sum / signal.SAMPLES);
 	}
 
+	std::random_device rd;
+	std::mt19937 e2(rd());
+	std::normal_distribution<double> d(0, .02);
+	
 	double nonZeroGaussianRandom(double minMax) {
-		double randv;
+	/*	double randv;
 		do{
 			randv = rand();
 		} while (randv == 0.0);
@@ -145,7 +149,10 @@ namespace staticTools{
 		double randlog = log((double)randv / RAND_MAX);
 		double randomNumber = pow(-2 * randlog, .5) * cos(2 * PI * rand()) * minMax - minMax;
 
-		return randomNumber;
+		return randomNumber;*/
+		
+		double result = d(e2);
+		return result;
 	}
 
 
