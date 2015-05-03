@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "LEGION.h"
+#include "LEGION(old).h"
 #include<fstream>
 
-LEGION::LEGION(SignalGrid& correlogram) : FRAMES(correlogram.FRAMES), CHANNELS(correlogram.CHANNELS)
+LEGIONold::LEGIONold(SignalGrid& correlogram) : FRAMES(correlogram.FRAMES), CHANNELS(correlogram.CHANNELS)
 {
 
 	/*Oscillator* oss = new Oscillator(.5, .1, .02, .8);
@@ -19,13 +19,13 @@ LEGION::LEGION(SignalGrid& correlogram) : FRAMES(correlogram.FRAMES), CHANNELS(c
 	createConnections(correlogram);
 }
 
-void LEGION::initializeGrid(SignalGrid& correlogram){
+void LEGIONold::initializeGrid(SignalGrid& correlogram){
 	print "initializing" end;
 	double powerThreshold = .75;
 
-	neuralGrid = new Oscillator**[correlogram.CHANNELS];
+	neuralGrid = new OscillatorOld**[correlogram.CHANNELS];
 	for (int channel = 0; channel < correlogram.CHANNELS; channel++) {
-		neuralGrid[channel] = new Oscillator*[correlogram.FRAMES];
+		neuralGrid[channel] = new OscillatorOld*[correlogram.FRAMES];
 		for (int frame = 0; frame < correlogram.FRAMES; frame++) {
 			int neighbors = 4;
 			if (channel == 0 || channel == correlogram.CHANNELS - 1) {
@@ -38,27 +38,27 @@ void LEGION::initializeGrid(SignalGrid& correlogram){
 			double randX = rand() / (RAND_MAX / .8);
 			double randY = rand() / (RAND_MAX / .8);
 			double noise = staticTools::nonZeroGaussianRandom(.01);
-			neuralGrid[channel][frame] = new Oscillator(randX, randY, noise, 
+			neuralGrid[channel][frame] = new OscillatorOld(.2, .5, noise,
 				correlogram[frame][channel][0] > powerThreshold ? .2 : -5,
 				neighbors);
 		}
 	}
 }
 
-void LEGION::createConnections(SignalGrid& correlogram) {
+void LEGIONold::createConnections(SignalGrid& correlogram) {
 	print "linking" end;
-	timeConnections = new Connection**[correlogram.CHANNELS];
-	freqConnections = new Connection**[correlogram.CHANNELS - 1];
+	timeConnections = new ConnectionOld**[correlogram.CHANNELS];
+	freqConnections = new ConnectionOld**[correlogram.CHANNELS - 1];
 	double crosses = 0;
 
 	for (int channel = 0; channel < correlogram.CHANNELS; channel++) {
-		timeConnections[channel] = new Connection*[correlogram.FRAMES - 1];
+		timeConnections[channel] = new ConnectionOld*[correlogram.FRAMES - 1];
 		if (channel < correlogram.CHANNELS - 1)
-			freqConnections[channel] = new Connection*[correlogram.FRAMES];
+			freqConnections[channel] = new ConnectionOld*[correlogram.FRAMES];
 
 		for (int frame = 0; frame < correlogram.FRAMES; frame++) {
 			if (frame < correlogram.FRAMES - 1) {
-				Connection* timeConnection = new Connection(1, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
+				ConnectionOld* timeConnection = new ConnectionOld(1, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
 				timeConnections[channel][frame] = timeConnection;
 			}
 			if (channel < correlogram.CHANNELS - 1) {
@@ -66,14 +66,14 @@ void LEGION::createConnections(SignalGrid& correlogram) {
 					> crossCorrelationThreshold ? 1 : 0;
 
 				crosses += weight;
-				Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
+				ConnectionOld* freqConnection = new ConnectionOld(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
 				freqConnections[channel][frame] = freqConnection;
 			}
 		}
 	}
 }
 
-void LEGION::calculateNeighborWeights(){
+void LEGIONold::calculateNeighborWeights(){
 	double potentialThreshold = .75;
 	double globalInhibition = isAnOscillatorSpiking() ? .5 : 0;
 		//globalInhibitor->inhibition > .5 ? .5 : 0;
@@ -114,7 +114,7 @@ void LEGION::calculateNeighborWeights(){
 				}
 			}
 
-			Oscillator& osc = *neuralGrid[channel][frame];
+			OscillatorOld& osc = *neuralGrid[channel][frame];
 
 			double* weights = new double[osc.neighbors];
 			int weigh = 0;
@@ -132,10 +132,10 @@ void LEGION::calculateNeighborWeights(){
 	}
 }
 
-bool LEGION::isAnOscillatorSpiking() {
+bool LEGIONold::isAnOscillatorSpiking() {
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		for (int frame = 0; frame < FRAMES; frame++) {
-			if (neuralGrid[channel][frame]->excitement > spikeThreshold) {
+			if (neuralGrid[channel][frame]->excitement > globalSpikeThreshold) {
 				if (neuralGrid[channel][frame]->potential < 25) {
 					int a = 5;
 				}
@@ -149,7 +149,7 @@ bool LEGION::isAnOscillatorSpiking() {
 	return false;
 }
 
-void LEGION::saveActiveText(std::string flieName) {
+void LEGIONold::saveActiveText(std::string flieName) {
 	std::fstream os(flieName, std::ios::out);
 	for (int channel = CHANNELS - 1; channel >= 0; channel--) {
 		for (int frame = 0; frame < FRAMES; frame++) {
@@ -161,7 +161,7 @@ void LEGION::saveActiveText(std::string flieName) {
 }
 
 
-void LEGION::run(int phases) {
+void LEGIONold::run(int phases) {
 	print "oscilating " << phases end;
 	int steps = phases * (pointsPerPhase * 10);
 	Signal* sig = new Signal(steps, 44100);
@@ -191,7 +191,7 @@ void LEGION::run(int phases) {
 	sig->save(std::string("globalOscy.wav"));
 }
 
-int LEGION::update() {
+int LEGIONold::update() {
 	int active = 0;
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		for (int frame = 0; frame < FRAMES; frame++) {
@@ -205,6 +205,6 @@ int LEGION::update() {
 
 
 
-LEGION::~LEGION()
+LEGIONold::~LEGIONold()
 {
 }

@@ -1,27 +1,15 @@
 #include "stdafx.h"
-#include "Oscillator.h"
+#include "Oscillator(old).h"
 
-Oscillator::Oscillator() {}
+OscillatorOld::OscillatorOld() {}
 
-Oscillator::Oscillator(double excitement, double inhibition, double noise, double inputValue, int neighbors) :
+OscillatorOld::OscillatorOld(double excitement, double inhibition, double noise, double inputValue, int neighbors) :
 excitement(excitement), inhibition(inhibition), noise(noise), inputValue(inputValue), neighbors(neighbors)
 {
-	Signal sig(44100, 44100);
-	Signal sig2(44100, 44100);
-	Signal sig3(44100, 44100);
-	for (int i = 0; i < 44100; i++) {
-		update(.1);
-		sig[i] = this->excitement;
-		sig2[i] = this->inhibition;
-		sig3[i] = this->potential;
-		updatePotential(prevExit - 1, .1);
-	}
-	sig.save(std::string("oscil.wav"));
-	sig2.save(std::string("inhibition.wav"));
-	sig3.save(std::string("potential.wav"));
+
 }
 
-Oscillator::Oscillator(double excitement, double inhibition, double noise, double inputValue, int neighbors, int samplesToSave) :
+OscillatorOld::OscillatorOld(double excitement, double inhibition, double noise, double inputValue, int neighbors, int samplesToSave) :
 excitement(excitement), inhibition(inhibition), noise(noise), inputValue(inputValue), neighbors(neighbors), samplesToSave(samplesToSave)
 {
 	exitWav = new Signal(samplesToSave, 44100);
@@ -41,7 +29,7 @@ excitement(excitement), inhibition(inhibition), noise(noise), inputValue(inputVa
 	//sig3.save(std::string("potential.wav"));
 }
 
-void Oscillator::update(double stepSize) {
+void OscillatorOld::update(double stepSize) {
 	double randomNoise = staticTools::nonZeroGaussianRandom(.02);
 	
 	prevInhi = inhibition;
@@ -69,14 +57,14 @@ void Oscillator::update(double stepSize) {
 	}
 }
 
-void Oscillator::updateNeighborWeights(double* weights, double globalInhibition) {
+void OscillatorOld::updateNeighborWeights(double* weights, double globalInhibition) {
 	neighborWeights = 0;
 	for (int i = 0; i < neighbors; i++) {
 		neighborWeights += weights[i] - globalInhibition;
 	}
 }
 
-void Oscillator::updatePotential(double weight, double stepSize) {
+void OscillatorOld::updatePotential(double weight, double stepSize) {
 	double change = (weight >= 0 ? (1 - potential) : 0) - .02 * potential;
 	if (!(change <= DBL_MAX && change >= -DBL_MAX)) {
 		int a = 3;
@@ -84,12 +72,27 @@ void Oscillator::updatePotential(double weight, double stepSize) {
 	potential += change * stepSize;
 }
 
-void Oscillator::saveWavs(std::string name) {
+void OscillatorOld::saveWavs(std::string name) {
 	exitWav->save(name + ".exit.wav");
 	inhibitWav->save(name + ".inhibit.wav");
 	potWav->save(name + ".pot.wav");
 }
+void OscillatorOld::soloTest() {
+	Signal sig(44100, 44100);
+	Signal sig2(44100, 44100);
+	Signal sig3(44100, 44100);
+	for (int i = 0; i < 44100; i++) {
+		update(.1);
+		sig[i] = this->excitement;
+		sig2[i] = this->inhibition;
+		sig3[i] = this->potential;
+		updatePotential(prevExit - 1, .1);
+	}
+	sig.save(std::string("oscil.wav"));
+	sig2.save(std::string("inhibition.wav"));
+	sig3.save(std::string("potential.wav"));
+}
 
-Oscillator::~Oscillator()
+OscillatorOld::~OscillatorOld()
 {
 }

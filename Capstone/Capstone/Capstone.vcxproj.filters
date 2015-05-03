@@ -69,16 +69,16 @@
     <ClInclude Include="IdealBinaryMask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Oscillator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GlobalInhibitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LEGION.h">
+    <ClInclude Include="LEGION%28old%29.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Connection.h">
+    <ClInclude Include="Oscillator%28old%29.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Connection%28old%29.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -134,16 +134,16 @@
     <ClCompile Include="IdealBinaryMask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Oscillator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GlobalInhibitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LEGION.cpp">
+    <ClCompile Include="Oscillator%28old%29.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Connection.cpp">
+    <ClCompile Include="LEGION%28old%29.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Connection%28old%29.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

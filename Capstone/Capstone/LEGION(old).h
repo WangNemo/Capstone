@@ -2,13 +2,15 @@
 #include "Definitions.h"
 #include "Correlogram.h"
 #include "GlobalInhibitor.h"
-#include "Oscillator.h"
+#include "Oscillator(old).h"
+#include "Connection(old).h"
 
-class LEGION
+class LEGIONold
 {
 private:
-	double crossCorrelationThreshold = .70;
-	double spikeThreshold = 1.5;
+	double crossCorrelationThreshold = .95;
+	double globalSpikeThreshold = 1.5;
+	double spikeThreshold = -.5;
 	int pointsPerPhase = 62;
 	double stepSize = .1;
 
@@ -21,14 +23,14 @@ private:
 public:
 	int FRAMES;
 	int CHANNELS;
-	Connection*** timeConnections;
-	Connection*** freqConnections;
-	Oscillator*** neuralGrid;
+	ConnectionOld*** timeConnections;
+	ConnectionOld*** freqConnections;
+	OscillatorOld*** neuralGrid;
 	GlobalInhibitor* globalInhibitor;
 
-	LEGION(SignalGrid& correlogram);
+	LEGIONold(SignalGrid& correlogram);
 	void run(int phases);
 	void saveActiveText(std::string flieName);
-	~LEGION();
+	~LEGIONold();
 };
 

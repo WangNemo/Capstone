@@ -1,9 +1,8 @@
 #pragma once
 #include <math.h>
-#include "Connection.h"
 #include "Definitions.h"
 
-class Oscillator
+class OscillatorOld
 {
 private:
 	int samplesToSave = 0;
@@ -21,13 +20,14 @@ public:
 	double potential = 1;
 	int neighbors;
 
-	Oscillator();
-	Oscillator(double excitement, double inhibition, double noise, double inputValue, int neighbors);
-	Oscillator(double excitement, double inhibition, double noise, double inputValue, int neighbors, int samplesToSave);
+	OscillatorOld();
+	OscillatorOld(double excitement, double inhibition, double noise, double inputValue, int neighbors);
+	OscillatorOld(double excitement, double inhibition, double noise, double inputValue, int neighbors, int samplesToSave);
 	void update(double stepSize);
 	void updateNeighborWeights(double* weights, double globalInhibition);
 	void updatePotential(double weight, double stepSize);
 	void saveWavs(std::string name);
-	~Oscillator();
+	void soloTest();
+	~OscillatorOld();
 };
 

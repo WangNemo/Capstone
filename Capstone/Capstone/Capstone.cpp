@@ -12,9 +12,7 @@
 #include "Correlogram.h"
 #include "crossCorrelationSegmentation.h"
 #include "IdealBinaryMask.h"
-#include "Oscillator.h"
 #include <ctime>
-#include "LEGION.h"
 
 int main(int argc, char* argv[], char* envp[]) {
 	srand(static_cast <unsigned> (time(0)));
@@ -49,55 +47,12 @@ int main(int argc, char* argv[], char* envp[]) {
 	//	if (rand > max) max = rand;
 	//}
 
-	//Oscillator* dead = new Oscillator(.3, .5, .2, 0, 2);
 
-	//Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
-	//Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
-	int size = 44100;
-	double step = .1;
-	Oscillator* oscil0 = new Oscillator(.8, .5, .003, -5, 2, size);
-	Oscillator* oscil1 = new Oscillator(.3, .5, .003, 0, 2, size);
-	Oscillator* oscil2 = new Oscillator(.5, .3, .001, .2, 2, size);
-	Oscillator* oscil3 = new Oscillator(.2, .4, .002, .2, 2, size);
-	Oscillator* oscil4 = new Oscillator(.1, 0, 0, 0, 2, size);
-	GlobalInhibitor* gi = new GlobalInhibitor();
-	for (int i = 0; i < size; i++) {
-		oscil1->updatePotential(0 - 7.5, step);
-		oscil2->updatePotential(((oscil3->excitement > -.8) + 0) - 1.5, step);
-		oscil3->updatePotential(((oscil2->excitement > -.8) + (oscil4->excitement > -.8)) - 1.5, step);
-		oscil4->updatePotential((oscil3->excitement > -.8) - 1.5, step);
-
-		bool global = (oscil0->excitement > .5 || oscil1->excitement > .5 || oscil2->excitement > .5 || oscil3->excitement > .5 || oscil4->excitement > .5);// ? .5 : 0);
-		gi->update(step, global);
-		double globalInhibition = gi->inhibition > .5 ? .5 : 0;
-
-		oscil0->updateNeighborWeights(new double[2]{(double)(oscil1->excitement > -.8), 0}, globalInhibition);
-		oscil1->updateNeighborWeights(new double[2]{(double)(oscil0->excitement > -.8), 0}, globalInhibition);
-		oscil2->updateNeighborWeights(new double[2]{((double)(oscil3->excitement > -.8)), 0}, globalInhibition);
-		oscil3->updateNeighborWeights(new double[2]{((double)(oscil2->excitement > -.8)), ((double)(oscil4->excitement > -.8))}, globalInhibition);
-		if (((double)(oscil3->excitement > -.8)) && ((double)(oscil4->excitement < -.8))) {
-			int a = ((double)(oscil3->excitement > .5));
-		}
-		oscil4->updateNeighborWeights(new double[2]{((double)(oscil3->excitement > -.8)), 0}, globalInhibition);
-
-		oscil0->update(step);
-		oscil1->update(step);
-		oscil2->update(step);
-		oscil3->update(step);
-		oscil4->update(step);
+	Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
+	Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
 
 
-	}
 
-	oscil0->saveWavs("oscil0");
-	oscil1->saveWavs("oscil1");
-	oscil2->saveWavs("oscil2");
-	oscil3->saveWavs("oscil3");
-	oscil4->saveWavs("oscil4");
-
-
-	//LEGION* l = new LEGION(*coresdfa.T_FGrid);
-	//l->run(60);
 
 	return 0;
 	//for (int i = 7; i >= 0; i--) {
