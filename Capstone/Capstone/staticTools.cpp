@@ -136,9 +136,10 @@ namespace staticTools{
 		return sqrt(sum / signal.SAMPLES);
 	}
 
-	std::random_device rd;
-	std::mt19937 e2(rd());
-	std::normal_distribution<double> d(0, .02);
+	/*std::random_device rd;
+	std::mt19937 e2(rd());*/
+	std::default_random_engine generator;
+	std::normal_distribution<double> d(0, .002);
 	
 	double nonZeroGaussianRandom(double minMax) {
 	/*	double randv;
@@ -151,8 +152,8 @@ namespace staticTools{
 
 		return randomNumber;*/
 		
-		double result = d(e2);
-		return result;
+		double result = d(generator);
+		return result - .00000157215;
 	}
 
 

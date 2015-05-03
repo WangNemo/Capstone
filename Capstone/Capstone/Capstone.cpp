@@ -39,31 +39,47 @@ int main(int argc, char* argv[], char* envp[]) {
 	FILE* mixF = fopen("Mixed.wav", "wb");
 	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
+	double total = 0;
+	double low = 0;
+	double max = 0;
+	for (int i = 0; i < 10000000; i++) {
+		double rand = staticTools::nonZeroGaussianRandom(0);
+		total += rand;
+		if (rand < low) low = rand;
+		if (rand > max) max = rand;
+	}
+
 	//Oscillator* dead = new Oscillator(.3, .5, .2, 0, 2);
 
 	//Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
 	//Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
-	Oscillator* oscil1 = new Oscillator(.3, .5, .003, -5, 2, 44100);
-	Oscillator* oscil2 = new Oscillator(.5, .3, .001, .2, 1, 44100);
-	Oscillator* oscil3 = new Oscillator(.2, .4, .002, .2, 2, 44100);
-	Oscillator* oscil4 = new Oscillator(.1, 0, 0, .2, 1, 44100);
-	for (int i = 0; i < 44100; i++) {
-		oscil1->update(.1);
-		oscil2->update(.1);
-		oscil3->update(.1);
-		oscil4->update(.1);
+	int size = 44100;
+	double step = .1;
+	Oscillator* oscil1 = new Oscillator(.3, .5, .003, 0, 2, size);
+	Oscillator* oscil2 = new Oscillator(.5, .3, .001, .2, 1, size);
+	Oscillator* oscil3 = new Oscillator(.2, .4, .002, .2, 2, size);
+	Oscillator* oscil4 = new Oscillator(.1, 0, 0, .2, 1, size);
+	GlobalInhibitor* gi = new GlobalInhibitor();
+	for (int i = 0; i < size; i++) {
+		//oscil1->updatePotential(0 - 7.5, step);
+		//oscil2->updatePotential(((oscil3->excitement > .5) + 0) - 1.5, step);
+		//oscil3->updatePotential(((oscil2->excitement > .5) + (oscil4->excitement > .5)) - 1.5, step);
+		//oscil4->updatePotential((oscil3->excitement > .5) - 1.5, step);
 
-		//oscil1->updatePotential(0 - 1.5, .1);
-		//oscil2->updatePotential(((oscil3->excitement > .5) + 0) - 1.5, .1);
-		//oscil3->updatePotential(((oscil2->excitement > .5) + (oscil4->excitement > .5)) - 1.5, .1);
-		//oscil4->updatePotential((oscil3->excitement > .5) - 1.5, .1);
+		bool global = (oscil1->excitement > .5 || oscil2->excitement > .5 || oscil3->excitement > .5 || oscil4->excitement > .5);// ? .5 : 0);
+		gi->update(step, global);
 
-		double global = (oscil1->excitement > .5 || oscil2->excitement > .5 || oscil3->excitement > .5 || oscil4->excitement > .5 ? .5 : 0);
+		//oscil1->updateNeighborWeights(new double[2]{0, 0}, gi ->inhibition);
+		//oscil2->updateNeighborWeights(new double[2]{((double)(oscil3->excitement > .5)), 0}, gi->inhibition);
+		//oscil3->updateNeighborWeights(new double[2]{((double)(oscil2->excitement > .5)), ((double)(oscil4->excitement > .5))}, gi->inhibition);
+		//oscil4->updateNeighborWeights(new double[2]{((double)(oscil3->excitement > .5)), 0}, gi->inhibition);
 
-		oscil1->updateNeighborWeights(new double[2]{0,0}, global);
-		oscil2->updateNeighborWeights(new double[1]{((double)(oscil3->excitement > .5))}, global);
-		oscil3->updateNeighborWeights(new double[2]{((double)(oscil2->excitement > .5)), ((double)(oscil4->excitement > .5))}, global);
-		oscil4->updateNeighborWeights(new double[1]{((double)(oscil3->excitement > .5))}, global);
+		oscil1->update(step);
+		oscil2->update(step);
+		oscil3->update(step);
+		oscil4->update(step);
+
+
 	}
 
 	oscil1->saveWavs("oscil1");

@@ -47,9 +47,9 @@ void Oscillator::update(double stepSize) {
 	prevInhi = inhibition;
 	prevExit = excitement;
 
-	double input = potential > .25 ? inputValue : 0;
+	double input = potential > .25 || inputValue < 0 ? inputValue : 0;
 
-	double adjustment = input + neighborWeights + randomNoise;
+	double adjustment = input + neighborWeights + randomNoise;// input > 0 ? randomNoise : 0;
 
 	if (adjustment <= 0) {
 		int a = 5;
@@ -77,7 +77,7 @@ void Oscillator::updateNeighborWeights(double* weights, double globalInhibition)
 }
 
 void Oscillator::updatePotential(double weight, double stepSize) {
-	double change = (weight >= 0 ? (1 - potential) : 0) - .04 * potential;
+	double change = (weight >= 0 ? (1 - potential) : 0) - .02 * potential;
 	if (!(change <= DBL_MAX && change >= -DBL_MAX)) {
 		int a = 3;
 	}
