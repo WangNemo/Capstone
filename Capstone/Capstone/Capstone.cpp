@@ -40,8 +40,8 @@ int main(int argc, char* argv[], char* envp[]) {
 	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 
 	//double total = 0;
-	//double low = 0;
-	//double max = 0;
+	//double low = 10;
+	//double max = -5;
 	//for (int i = 0; i < 10000000; i++) {
 	//	double rand = staticTools::nonZeroGaussianRandom(0);
 	//	total += rand;

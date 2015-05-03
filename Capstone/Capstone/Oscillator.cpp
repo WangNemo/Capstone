@@ -42,7 +42,7 @@ excitement(excitement), inhibition(inhibition), noise(noise), inputValue(inputVa
 }
 
 void Oscillator::update(double stepSize) {
-	double randomNoise = 0;// staticTools::nonZeroGaussianRandom(.02);
+	double randomNoise = staticTools::nonZeroGaussianRandom(.02);
 	
 	prevInhi = inhibition;
 	prevExit = excitement;

@@ -139,7 +139,7 @@ namespace staticTools{
 	/*std::random_device rd;
 	std::mt19937 e2(rd());*/
 	std::default_random_engine generator;
-	std::normal_distribution<double> d(0, .002);
+	std::normal_distribution<double> d(-.02, .02);
 	
 	double nonZeroGaussianRandom(double minMax) {
 	/*	double randv;
@@ -153,7 +153,7 @@ namespace staticTools{
 		return randomNumber;*/
 		
 		double result = d(generator);
-		return result - .00000157215;
+		return result;
 	}
 
 
