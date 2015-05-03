@@ -1,26 +1,25 @@
 #pragma once
 #include <math.h>
 #include "Connection.h"
-
-
-class Connection;
-
+#include "Definitions.h"
 
 class Oscillator
 {
 public:
+	double prevInhi, prevExit;
 	double excitement;
 	double inhibition;
-	double randomNoise;
+	double noise;
 	double neighborWeights = 0;
 	double inputValue;
-	Connection* neighbors;
-	int numNeighbors;
+	double potential = 1;
+	int neighbors;
 
 	Oscillator();
-	Oscillator(double excitement, double inhibition, double noise, double inputValue);
-	void update();
-	void updateNeighborWeights();
+	Oscillator(double excitement, double inhibition, double noise, double inputValue, int neighbors);
+	void update(double stepSize);
+	void updateNeighborWeights(double* weights, double globalInhibition);
+	void updatePotential(double weight, double stepSize);
 	~Oscillator();
 };
 

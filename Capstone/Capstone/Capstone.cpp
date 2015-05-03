@@ -13,9 +13,13 @@
 #include "crossCorrelationSegmentation.h"
 #include "IdealBinaryMask.h"
 #include "Oscillator.h"
+#include <ctime>
 #include "LEGION.h"
 
 int main(int argc, char* argv[], char* envp[]) {
+	srand(static_cast <unsigned> (time(0)));
+
+
 	print argv[0] end;
 	print argv[1] end;
 	print argv[2] end;
@@ -39,6 +43,8 @@ int main(int argc, char* argv[], char* envp[]) {
 	Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
 	
 	LEGION* l = new LEGION(*coresdfa.T_FGrid);
+	l->run(60);
+
 	return 0;
 	//for (int i = 7; i >= 0; i--) {
 	//	FILE* mixF = fopen(("corr" + std::to_string(8 - i)+  ".wav").c_str(), "wb");

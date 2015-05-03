@@ -120,5 +120,6 @@ namespace staticTools{
 	Signal* normalize(short* data, int dataSize);
 	Signal* combine(Signal& s1, Signal& s2);
 	double standardDeviation(Signal& signal, double mean);
+	double nonZeroGaussianRandom(double minMax);
 }
 

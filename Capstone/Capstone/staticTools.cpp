@@ -136,6 +136,18 @@ namespace staticTools{
 		return sqrt(sum / signal.SAMPLES);
 	}
 
+	double nonZeroGaussianRandom(double minMax) {
+		double randv;
+		do{
+			randv = rand();
+		} while (randv == 0.0);
+
+		double randlog = log((double)randv / RAND_MAX);
+		double randomNumber = pow(-2 * randlog, .5) * cos(2 * PI * rand()) * minMax - minMax;
+
+		return randomNumber;
+	}
+
 
 	//void readChunk(FILE* source, char* chunkName, byte* chunkBuffer) {
 	//	fseek(source, 0, SEEK_SET);

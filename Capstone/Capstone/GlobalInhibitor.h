@@ -5,7 +5,7 @@ public:
 	double inhibition = 0;
 
 	GlobalInhibitor();
-	void update(bool isOscOverThreshold);
+	void update(double stepSize, bool isOscOverThreshold);
 	~GlobalInhibitor();
 };
 

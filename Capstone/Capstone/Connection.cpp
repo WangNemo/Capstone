@@ -7,10 +7,10 @@
 
 	double Connection::getWeightOne() {
 		return (one->excitement > threshold) ?
-		weight : 0;
+			weight : 0;
 	}
 
 	double Connection::getWeightTwo() {
 		return (two->excitement > threshold) ?
-		weight : 0;
+			weight : 0;
 	}

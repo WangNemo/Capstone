@@ -6,9 +6,9 @@ GlobalInhibitor::GlobalInhibitor()
 {
 }
 
-void GlobalInhibitor::update(bool isOscOverThreshold) {
+void GlobalInhibitor::update(double stepSize, bool isOscOverThreshold) {
 	double inhibitionChange = ((int)isOscOverThreshold) - inhibition;
-	inhibition += inhibitionChange * .1;
+	inhibition += inhibitionChange * stepSize;
 }
 
 
