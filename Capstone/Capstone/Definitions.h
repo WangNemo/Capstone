@@ -11,16 +11,16 @@
 
 #define PI 3.1415926535897932384626433832795
 #define print std::cout<<
-#define end <<std::endl
+#define endl <<std::endl
 
 #define SPIKING 1
 #define SPIKE_THRESHOLD -1
 #define MINIMUM_ACTIVITY -2
 #define STEP .1
-#define MAJORITY_SPIKE_WEIGHT 4;
-#define SINGLE_SPIKE_WEIGHT .1;
-#define MUTUAL_EXCITEMENT .5;
-#define MUTUAL_INHIBITION - .5;
+#define MAJORITY_SPIKE_WEIGHT 4
+#define SINGLE_SPIKE_WEIGHT .1
+#define MUTUAL_EXCITEMENT .5
+#define MUTUAL_INHIBITION -.5
 
 
 double maxInArray(double* darray, int size); 

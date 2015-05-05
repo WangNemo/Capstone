@@ -4,29 +4,29 @@
 
 Correlogram::Correlogram(SignalBank& cochleagram, int frameSize, int frameOffset)
 {
-	print "correlating" end;
+	print "correlating" endl;
 	int frames = (cochleagram.SAMPLES - frameSize * cochleagram.SAMPLE_RATE / 1000) / (frameOffset * cochleagram.SAMPLE_RATE / 1000);
-	print frames end;
+	print frames endl;
 	int samplesPerFrame = (frameSize * cochleagram.SAMPLE_RATE / 1000);
 	int lagSamples = (frameOffset *  cochleagram.SAMPLE_RATE) / 1000;
 	
 	T_FGrid = new SignalGrid(frames, cochleagram.CHANNELS, cochleagram.SAMPLES, cochleagram.SAMPLE_RATE, frameSize, frameOffset, frameSize - frameOffset);
-	summaryCorrelogram = new SignalBank(frames, cochleagram.SAMPLE_RATE, cochleagram.SAMPLES);
+	fundamentialFrequencyTime = new int[frames];
 	HanningWindow han(samplesPerFrame);
 	for (int f = 0; f < frames; f++) {
 		SignalBank* frequencyBank = new SignalBank(cochleagram.CHANNELS, cochleagram.SAMPLE_RATE, cochleagram.SAMPLES);
-		Signal* summary = new Signal(lagSamples, cochleagram.SAMPLE_RATE);
+		Signal summary(lagSamples, cochleagram.SAMPLE_RATE);
 		for (int i = 0; i < cochleagram.CHANNELS; i++) {
 			Signal* cor = cochleagram[i].autoCorrelate(frameOffset, f * frameOffset, *han.window, activityThreshold);// .99);
 			frequencyBank->add(cor, i);
 			for (int sample = 0; sample < lagSamples; sample++) {
-				(*summary)[sample] += (*cor)[sample];
+				summary[sample] += (*cor)[sample];
 			}
 		}
 		T_FGrid->addBank(frequencyBank, f);
-		summary->normalize();
-		summaryCorrelogram->add(summary, f);
-		print '\t' << f end;
+		summary.normalize();
+		fundamentialFrequencyTime[f] = summary.sampleOfHighestPeak(2);
+		print '\t' << f endl;
 	}
 }
 

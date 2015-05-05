@@ -18,7 +18,7 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	cochleagram = basilarMembrane;
 
 	for (int i = 0; i < CHANNELS; i++) {
-		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) end;
+		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) endl;
 		//(*cochleagram)[i].normalize();
 
 		(*basilarMembrane)[i].scale(100);
@@ -26,7 +26,7 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	delete bank;
 	cochleagram = meddis->filter(*basilarMembrane);
 	for (int i = 0; i < CHANNELS; i++) {
-		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) end;
+		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) endl;
 		(*cochleagram)[i].zeroMeanStandardVariance();
 	}
 	delete meddis;

@@ -33,7 +33,7 @@ void Signal::normalize() {
 			largest = sam;
 		}
 	}
-	//print largest end;
+	//print largest endl;
 	for (int sample = 0; sample < SAMPLES; sample++) {
 		double sam = signal[sample];
 		signal[sample] = sam / largest;
@@ -105,7 +105,7 @@ Signal* Signal::autoCorrelate(int lagMS, int startingMS, Signal& window, double 
 	Signal* correlation = new Signal(lagSamples, SAMPLE_RATE);
 
 	if (noTimeDelay < threshold) {
-		//print noTimeDelay end;
+		//print noTimeDelay endl;
 		return correlation;
 	}
 
@@ -131,6 +131,19 @@ double Signal::getCorrelation(int startingSample, Signal& window, int lag) {
 	double sample = 0;
 	for (int i = 0; i < window.SAMPLES; i++) {
 		sample += signal[i + startingSample] * signal[startingSample + i + lag] * window[i];
+	}
+	return sample;
+}
+
+int Signal::sampleOfHighestPeak(int millis) {
+	int start = (millis * SAMPLE_RATE) / 1000;
+	double max = -100;
+	int sample = -1;
+	for (int i = start; i < SAMPLES; i++) {
+		if (signal[i] > max) {
+			max = signal[i];
+			sample = i;
+		}
 	}
 	return sample;
 }

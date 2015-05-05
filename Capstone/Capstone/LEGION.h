@@ -5,12 +5,13 @@
 #include "Connection.h"
 #include "Segment.h"
 #include <vector>
+#include "Correlogram.h"
 
 class LEGION
 {
 private:
-	void initializeGrid(SignalGrid& correlogram);
-	void createConnections(SignalGrid& correlogram);
+	void initializeGrid();
+	void createConnections();
 	void findLeaders();
 	Oscillator* maxExcitement();
 public:
@@ -22,15 +23,17 @@ public:
 	int largestSegment = -1;
 	int numInLargestSegment = -1;
 	double crossCorrelationThreshold = .95;
+	Correlogram& correlogram;
 	Connection*** timeConnections;
 	Connection*** freqConnections;
 	Oscillator*** neuralGrid;
 	intGrid* segmentGrid;
-	std::vector<Segment*>*  segments;
+	std::vector<Segment>*  segments;
 
-	LEGION(SignalGrid& correlogram);
+	LEGION(Correlogram& correlogram);
 	void run();
 	void allStep(int spiked);
+	boolGrid* segmentsAsMask();
 	void saveSegmentGrid(std::string location);
 	void markLargestSegment();
 	~LEGION();

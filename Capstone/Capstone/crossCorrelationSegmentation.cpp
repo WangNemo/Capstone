@@ -5,13 +5,13 @@
 crossCorrelationSegmentation::crossCorrelationSegmentation(SignalGrid& correlogram)
 	: correlogram(correlogram)
 {
-	print "cross correlation" end;
+	print "cross correlation" endl;
 	segmentGrid = new intGrid(correlogram.CHANNELS, correlogram.FRAMES, UNASSIGNED);
 	for (int row = 0; row < correlogram.CHANNELS; row++) {
 		for (int col = 0; col < correlogram.FRAMES; col++) {
 			traverse(row, col);
 		}
-		print row end;
+		print row endl;
 	}
 }
 
@@ -111,7 +111,7 @@ boolGrid* crossCorrelationSegmentation::getBinaryMask(int group) {
 		binaryMask[row] = new bool[segmentGrid->COLUMNS];
 		for (int col = 0; col < segmentGrid->COLUMNS; col++) {
 			binaryMask[row][col] = (*segmentGrid)(row, col) == group;
-			//if(binaryMask[row][col]) print group end;
+			//if(binaryMask[row][col]) print group endl;
 		}
 	}
 	boolGrid* idealBinaryMask1 = new boolGrid(binaryMask, segmentGrid->ROWS, segmentGrid->COLUMNS);

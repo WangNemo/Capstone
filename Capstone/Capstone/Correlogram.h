@@ -9,7 +9,7 @@ public:
 	double activityThreshold = .75;
 
 	SignalGrid* T_FGrid;
-	SignalBank* summaryCorrelogram;
+	int* fundamentialFrequencyTime;
 	Correlogram(SignalBank& cochleagram, int frameSize, int frameOffset);
 	boolGrid* toBinaryMask();
 	~Correlogram();

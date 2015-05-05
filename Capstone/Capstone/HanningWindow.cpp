@@ -7,7 +7,7 @@ HanningWindow::HanningWindow(int size) : SIZE(size)
 	window = new Signal(size, 0);
 	for (int i = 0; i < size; i++) {
 		(*window)[i] = .5 * (1 - cos(2 * PI * i / (size - 1)));
-		//print (*window)[i] end;
+		//print (*window)[i] endl;
 	}
 }
 

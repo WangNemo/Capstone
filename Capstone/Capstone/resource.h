@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+//{{NO_DEPendlENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by Capstone.rc
 

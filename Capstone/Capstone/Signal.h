@@ -24,6 +24,7 @@ public:
 	Signal* minus(Signal& other);
 	Signal* autoCorrelate(int lagMS, int startingMS, Signal& window, double threshold);
 	double crossCorrelate(Signal& other);
+	int sampleOfHighestPeak(int millis);
 	~Signal();
 };
 

@@ -23,13 +23,13 @@ IdealBinaryMask::IdealBinaryMask(Signal& signal1, Signal& signal2) : signal1(sig
 
 
 	for (int i = 0; i < powerGrid2->ROWS; i++) {
-		print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) end;
-		print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) end;
+		print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) endl;
+		print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) endl;
 	}
 
 
-	////print powerGrid->COLUMNS << '\t' << powerGrid->ROWS end;
-	////print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS end;
+	////print powerGrid->COLUMNS << '\t' << powerGrid->ROWS endl;
+	////print powerGrid2->COLUMNS << '\t' << powerGrid2->ROWS endl;
 
 
 	doubleGrid* decibelGrid = gridOfRelativeDecibels(*powerGrid, *powerGrid2); //simpleRatio(*powerGrid, *powerGrid2);//diffGrid(*powerGrid, *powerGrid2);//gridOfRelativeDecibels(*powerGrid, *powerGrid2);
@@ -38,8 +38,8 @@ IdealBinaryMask::IdealBinaryMask(Signal& signal1, Signal& signal2) : signal1(sig
 	delete powerGrid2;
 
 	for (int i = 0; i < decibelGrid->ROWS; i++) {
-		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
-		print minInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << maxInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << avgInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) end;
+		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) endl;
+		print minInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << maxInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << avgInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) endl;
 	}
 
 
@@ -48,7 +48,7 @@ IdealBinaryMask::IdealBinaryMask(Signal& signal1, Signal& signal2) : signal1(sig
 	delete decibelGrid;
 	delete decibelGrid2;
 	/*for (int i = 0; i < decibelGrid->ROWS; i++) {
-		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) end;
+		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) endl;
 	}*/
 
 
@@ -60,9 +60,15 @@ Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask) {
 	Signal* mixed = staticTools::combine(signal1, signal2);
 	mixed->normalize();
 
-	FilterBank bank(mask->ROWS, 100, 8000, 44100);
-	SignalBank* mixedBank = bank.filter(*mixed);
+	Signal* result = applyIdealBinaryMask(mask, mixed);
 	delete mixed;
+	return result;
+}
+
+Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal) {
+
+	FilterBank bank(mask->ROWS, 100, 8000, 44100);
+	SignalBank* mixedBank = bank.filter(*signal);
 
 
 	for (int i = 0; i < mask->ROWS; i++) {
@@ -86,6 +92,15 @@ void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask) {
 	delete result;
 }
 
+void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask, Signal* signal) {
+	Signal* result = applyIdealBinaryMask(mask, signal);
+	result->normalize();
+	FILE* results = fopen(name.c_str(), "wb");
+	fwrite(result->signal, sizeof(double), result->SAMPLES, results);
+	fclose(results);
+	delete result;
+}
+
 void IdealBinaryMask::writeBinaryMask(std::ostream& os, boolGrid* mask) {
 	for (int i = mask->ROWS - 1; i >= 0; --i)
 	{
@@ -100,8 +115,6 @@ void IdealBinaryMask::writeBinaryMask(std::ostream& os, boolGrid* mask) {
 		os << "\n";
 	}
 }
-
-
 
 doubleGrid* IdealBinaryMask::diffGrid(doubleGrid& powerGrid1, doubleGrid& powerGrid2) {
 	int combinedRows = MIN(powerGrid1.ROWS, powerGrid2.ROWS);

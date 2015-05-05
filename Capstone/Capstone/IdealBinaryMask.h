@@ -22,6 +22,8 @@ public:
 	IdealBinaryMask(Signal& sig1, Signal& sig2);
 	Signal* applyIdealBinaryMask(boolGrid* mask);
 	void saveIdealBinaryMask(std::string name, boolGrid* mask);
+	static Signal* applyIdealBinaryMask(boolGrid* mask, Signal* signal);
+	static void saveIdealBinaryMask(std::string name, boolGrid* mask, Signal* signal);
 	static void writeBinaryMask(std::ostream& os, boolGrid* mask);
 	~IdealBinaryMask();
 };

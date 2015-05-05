@@ -20,7 +20,7 @@ LEGIONold::LEGIONold(SignalGrid& correlogram) : FRAMES(correlogram.FRAMES), CHAN
 }
 
 void LEGIONold::initializeGrid(SignalGrid& correlogram){
-	print "initializing" end;
+	print "initializing" endl;
 	double powerThreshold = .75;
 
 	neuralGrid = new OscillatorOld**[correlogram.CHANNELS];
@@ -46,7 +46,7 @@ void LEGIONold::initializeGrid(SignalGrid& correlogram){
 }
 
 void LEGIONold::createConnections(SignalGrid& correlogram) {
-	print "linking" end;
+	print "linking" endl;
 	timeConnections = new ConnectionOld**[correlogram.CHANNELS];
 	freqConnections = new ConnectionOld**[correlogram.CHANNELS - 1];
 	double crosses = 0;
@@ -162,7 +162,7 @@ void LEGIONold::saveActiveText(std::string flieName) {
 
 
 void LEGIONold::run(int phases) {
-	print "oscilating " << phases end;
+	print "oscilating " << phases endl;
 	int steps = phases * (pointsPerPhase * 10);
 	Signal* sig = new Signal(steps, 44100);
 	int realStep = 0;
@@ -179,13 +179,13 @@ void LEGIONold::run(int phases) {
 				if (active > maxJump) maxJump = active;
 				if (active > 5 && !printedSub) {
 					printedSub = true;
-					print "\t\t" << active end;
+					print "\t\t" << active endl;
 					saveActiveText(std::to_string(phase) + "spikes" + std::to_string(active) + ".txt");
 				}
 			}
 		}
-		print "\t\t\tmax" << maxJump end;
-		print '\t' << phase end;
+		print "\t\t\tmax" << maxJump endl;
+		print '\t' << phase endl;
 
 	}
 	sig->save(std::string("globalOscy.wav"));

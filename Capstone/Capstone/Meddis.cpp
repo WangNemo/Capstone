@@ -4,7 +4,7 @@
 
 SignalBank* Meddis::filter(SignalBank& bm)
 {
-	print "meddis" end;
+	print "meddis" endl;
 	//% initialize inner hair cells
 	double processAdj = PROCESS_RATE / bm.SAMPLE_RATE;
 	double replenishAdj = REPLENISH_RATE / bm.SAMPLE_RATE;

@@ -56,7 +56,7 @@ doubleGrid* SignalGrid::toSmrPower() {
 		}
 	}
 	/*for (int i = 0; i < FRAMES; i++) {
-		print minInArray(powerGrid[i], CHANNELS) << '\t' << maxInArray(powerGrid[i], CHANNELS) << '\t' << avgInArray(powerGrid[i], CHANNELS) end;
+		print minInArray(powerGrid[i], CHANNELS) << '\t' << maxInArray(powerGrid[i], CHANNELS) << '\t' << avgInArray(powerGrid[i], CHANNELS) endl;
 	}*/
 	return new doubleGrid(powerGrid, CHANNELS, FRAMES);
 }
@@ -72,7 +72,7 @@ Signal* SignalGrid::resynthesize(boolGrid& mask) {
 			if (!(mask)(channel, frame))
 				deleteCell(frame, channel);
 			/*else
-				print "frame: " << frame << "\tchannel: " << channel end;*/
+				print "frame: " << frame << "\tchannel: " << channel endl;*/
 		}
 	}
 	for (int frame = mask.COLUMNS; frame < FRAMES; frame++) {

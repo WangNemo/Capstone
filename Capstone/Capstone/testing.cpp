@@ -15,7 +15,7 @@ namespace test{
 			double other = otherFilterResults[i];
 			double diff = my - other;
 			if (abs(diff) > .001) {
-				print diff end;
+				print diff endl;
 			}
 		}
 	}
@@ -36,7 +36,7 @@ namespace test{
 			for (int j = 0; j < samples; j++) {
 				double diff = (*cochleagram)[i][j] - correctCoch[i][j];
 				if (abs(diff) > .000001)
-					print i << '\t' << j << '\t' << diff end;
+					print i << '\t' << j << '\t' << diff endl;
 			}
 		}
 	}

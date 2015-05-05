@@ -26,7 +26,7 @@ GammatoneFilter::GammatoneFilter(int frequencyCenter, double bandwidth, int samp
 }
 
 Signal* GammatoneFilter::filter(Signal& signal) {
-	//print frequencyCenter << '\t' << radianSize / ((PI * 2) / signal.SAMPLE_RATE) end;
+	//print frequencyCenter << '\t' << radianSize / ((PI * 2) / signal.SAMPLE_RATE) endl;
 	Signal* filteredSignal = new Signal(signal.SAMPLES, signal.SAMPLE_RATE);//new double[samples];
 
 	Complex freqShift(1, 0);

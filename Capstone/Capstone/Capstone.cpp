@@ -13,14 +13,15 @@
 #include "IdealBinaryMask.h"
 #include <ctime>
 #include "LEGION.h"
+#include "GroupingNetwork.h"
 
 int main(int argc, char* argv[], char* envp[]) {
 	srand(static_cast <unsigned> (time(0)));
 
 
-	print argv[0] end;
-	print argv[1] end;
-	print argv[2] end;
+	print argv[0] endl;
+	print argv[1] endl;
+	print argv[2] endl;
 	std::string fileName(argv[1]);
 	std::string fileName2(argv[2]);
 	Signal* signal1 = staticTools::readWav(fileName);
@@ -32,7 +33,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	signal2->trim(shorter);
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
-	mixed->trim(44100);
+	//mixed->trim(44100);
 	mixed->normalize();
 	FILE* mixF = fopen("Mixed.wav", "wb");
 	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
@@ -54,9 +55,16 @@ int main(int argc, char* argv[], char* envp[]) {
 	//boolGrid* mask41 = coresdfa.toBinaryMask();
 	//IdealBinaryMask::writeBinaryMask(ofsas, mask41);
 
-	LEGION* lo = new LEGION(*coresdfa.T_FGrid);
+	LEGION* lo = new LEGION(coresdfa);
 	lo->run();
+	lo->markLargestSegment();
+	IdealBinaryMask::saveIdealBinaryMask("LEGION.wav", lo->segmentsAsMask(), mixed);
 
+	GroupingNetwork* level2 = new GroupingNetwork(*lo);
+	level2->run();
+
+	IdealBinaryMask::saveIdealBinaryMask("background.wav", level2->background, mixed);
+	IdealBinaryMask::saveIdealBinaryMask("foreground.wav", level2->foreground, mixed);
 
 	return 0;
 	//for (int i = 7; i >= 0; i--) {
@@ -93,7 +101,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	//signal1->trim(4410);
 	//Cochleagram* sigMix = new Cochleagram(*signal1, sampleRate);
 	Correlogram* correl = new Correlogram(*cochMix->cochleagram, 20, 10);
-	print correl->T_FGrid->FRAMES end;
+	print correl->T_FGrid->FRAMES endl;
 	crossCorrelationSegmentation segmentation(*correl->T_FGrid);
 	
 	//boolGrid* idealBinaryMask = correl->toBinaryMask();
@@ -113,10 +121,10 @@ int main(int argc, char* argv[], char* envp[]) {
 
 	segmentation.writeSegmentText("Map.txt");
 
-	//print "groups: " << segmentation.groups end;
+	//print "groups: " << segmentation.groups endl;
 	////SignalBank resynthBank(segmentation.groups - 1, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
 	//for (int group = 1; group < segmentation.groups - 1; group++) {
-	//	print group end;
+	//	print group endl;
 	//	boolGrid* idealBinaryMask = segmentation.getBinaryMask(group);
 
 	//	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);
@@ -133,7 +141,7 @@ int main(int argc, char* argv[], char* envp[]) {
 
 	//SignalBank resynthBank(segmentation->ROWS, mixedBank->SAMPLE_RATE, mixedBank->SAMPLES);
 	//for (int group = 1; group < segmentation.groups - 1; group++) {
-	//	print group end;
+	//	print group endl;
 	//	boolGrid* idealBinaryMask = segmentation.getBinaryMask(group);
 
 	//	SignalGrid mixedGrid = SignalGrid(*mixedBank, .020*sampleRate, .010*sampleRate);

@@ -53,7 +53,7 @@ namespace staticTools{
 
 		for (int i = 0; i < dataSize; i++) {
 			(*sig)[i] = data[i] / largestSample;
-			//print (*sig)[i] << '\t' << data[i] end;
+			//print (*sig)[i] << '\t' << data[i] endl;
 		}
 
 		delete[] data;
@@ -99,7 +99,7 @@ namespace staticTools{
 
 	Signal* readWav(std::string& fileName) {
 		FILE* file = fopen(fileName.c_str(), "rb");
-		print file << fileName end;
+		print file << fileName endl;
 		int dataSize = seekToData(file);
 		dataSize = dataSize / 2; // for 8 bit ints
 		short* data = new short[dataSize];
