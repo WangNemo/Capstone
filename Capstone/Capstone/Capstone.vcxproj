@@ -89,6 +89,8 @@
     <ClInclude Include="GammatoneFilter.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="GlobalInhibitor.h" />
+    <ClInclude Include="GroupingNetwork.h" />
+    <ClInclude Include="GroupingOscillator.h" />
     <ClInclude Include="HanningWindow.h" />
     <ClInclude Include="IdealBinaryMask.h" />
     <ClInclude Include="LEGION%28old%29.h" />
@@ -97,6 +99,7 @@
     <ClInclude Include="Oscillator%28old%29.h" />
     <ClInclude Include="Oscillator.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Segment.h" />
     <ClInclude Include="Signal.h" />
     <ClInclude Include="SignalBank.h" />
     <ClInclude Include="SignalGrid.h" />
@@ -115,6 +118,8 @@
     <ClCompile Include="FilterBank.cpp" />
     <ClCompile Include="GammatoneFilter.cpp" />
     <ClCompile Include="GlobalInhibitor.cpp" />
+    <ClCompile Include="GroupingNetwork.cpp" />
+    <ClCompile Include="GroupingOscillator.cpp" />
     <ClCompile Include="HanningWindow.cpp" />
     <ClCompile Include="IdealBinaryMask.cpp" />
     <ClCompile Include="LEGION%28old%29.cpp" />
@@ -123,6 +128,7 @@
     <ClCompile Include="mexFunction.cpp" />
     <ClCompile Include="Oscillator%28old%29.cpp" />
     <ClCompile Include="Oscillator.cpp" />
+    <ClCompile Include="Segment.cpp" />
     <ClCompile Include="Signal.cpp" />
     <ClCompile Include="SignalBank.cpp" />
     <ClCompile Include="SignalGrid.cpp" />

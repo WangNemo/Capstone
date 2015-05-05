@@ -17,6 +17,10 @@
 #define SPIKE_THRESHOLD -1
 #define MINIMUM_ACTIVITY -2
 #define STEP .1
+#define MAJORITY_SPIKE_WEIGHT 4;
+#define SINGLE_SPIKE_WEIGHT .1;
+#define MUTUAL_EXCITEMENT .5;
+#define MUTUAL_INHIBITION - .5;
 
 
 double maxInArray(double* darray, int size); 
@@ -36,6 +40,15 @@ struct Complex {
 	}
 
 	Complex() {}
+};
+
+struct RowColumn {
+	int row;
+	int col;
+
+	RowColumn() {}
+	RowColumn(int row, int col)
+		:row(row), col(col) {}
 };
 
 class doubleGrid {
