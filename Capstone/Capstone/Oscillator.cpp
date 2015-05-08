@@ -69,6 +69,7 @@ void Oscillator::kill() {
 	leader = false;
 	input = -5;
 	excitement = -5;
+	segment = -1;
 	if (wUp > 0 && up != nullptr && up->isSpiking()) {
 		up->kill();
 	}

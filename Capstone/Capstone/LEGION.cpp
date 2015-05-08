@@ -4,7 +4,7 @@
 
 LEGION::LEGION(Correlogram& correlogram) : FRAMES(correlogram.T_FGrid->FRAMES), CHANNELS(correlogram.T_FGrid->CHANNELS), correlogram(correlogram)
 {
-	segments = new std::vector<Segment>();
+	segments = new std::vector<Segment*>();
 	segmentGrid = new intGrid(CHANNELS, FRAMES, -1);
 	initializeGrid();
 	createConnections();
@@ -13,7 +13,6 @@ LEGION::LEGION(Correlogram& correlogram) : FRAMES(correlogram.T_FGrid->FRAMES), 
 
 void LEGION::initializeGrid() {
 	print "initializing" endl;
-	double powerThreshold = .75;
 
 	neuralGrid = new Oscillator**[CHANNELS];
 	for (int channel = 0; channel < CHANNELS; channel++) {
@@ -22,7 +21,7 @@ void LEGION::initializeGrid() {
 			double randa = rand();
 			double randX = randa / RAND_MAX + MINIMUM_ACTIVITY;
 			neuralGrid[channel][frame] = new Oscillator(randX,
-				(*correlogram.T_FGrid)[frame][channel][0] > powerThreshold ? .2 : -5);
+				(*correlogram.T_FGrid)[frame][channel][0] > correlogram.activityThreshold ? .2 : -5);
 		}
 	}
 }
@@ -35,7 +34,7 @@ void LEGION::createConnections() {
 
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		//timeConnections[channel] = new Connection*[correlogram.FRAMES - 1];
-		if (channel < CHANNELS - 1)
+		//if (channel < CHANNELS - 1)
 			//freqConnections[channel] = new Connection*[correlogram.FRAMES];
 
 		for (int frame = 0; frame < FRAMES; frame++) {
@@ -135,7 +134,7 @@ void LEGION::allStep(int spiked) {
 			}
 		}
 	}
-	(*segments).push_back(*segment);
+	(*segments).push_back(segment);
 }
 
 void LEGION::markLargestSegment() {
@@ -166,4 +165,20 @@ void LEGION::saveSegmentGrid(std::string location) {
 
 LEGION::~LEGION()
 {
+	for (int i = 0; i < numSegments; i++) {
+		(*segments)[i]->deleteSeg();
+		delete ((*segments)[i]);
+	}
+	segments->clear();
+	delete segments;
+
+	for (int channel = 0; channel < CHANNELS; channel++) {
+		for (int frame = 0; frame < FRAMES; frame++) {
+			delete neuralGrid[channel][frame];
+		}
+		delete[] neuralGrid[channel];
+	}
+	delete[] neuralGrid;
+
+	delete segmentGrid;
 }

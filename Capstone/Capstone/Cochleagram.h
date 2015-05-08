@@ -7,7 +7,7 @@ class Cochleagram
 {
 private:
 public:
-	static const int CHANNELS = 128, MAX_FREQ = 8000, MIN_FREQ = 100;
+	static const int CHANNELS = 128, MAX_FREQ = 5000, MIN_FREQ = 80;
 	SignalBank* cochleagram;
 	Cochleagram(Signal& signal, int sampleRate);
 	~Cochleagram();

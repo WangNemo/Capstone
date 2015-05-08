@@ -8,7 +8,7 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	FilterBank* bank = new FilterBank(CHANNELS, MIN_FREQ, MAX_FREQ, sampleRate);
 	
 
-	Meddis* meddis = new Meddis();
+	
 	SignalBank* basilarMembrane = bank->filter(signal);
 
 	/*for (int i = 0; i < CHANNELS; i++) {
@@ -24,6 +24,8 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 		(*basilarMembrane)[i].scale(100);
 	}
 	delete bank;
+
+	Meddis* meddis = new Meddis();
 	cochleagram = meddis->filter(*basilarMembrane);
 	for (int i = 0; i < CHANNELS; i++) {
 		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) endl;

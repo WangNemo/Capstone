@@ -29,4 +29,5 @@ double& HanningWindow::operator[](int sample) {
 
 HanningWindow::~HanningWindow()
 {
+	delete window;
 }

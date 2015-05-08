@@ -43,4 +43,5 @@ void GroupingOscillator::update() {
 
 GroupingOscillator::~GroupingOscillator()
 {
+
 }

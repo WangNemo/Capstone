@@ -15,7 +15,6 @@ private:
 public:
 	GammatoneFilter** bank;
 	const int CHANNELS, LOW, HIGH, SAMPLE_RATE;
-	SignalBank* channels;
 
 	FilterBank(int channels, int lowFreq, int highFreq, int sampleRate);
 	SignalBank* filter(Signal& signal);

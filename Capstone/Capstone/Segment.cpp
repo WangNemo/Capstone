@@ -7,14 +7,13 @@ Segment::Segment(int segmentSize) : segmentSize(segmentSize)
 	segment = new RowColumn*[segmentSize];
 }
 
-int segmentSize;
-RowColumn** segment;
-
 void Segment::add(RowColumn* pair) {
-	if (inserted < 0 || inserted >= segmentSize) {
-		print "a";
+	if (inserted < segmentSize) {
+		segment[inserted++] = pair;
 	}
-	segment[inserted++] = pair;
+	else {
+		print "Too many in seg" endl;
+	}
 }
 
 int Segment::numActive(GroupingOscillator*** neuralGrid) {
@@ -26,6 +25,13 @@ int Segment::numActive(GroupingOscillator*** neuralGrid) {
 		}
 	}
 	return active;
+}
+
+void Segment::deleteSeg() {
+	for (int i = 0; i < segmentSize; i++) {
+		delete segment[i];
+	}
+	delete[] segment;
 }
 
 Segment::~Segment()

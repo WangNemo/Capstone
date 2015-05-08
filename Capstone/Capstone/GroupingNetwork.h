@@ -6,11 +6,14 @@
 
 class GroupingNetwork
 {
+private:
+	GroupingOscillator* deadOscillator;
 public:
 	int CHANNELS, FRAMES;
 	GroupingOscillator*** neuralGrid;
 	boolGrid* foreground;
 	boolGrid* background;
+	double freqMatchThreshold = .95;
 
 	LEGION& legion;
 	GroupingNetwork(LEGION& legion);

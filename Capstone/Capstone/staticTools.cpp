@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include <random>
+#include <Windows.h>
+#include <vector>
+#include <locale>
+#include <codecvt>
 
 #include "Definitions.h"
 
@@ -105,10 +109,10 @@ namespace staticTools{
 		short* data = new short[dataSize];
 		fread(data, sizeof(short), dataSize, file);
 		fclose(file);
-		Signal* sig = new Signal(dataSize, 44100);
-		for (int i = 0; i < dataSize; i++) {
-			(*sig)[i] = data[i];
-		}
+		//Signal* sig = new Signal(dataSize, 44100);
+		//for (int i = 0; i < dataSize; i++) {
+		//	(*sig)[i] = data[i];
+		//}
 		return normalize(data, dataSize);
 	}
 
@@ -154,6 +158,49 @@ namespace staticTools{
 		
 		double result = d(generator);
 		return result;
+	}
+
+
+	std::vector<std::string> get_all_files_names_within_folder(std::string folder2)
+	{
+		std::wstring folder = s2ws(folder2);
+		std::vector<std::string> out;
+		HANDLE dir;
+		WIN32_FIND_DATA file_data;
+
+		if ((dir = FindFirstFile((folder + std::wstring(L"/*")).c_str(), &file_data)) == INVALID_HANDLE_VALUE)
+			return out; /* No files found */
+
+		do {
+			const std::wstring file_name = file_data.cFileName;
+			const std::wstring full_file_name = folder + L"/" + file_name;
+			const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+
+			if (file_name[0] == '.')
+				continue;
+
+			if (is_directory)
+				continue;
+			out.push_back(ws2s(file_name));
+		} while (FindNextFile(dir, &file_data));
+
+		return out;
+	}
+
+	std::wstring s2ws(const std::string& str)
+	{
+		typedef std::codecvt_utf8<wchar_t> convert_typeX;
+		std::wstring_convert<convert_typeX, wchar_t> converterX;
+
+		return converterX.from_bytes(str);
+	}
+
+	std::string ws2s(const std::wstring& wstr)
+	{
+		typedef std::codecvt_utf8<wchar_t> convert_typeX;
+		std::wstring_convert<convert_typeX, wchar_t> converterX;
+
+		return converterX.to_bytes(wstr);
 	}
 
 

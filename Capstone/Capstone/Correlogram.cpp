@@ -26,7 +26,10 @@ Correlogram::Correlogram(SignalBank& cochleagram, int frameSize, int frameOffset
 		T_FGrid->addBank(frequencyBank, f);
 		summary.normalize();
 		fundamentialFrequencyTime[f] = summary.sampleOfHighestPeak(2);
+	#ifdef _DEBUG
 		print '\t' << f endl;
+	#endif
+
 	}
 }
 
@@ -56,4 +59,6 @@ double getCorrelation(int sample, Signal& sig, Signal& window, int lag) {
 
 Correlogram::~Correlogram()
 {
+	delete T_FGrid;
+	delete[] fundamentialFrequencyTime;
 }

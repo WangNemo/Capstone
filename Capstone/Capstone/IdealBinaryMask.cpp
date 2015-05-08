@@ -73,6 +73,7 @@ Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal) {
 
 	for (int i = 0; i < mask->ROWS; i++) {
 		(*mixedBank)[i].reverse();
+
 		(*mixedBank).add((*(bank.bank[i])).filter((*mixedBank)[i]), i);
 		(*mixedBank)[i].reverse();
 	}
@@ -80,6 +81,7 @@ Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal) {
 	SignalGrid* grid = new SignalGrid((*mixedBank), .020*mixedBank->SAMPLE_RATE, .010*mixedBank->SAMPLE_RATE);
 	Signal* result = grid->resynthesize(*mask);
 	delete grid;
+	delete mixedBank;
 	return result;
 }
 

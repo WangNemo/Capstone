@@ -14,10 +14,29 @@
 #include <ctime>
 #include "LEGION.h"
 #include "GroupingNetwork.h"
+#include <vector>
+#include "SoundTest.h"
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+struct AtExit
+{
+	~AtExit() { _CrtDumpMemoryLeaks(); }
+} doAtExit;
 
 int main(int argc, char* argv[], char* envp[]) {
 	srand(static_cast <unsigned> (time(0)));
 
+	SoundTest test("sounds", "results");
+	test.run();
+	/*for each (std::string var in staticTools::get_all_files_names_within_folder(L"sounds"))
+	{
+		print var endl;
+		Signal* signal1 = staticTools::readWav(var);
+	}*/
+	//_CrtDumpMemoryLeaks();
+	return 0;
 
 	print argv[0] endl;
 	print argv[1] endl;
@@ -33,8 +52,8 @@ int main(int argc, char* argv[], char* envp[]) {
 	signal2->trim(shorter);
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
-	//mixed->trim(44100);
 	mixed->normalize();
+	mixed->trim(44100);
 	FILE* mixF = fopen("Mixed.wav", "wb");
 	fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 

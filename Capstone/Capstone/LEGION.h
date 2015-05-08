@@ -18,17 +18,17 @@ public:
 	int CHANNELS;
 	int FRAMES;
 	int minGroup = 3;
-	int leaderNeighbors = 2;
+	int leaderNeighbors = 1;
 	int numSegments = 0;
 	int largestSegment = -1;
 	int numInLargestSegment = -1;
 	double crossCorrelationThreshold = .95;
 	Correlogram& correlogram;
-	Connection*** timeConnections;
-	Connection*** freqConnections;
+	//Connection*** timeConnections;
+	//Connection*** freqConnections;
 	Oscillator*** neuralGrid;
 	intGrid* segmentGrid;
-	std::vector<Segment>*  segments;
+	std::vector<Segment*>*  segments;
 
 	LEGION(Correlogram& correlogram);
 	void run();

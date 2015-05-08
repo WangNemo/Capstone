@@ -33,10 +33,13 @@ SignalGrid::SignalGrid(SignalBank& signalBank, int frameSize, int frameOverlap)
 SignalGrid::SignalGrid(int frames, int channels, int samples, int sampleRate, int frameSize, int overlap, int offset)
 	: FRAMES(frames), CHANNELS(channels), SAMPLES(samples), SAMPLE_RATE(sampleRate),
 	FRAME_SIZE(frameSize), FRAME_OFFSET(offset), FRAME_OVERLAP(overlap){
-	grid = new SignalBank*[FRAMES];
+	grid = new SignalBank*[FRAMES] {};
 }
 
 void SignalGrid::addBank(SignalBank* bank, int index) {
+	if (grid[index] != nullptr) {
+		delete grid[index];
+	}
 	grid[index] = bank;
 }
 
@@ -81,26 +84,26 @@ Signal* SignalGrid::resynthesize(boolGrid& mask) {
 		}
 	}
 
-	SignalBank resynthesisBank(CHANNELS, SAMPLE_RATE, SAMPLES);
+	SignalBank* resynthesisBank = new SignalBank(CHANNELS, SAMPLE_RATE, SAMPLES);
 	for (int i = 0; i < CHANNELS; i++) {
-		resynthesisBank.add(new Signal(SAMPLES, SAMPLE_RATE), i);
+		resynthesisBank->add(new Signal(SAMPLES, SAMPLE_RATE), i);
 	}
 
 	for (int frame = 0; frame < FRAMES; frame++) {
 		for (int channel = 0; channel < CHANNELS; channel++) {
 			for (int sample = 0; sample < FRAME_SIZE; sample++) {
-				resynthesisBank[channel][sample + FRAME_OFFSET * frame] += (*this)[frame][channel][sample];
+				(*resynthesisBank)[channel][sample + FRAME_OFFSET * frame] += (*this)[frame][channel][sample];
 			}
 		}
 	}
 
-	Signal* resynthesized = new Signal(SAMPLES, resynthesisBank.SAMPLE_RATE);
+	Signal* resynthesized = new Signal(SAMPLES, resynthesisBank->SAMPLE_RATE);
 	for (int channel = 0; channel < CHANNELS; channel++){//=2) {
 		for (int sample = 0; sample < SAMPLES; sample++) {
-			((*resynthesized)[sample]) += resynthesisBank[channel][sample];
+			((*resynthesized)[sample]) += (*resynthesisBank)[channel][sample];
 		}
 	}
-
+	delete resynthesisBank;
 	//resynthesized->normalize();
 	return resynthesized;
 }
@@ -113,4 +116,5 @@ SignalGrid::~SignalGrid()
 	for (int i = 0; i < FRAMES; i++) {
 		delete grid[i];
 	}
+	delete[] grid;
 }

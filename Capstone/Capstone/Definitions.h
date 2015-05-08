@@ -1,10 +1,19 @@
 #pragma once
 
+
+#ifdef _DEBUG
+	#ifndef DBG_NEW
+		#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+		#define new DBG_NEW
+	#endif
+#endif  // _DEBUG
+
 #include <cmath>
 #include <iostream>
 #include <string>
 #include <fstream>
 #include "Signal.h"
+#include <vector>
 
 #define MAX(x,y)     ( ( x ) > ( y ) ? ( x ) : ( y ) )
 #define MIN(x,y)     ( ( x ) < ( y ) ? ( x ) : ( y ) )
@@ -74,8 +83,9 @@ public:
 
 	~doubleGrid(){
 		for (int i = 0; i < ROWS; i++) {
-			delete grid[i];
+			delete[] grid[i];
 		}
+		delete[] grid;
 	}
 };
 
@@ -123,8 +133,9 @@ public:
 
 	~intGrid(){
 		for (int i = 0; i < ROWS; i++) {
-			delete grid[i];
+			delete[] grid[i];
 		}
+		delete[] grid;
 	}
 };
 
@@ -142,8 +153,9 @@ public:
 
 	~boolGrid(){
 		for (int i = 0; i < ROWS; i++) {
-			delete grid[i];
+			delete[] grid[i];
 		}
+		delete[] grid;
 	}
 };
 
@@ -156,5 +168,8 @@ namespace staticTools{
 	Signal* combine(Signal& s1, Signal& s2);
 	double standardDeviation(Signal& signal, double mean);
 	double nonZeroGaussianRandom(double minMax);
+	std::vector<std::string> get_all_files_names_within_folder(std::string folder);
+	std::wstring s2ws(const std::string& str);
+	std::string ws2s(const std::wstring& wstr);
 }
 

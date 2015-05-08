@@ -15,6 +15,7 @@ public:
 	Segment(int segmentSize);
 	void add(RowColumn* pair);
 	int numActive(GroupingOscillator*** neuralGrid);
+	void deleteSeg();
 	~Segment();
 };
 
