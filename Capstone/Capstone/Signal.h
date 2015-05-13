@@ -16,6 +16,7 @@ public:
 	void zeroOut();
 	void reverse();
 	void normalize();
+	void normalize(double max);
 	void zeroMeanStandardVariance();
 	void scale(double scalar);
 	void trim(int samples);
@@ -25,6 +26,7 @@ public:
 	Signal* autoCorrelate(int lagMS, int startingMS, Signal& window, double threshold);
 	double crossCorrelate(Signal& other);
 	double squareSum();
+	double getMax();
 	int sampleOfHighestPeak(int millis);
 	~Signal();
 };

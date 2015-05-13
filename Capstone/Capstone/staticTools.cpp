@@ -47,11 +47,11 @@ namespace staticTools{
 	}
 
 	Signal* normalize(short* data, int dataSize) {
-		double largestSample = 0;
+		double largestSample = 32767;// 0;
 
-		for (int i = 0; i < dataSize; i++) {
-			largestSample = largestSample > data[i] ? largestSample : data[i];
-		}
+		//for (int i = 0; i < dataSize; i++) {
+		//	largestSample = largestSample > data[i] ? largestSample : data[i];
+		//}
 
 		Signal* sig = new Signal(dataSize, 44100);
 

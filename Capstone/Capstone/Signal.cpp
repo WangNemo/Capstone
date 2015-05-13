@@ -25,20 +25,19 @@ void Signal::reverse() {
 	}
 }
 
-void Signal::normalize() {
-	double largest = -1000000;
-	for (int sample = 0; sample < SAMPLES; sample++) {
-		double sam = abs(signal[sample]);
-		if (sam > largest) {
-			largest = sam;
-		}
-	}
-	//print largest endl;
-	for (int sample = 0; sample < SAMPLES; sample++) {
-		double sam = signal[sample];
-		signal[sample] = sam / largest;
-	}
 
+
+void Signal::normalize() {
+	
+	normalize(getMax());
+
+}
+
+void Signal::normalize(double max) {
+	for (int sample = 0; sample < SAMPLES && max > 0; sample++) {
+		double sam = signal[sample];
+		signal[sample] = sam / max;
+	}
 }
 
 void Signal::zeroMeanStandardVariance() {
@@ -142,6 +141,17 @@ double Signal::squareSum() {
 		power += sample * sample;
 	}
 	return power;
+}
+
+double Signal::getMax() {
+	double largest = -1000000;
+	for (int sample = 0; sample < SAMPLES; sample++) {
+		double sam = abs(signal[sample]);
+		if (sam > largest) {
+			largest = sam;
+		}
+	}
+	return largest;
 }
 
 int Signal::sampleOfHighestPeak(int millis) {

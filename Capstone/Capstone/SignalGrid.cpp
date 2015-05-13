@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "SignalGrid.h"
+#include "FilterBank.h"
+#include "Cochleagram.h"
 
 
 SignalBank& SignalGrid::operator[](int frame) {
@@ -55,6 +57,7 @@ doubleGrid* SignalGrid::toSmrPower() {
 			//	double sample = (*(grid[frame]))[channel][i];
 			//	power += sample * sample;
 			//}
+			
 			powerColumn[frame] = sqrt(power);
 		}
 	}
@@ -106,6 +109,26 @@ Signal* SignalGrid::resynthesize(boolGrid& mask) {
 	delete resynthesisBank;
 	//resynthesized->normalize();
 	return resynthesized;
+}
+
+Signal* SignalGrid::resynthesize(Signal& signal, int frames, int channels, int samples, int sampleRate, int frameSize, int overlap){
+	FilterBank bank(channels, Cochleagram::MIN_FREQ, Cochleagram::MAX_FREQ, 44100);
+	SignalBank* siggyb = bank.filter(signal);
+	SignalGrid* siggyGrid = new SignalGrid(*siggyb, frameSize, overlap);
+	bool** bools = new bool*[channels];
+	for (int channel = 0; channel < channels; channel++) {
+		bools[channel] = new bool[siggyGrid->FRAMES];
+		std::fill_n(bools[channel], siggyGrid->FRAMES, true);
+	}
+	boolGrid* mask = new boolGrid(bools, channels, siggyGrid->FRAMES);
+
+	Signal* resyth = siggyGrid->resynthesize(*mask);
+
+	delete siggyb;
+	delete siggyGrid;
+	delete mask;
+
+	return resyth;
 }
 
 

@@ -63,18 +63,18 @@ IdealBinaryMask::IdealBinaryMask(Signal& signal1, Signal& signal2) : signal1(sig
 
 }
 
-Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask) {
+Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, bool normalize) {
 	Signal* mixed = staticTools::combine(signal1, signal2);
 	mixed->normalize();
 
-	Signal* result = applyIdealBinaryMask(mask, mixed);
+	Signal* result = applyIdealBinaryMask(mask, mixed, normalize);
 	delete mixed;
 	return result;
 }
 
-Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal) {
+Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal, bool normalize) {
 
-	FilterBank bank(mask->ROWS, 100, 8000, 44100);
+	FilterBank bank(mask->ROWS, Cochleagram::MIN_FREQ, Cochleagram::MAX_FREQ, 44100);
 	SignalBank* mixedBank = bank.filter(*signal);
 
 
@@ -87,14 +87,18 @@ Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal) {
 
 	SignalGrid* grid = new SignalGrid((*mixedBank), .020*mixedBank->SAMPLE_RATE, .010*mixedBank->SAMPLE_RATE);
 	Signal* result = grid->resynthesize(*mask);
-	result->normalize();
+	if (normalize)
+		result->normalize();
 	delete grid;
 	delete mixedBank;
 	return result;
 }
 
-void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask) {
-	Signal* result = applyIdealBinaryMask(mask);
+void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask, double normal) {
+	Signal* result = applyIdealBinaryMask(mask, normal);
+	if (normal != 1) {
+		result->normalize(normal);
+	}
 	FILE* results = fopen(name.c_str(), "wb");
 	fwrite(result->signal, sizeof(double), result->SAMPLES, results);
 	fclose(results);
@@ -103,6 +107,7 @@ void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask) {
 
 void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask, Signal* signal) {
 	Signal* result = applyIdealBinaryMask(mask, signal);
+
 	FILE* results = fopen(name.c_str(), "wb");
 	fwrite(result->signal, sizeof(double), result->SAMPLES, results);
 	fclose(results);

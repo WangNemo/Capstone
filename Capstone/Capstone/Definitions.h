@@ -68,7 +68,7 @@ struct SeparationResult {
 	double mean = 1;
 
 	std::string toString() {
-		return std::to_string(foregroundEnergy) + "\t" + std::to_string(foregroundNoise) + "\t" + std::to_string(backgroundEnergy) + "\t" + std::to_string(backgroundNoise) + "\t";
+		return std::to_string(foregroundEnergy) + "\t" + std::to_string(foregroundNoise) + "\t" + std::to_string(backgroundEnergy) + "\t" + std::to_string(backgroundNoise) + "\t" + std::to_string(mean);
 	}
 };
 

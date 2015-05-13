@@ -18,6 +18,7 @@ public:
 	doubleGrid* toSmrPower();
 	void deleteCell(int frame, int channel);
 	Signal* resynthesize(boolGrid& mask);
+	static Signal* SignalGrid::resynthesize(Signal& signal, int frames, int channels, int samples, int sampleRate, int frameSize, int overlap);
 	~SignalGrid();
 };
 
