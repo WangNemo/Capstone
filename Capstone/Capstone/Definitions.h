@@ -60,6 +60,18 @@ struct RowColumn {
 		:row(row), col(col) {}
 };
 
+struct SeparationResult {
+	double foregroundEnergy = 1;
+	double backgroundEnergy = 1;
+	double foregroundNoise = 1;
+	double backgroundNoise = 1;
+	double mean = 1;
+
+	std::string toString() {
+		return std::to_string(foregroundEnergy) + "\t" + std::to_string(foregroundNoise) + "\t" + std::to_string(backgroundEnergy) + "\t" + std::to_string(backgroundNoise) + "\t";
+	}
+};
+
 class doubleGrid {
 public:
 	int const ROWS, COLUMNS;
@@ -149,6 +161,21 @@ public:
 
 	boolGrid(bool** grid, int rows, int cols) : grid(grid), ROWS(rows), COLUMNS(cols) {
 
+	}
+
+	boolGrid* intersect(boolGrid& other) {
+		boolGrid* result = nullptr;
+		if (ROWS == other.ROWS && COLUMNS == other.COLUMNS) {
+			bool** newGrid = new bool*[ROWS];
+			for (int row = 0; row < ROWS; row++) {
+				newGrid[row] = new bool[COLUMNS];
+				for (int col = 0; col < COLUMNS; col++) {
+					newGrid[row][col] = (grid[row][col] && other(row, col));
+				}
+			}
+			result = new boolGrid(newGrid, ROWS, COLUMNS);
+		}
+		return result;
 	}
 
 	~boolGrid(){

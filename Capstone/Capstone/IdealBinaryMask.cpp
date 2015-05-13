@@ -8,24 +8,31 @@ IdealBinaryMask::IdealBinaryMask(Signal& signal1, Signal& signal2) : signal1(sig
 	signal1.trim(shorter);
 	signal2.trim(shorter);
 
-	Cochleagram* coch1 = new Cochleagram(signal1, signal1.SAMPLE_RATE);
-	SignalGrid* grid1 = new SignalGrid(*(coch1->cochleagram), .020*signal1.SAMPLE_RATE, .010*signal1.SAMPLE_RATE);
-	delete coch1;
+	//Cochleagram* coch1 = new Cochleagram(signal1, signal1.SAMPLE_RATE);
+
+	FilterBank* bank1 = new FilterBank(Cochleagram::CHANNELS, Cochleagram::MIN_FREQ, Cochleagram::MAX_FREQ, signal1.SAMPLE_RATE);
+	SignalBank* freqBank1 = bank1->filter(signal1);
+	SignalGrid* grid1 = new SignalGrid(*freqBank1, .020*signal1.SAMPLE_RATE, .010*signal1.SAMPLE_RATE);
+	delete bank1;
+	delete freqBank1;
 	doubleGrid* powerGrid = grid1->toSmrPower();
 	delete grid1;
 
-	Cochleagram* coch2 = new Cochleagram(signal2, signal2.SAMPLE_RATE);
-	SignalGrid* grid2 = new SignalGrid(*(coch2->cochleagram), .020*signal2.SAMPLE_RATE, .010*signal2.SAMPLE_RATE);
-	delete coch2;
+	//Cochleagram* coch2 = new Cochleagram(signal2, signal2.SAMPLE_RATE);
+	FilterBank* bank2 = new FilterBank(Cochleagram::CHANNELS, Cochleagram::MIN_FREQ, Cochleagram::MAX_FREQ, signal1.SAMPLE_RATE);
+	SignalBank* freqBank2 = bank2->filter(signal2);
+	SignalGrid* grid2 = new SignalGrid(*freqBank2, .020*signal2.SAMPLE_RATE, .010*signal2.SAMPLE_RATE);
+	delete bank2;
+	delete freqBank2;
 	doubleGrid* powerGrid2 = grid2->toSmrPower();
 	delete grid2;
 
 
 
-	for (int i = 0; i < powerGrid2->ROWS; i++) {
-		print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) endl;
-		print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) endl;
-	}
+	//for (int i = 0; i < powerGrid2->ROWS; i++) {
+	//	print minInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << maxInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) << '\t' << avgInArray((*powerGrid2).grid[i], powerGrid2->COLUMNS) endl;
+	//	print minInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << maxInArray((*powerGrid).grid[i], powerGrid->COLUMNS) << '\t' << avgInArray((*powerGrid).grid[i], powerGrid->COLUMNS) endl;
+	//}
 
 
 	////print powerGrid->COLUMNS << '\t' << powerGrid->ROWS endl;
@@ -37,14 +44,14 @@ IdealBinaryMask::IdealBinaryMask(Signal& signal1, Signal& signal2) : signal1(sig
 	delete powerGrid;
 	delete powerGrid2;
 
-	for (int i = 0; i < decibelGrid->ROWS; i++) {
-		print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) endl;
-		print minInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << maxInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << avgInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) endl;
-	}
+	//for (int i = 0; i < decibelGrid->ROWS; i++) {
+	//	print minInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << maxInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) << '\t' << avgInArray((*decibelGrid).grid[i], decibelGrid->COLUMNS) endl;
+	//	print minInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << maxInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) << '\t' << avgInArray((*decibelGrid2).grid[i], decibelGrid2->COLUMNS) endl;
+	//}
 
 
-	idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, .01);
-	idealBinaryMask2 = createIdealBinaryMask(*decibelGrid2, .01);
+	idealBinaryMask1 = createIdealBinaryMask(*decibelGrid, 0);// .01);
+	idealBinaryMask2 = createIdealBinaryMask(*decibelGrid2, 0);// .01);
 	delete decibelGrid;
 	delete decibelGrid2;
 	/*for (int i = 0; i < decibelGrid->ROWS; i++) {
@@ -80,6 +87,7 @@ Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal) {
 
 	SignalGrid* grid = new SignalGrid((*mixedBank), .020*mixedBank->SAMPLE_RATE, .010*mixedBank->SAMPLE_RATE);
 	Signal* result = grid->resynthesize(*mask);
+	result->normalize();
 	delete grid;
 	delete mixedBank;
 	return result;
@@ -87,7 +95,6 @@ Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal) {
 
 void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask) {
 	Signal* result = applyIdealBinaryMask(mask);
-	result->normalize();
 	FILE* results = fopen(name.c_str(), "wb");
 	fwrite(result->signal, sizeof(double), result->SAMPLES, results);
 	fclose(results);
@@ -96,7 +103,6 @@ void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask) {
 
 void IdealBinaryMask::saveIdealBinaryMask(std::string name, boolGrid* mask, Signal* signal) {
 	Signal* result = applyIdealBinaryMask(mask, signal);
-	result->normalize();
 	FILE* results = fopen(name.c_str(), "wb");
 	fwrite(result->signal, sizeof(double), result->SAMPLES, results);
 	fclose(results);

@@ -14,7 +14,7 @@ private:
 	double* logSpacedErbScale(double minErb, double maxErb);
 public:
 	GammatoneFilter** bank;
-	const int CHANNELS, LOW, HIGH, SAMPLE_RATE;
+	int CHANNELS, LOW, HIGH, SAMPLE_RATE;
 
 	FilterBank(int channels, int lowFreq, int highFreq, int sampleRate);
 	SignalBank* filter(Signal& signal);

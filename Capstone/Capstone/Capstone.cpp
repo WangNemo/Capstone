@@ -35,12 +35,15 @@ int main(int argc, char* argv[], char* envp[]) {
 		print var endl;
 		Signal* signal1 = staticTools::readWav(var);
 	}*/
-	//_CrtDumpMemoryLeaks();
+	_CrtDumpMemoryLeaks();
 	return 0;
 
-	print argv[0] endl;
-	print argv[1] endl;
-	print argv[2] endl;
+	//print argv[0] endl;
+	//print argv[1] endl;
+	//print argv[2] endl;
+
+
+
 	std::string fileName(argv[1]);
 	std::string fileName2(argv[2]);
 	Signal* signal1 = staticTools::readWav(fileName);
@@ -50,6 +53,10 @@ int main(int argc, char* argv[], char* envp[]) {
 	int shorter = MIN(signal2->SAMPLES, signal1->SAMPLES);
 	signal1->trim(shorter);
 	signal2->trim(shorter);
+
+
+
+	return 0;
 
 	Signal* mixed = staticTools::combine(*signal1, *signal2);
 	mixed->normalize();
@@ -91,15 +98,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	//	fwrite((*coresdfa.T_FGrid)[97][i].signal, sizeof(double), (*coresdfa.T_FGrid)[97][i].SAMPLES, mixF);
 	//}
 
-	IdealBinaryMask mask(*signal1, *signal2);
-	std::fstream of1("ibm1.txt", std::ios::out);
-	mask.writeBinaryMask(of1, mask.idealBinaryMask1);
-	std::fstream of2("ibm2.txt", std::ios::out);
-	mask.writeBinaryMask(of2, mask.idealBinaryMask2);
-	//mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
-	//mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);
 
-	return 0;
 	//IdealBinaryMask mask(*signal1, *signal2);
 	//std::fstream of1("ibm1.txt", std::ios::out);
 	//mask.writeBinaryMask(of1, mask.idealBinaryMask1);

@@ -25,6 +25,25 @@ GammatoneFilter::GammatoneFilter(int frequencyCenter, double bandwidth, int samp
 	GammatoneFilter::sinFreq = sin(radianTimeStep * frequencyCenter);
 }
 
+void GammatoneFilter::filterComplex(Complex& shiftedSample) {
+	for (int i = 0; i < ORDER; i++) {
+		shiftedSample.real += GammatoneFilter::orders[i] *
+			GammatoneFilter::priorResults[i].real;
+		shiftedSample.imaginary += GammatoneFilter::orders[i] *
+			GammatoneFilter::priorResults[i].imaginary;
+	}
+
+	shiftPriorResults(shiftedSample);
+
+	shiftedSample.real +=
+		GammatoneFilter::orders[0] * GammatoneFilter::priorResults[0].real
+		+ GammatoneFilter::exp2 * GammatoneFilter::priorResults[1].real;
+
+	shiftedSample.imaginary +=
+		GammatoneFilter::orders[0] * GammatoneFilter::priorResults[0].imaginary
+		+ GammatoneFilter::exp2 * GammatoneFilter::priorResults[1].imaginary;
+}
+
 Signal* GammatoneFilter::filter(Signal& signal) {
 	//print frequencyCenter << '\t' << radianSize / ((PI * 2) / signal.SAMPLE_RATE) endl;
 	Signal* filteredSignal = new Signal(signal.SAMPLES, signal.SAMPLE_RATE);//new double[samples];
@@ -32,18 +51,21 @@ Signal* GammatoneFilter::filter(Signal& signal) {
 	Complex freqShift(1, 0);
 
 	for (int sample = 0; sample < signal.SAMPLES; sample++) {
-		Complex filteredSample;
+		Complex* filteredSamplePtr = new Complex();
 
+		Complex filteredSample = *filteredSamplePtr;
 		// shift signal's frequency to center
 		filteredSample.real = freqShift.real * signal[sample];
 		filteredSample.imaginary = freqShift.imaginary * signal[sample];
 
-		filter(&filteredSample);
+		filterComplex(filteredSample);
 
 		// shift signal back (only real needed)
 		double shiftedBack =
 			filteredSample.real * freqShift.real +
 			filteredSample.imaginary * freqShift.imaginary;
+
+		delete filteredSamplePtr;
 
 		(*filteredSignal)[sample] = shiftedBack * GammatoneFilter::gain;
 
@@ -51,36 +73,15 @@ Signal* GammatoneFilter::filter(Signal& signal) {
 		freqShift.real = cosFreq * tempCos + sinFreq * freqShift.imaginary;
 		freqShift.imaginary = cosFreq * freqShift.imaginary - tempCos * sinFreq;
 	}
-
 	return filteredSignal;
 }
 
-void GammatoneFilter::shiftPriorResults(Complex newResult) {
+void GammatoneFilter::shiftPriorResults(Complex& newResult) {
 	for (int i = ORDER - 1; i > 0; i--) {
 		GammatoneFilter::priorResults[i] = GammatoneFilter::priorResults[i - 1];
 	}
 	GammatoneFilter::priorResults[0] = newResult;
 }
-
-void GammatoneFilter::filter(Complex* shiftedSample) {
-	for (int i = 0; i < ORDER; i++) {
-		shiftedSample->real += GammatoneFilter::orders[i] * 
-			GammatoneFilter::priorResults[i].real;
-		shiftedSample->imaginary += GammatoneFilter::orders[i] *
-			GammatoneFilter::priorResults[i].imaginary;
-	}
-
-	shiftPriorResults(*shiftedSample);
-
-	shiftedSample->real += 
-		GammatoneFilter::orders[0] * GammatoneFilter::priorResults[0].real
-		 + GammatoneFilter::exp2 * GammatoneFilter::priorResults[1].real;
-
-	shiftedSample->imaginary +=
-		GammatoneFilter::orders[0] * GammatoneFilter::priorResults[0].imaginary
-		+ GammatoneFilter::exp2 * GammatoneFilter::priorResults[1].imaginary;
-}
-
 
 GammatoneFilter::~GammatoneFilter()
 {

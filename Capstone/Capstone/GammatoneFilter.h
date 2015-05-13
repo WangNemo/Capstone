@@ -27,8 +27,8 @@ private:
 	double cosFreq;
 	double sinFreq;
 
-	void shiftPriorResults(Complex newResult);
-	void filter(Complex* shiftedSample);
+	void shiftPriorResults(Complex& newResult);
+	void filterComplex(Complex& shiftedSample);
 public:
 	GammatoneFilter() {};
 	GammatoneFilter(int frequencyCenter, double bandwidth, int sampleRate);

@@ -4,6 +4,7 @@
 
 FilterBank::FilterBank(int channels, int lowFreq, int highFreq, int sampleRate) : 
 	CHANNELS(channels), LOW(lowFreq), HIGH(highFreq), SAMPLE_RATE(sampleRate) {
+	CHANNELS = channels; LOW = lowFreq; HIGH = highFreq; SAMPLE_RATE = sampleRate; // this was required because the values passed in were from the cochleagram's static const ints and it was giving weird errors. Values were comming in correctly, but being set incorrectly by the default initializy thing
 	bank = new GammatoneFilter*[CHANNELS];
 
 	double lowErb = freqToErbScale(LOW);
@@ -22,8 +23,8 @@ FilterBank::FilterBank(int channels, int lowFreq, int highFreq, int sampleRate) 
 }
 
 SignalBank* FilterBank::filter(Signal& signal){
-	print "filterbank" endl;
-	SignalBank* channels = new SignalBank(CHANNELS, SAMPLE_RATE, signal.SAMPLES);
+	//print "filterbank" endl;
+ 	SignalBank* channels = new SignalBank(CHANNELS, SAMPLE_RATE, signal.SAMPLES);
 	for (int i = 0; i < CHANNELS; i++) {
 		Signal* filtered = bank[i]->filter(signal); //(*bank)->filter(signal);
 		channels->add(filtered, i);

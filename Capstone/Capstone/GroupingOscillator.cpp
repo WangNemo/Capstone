@@ -2,7 +2,7 @@
 #include "GroupingOscillator.h"
 
 
-GroupingOscillator::GroupingOscillator() : segment(Segment()) {
+GroupingOscillator::GroupingOscillator() : segment(*new Segment()) {
 	inputValue = -1000;
 }
 

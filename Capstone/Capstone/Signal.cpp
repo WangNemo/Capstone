@@ -135,6 +135,15 @@ double Signal::getCorrelation(int startingSample, Signal& window, int lag) {
 	return sample;
 }
 
+double Signal::squareSum() {
+	double power = 0;
+	for (int i = 0; i < SAMPLES; i++) {
+		double sample = signal[i];
+		power += sample * sample;
+	}
+	return power;
+}
+
 int Signal::sampleOfHighestPeak(int millis) {
 	int start = (millis * SAMPLE_RATE) / 1000;
 	double max = -100;

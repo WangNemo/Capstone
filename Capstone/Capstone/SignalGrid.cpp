@@ -50,11 +50,11 @@ doubleGrid* SignalGrid::toSmrPower() {
 		double* powerColumn = new double[FRAMES];
 		powerGrid[channel] = powerColumn;
 		for (int frame = 0; frame < FRAMES; frame++) {
-			double power = 0;
-			for (int i = 0; i < FRAME_SIZE; i++) {
-				double sample = (*(grid[frame]))[channel][i];
-				power += sample * sample;
-			}
+			double power = (*(grid[frame]))[channel].squareSum();// 0;
+			//for (int i = 0; i < FRAME_SIZE; i++) {
+			//	double sample = (*(grid[frame]))[channel][i];
+			//	power += sample * sample;
+			//}
 			powerColumn[frame] = sqrt(power);
 		}
 	}
