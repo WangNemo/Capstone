@@ -145,13 +145,16 @@ void LEGION::allStep(int spiked) {
 }
 
 void LEGION::markLargestSegment() {
-	for (int channel = 0; channel < CHANNELS; channel++) {
-		for (int frame = 0; frame < FRAMES; frame++) {
-			if (neuralGrid[channel][frame]->segment == largestSegment) {
-				neuralGrid[channel][frame]->largestSegment = true;
-			}
-		}
-	}
+	//for (int channel = 0; channel < CHANNELS; channel++) {
+	//	for (int frame = 0; frame < FRAMES; frame++) {
+	//		if (neuralGrid[channel][frame]->segment == largestSegment) {
+	//			neuralGrid[channel][frame]->largestSegment = true;
+	//		}
+	//	}
+	//}
+		//Segment seg = *(*segments)[largestSegment];
+		//seg.largest = true;
+
 }
 
 boolGrid* LEGION::segmentsAsMask() {

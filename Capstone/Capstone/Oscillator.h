@@ -15,7 +15,7 @@ public:
 	Oscillator* right;
 	double wUp = 0, wDown = 0, wLeft = 0, wRight = 0;
 	bool hasSpiked = false;
-	bool largestSegment = false;
+	//bool largestSegment = false;
 	int segment = -1;
 
 	Oscillator(double randomExcitement, double input);

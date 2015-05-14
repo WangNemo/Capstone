@@ -9,6 +9,10 @@ Segment::Segment(int segmentSize) : segmentSize(segmentSize)
 
 void Segment::add(RowColumn* pair) {
 	if (inserted < segmentSize) {
+		if (pair->col > maxFrame)
+			maxFrame = pair->col;
+		if (pair->col < minFrame)
+			minFrame = pair->col;
 		segment[inserted++] = pair;
 	}
 	else {
@@ -16,22 +20,42 @@ void Segment::add(RowColumn* pair) {
 	}
 }
 
-int Segment::numActive(GroupingOscillator*** neuralGrid) {
-	active = 0;
-	for (int i = 0; i < segmentSize; i++) {
-		RowColumn* rc = segment[i];
-		if (neuralGrid[rc->row][rc->col]->excitement > SPIKE_THRESHOLD) {
-			active++;
-		}
-	}
-	return active;
-}
+//int Segment::numActive(GroupingOscillator*** neuralGrid) {
+//	active = 0;
+//	for (int i = 0; i < segmentSize; i++) {
+//		RowColumn* rc = segment[i];
+//		if (neuralGrid[rc->row][rc->col]->excitement > SPIKE_THRESHOLD) {
+//			active++;
+//		}
+//	}
+//	return active;
+//}
 
 void Segment::deleteSeg() {
 	for (int i = 0; i < segmentSize; i++) {
 		delete segment[i];
 	}
 	delete[] segment;
+}
+
+void Segment::incrementAgree() {
+	agree++;
+}
+
+void Segment::incrementDisagree(){
+	disagree++;
+}
+
+void Segment::decide() {
+	fundamentalFreqencyMatch = agree > disagree;
+}
+
+
+bool Segment::overlapsWith(Segment& other){
+	return (other.minFrame < minFrame && minFrame < other.maxFrame) ||
+		   (other.minFrame < maxFrame && maxFrame < other.maxFrame) ||
+		   (minFrame < other.minFrame && other.minFrame < maxFrame) ||
+		   (minFrame < other.maxFrame && other.maxFrame < maxFrame);
 }
 
 Segment::~Segment()

@@ -90,6 +90,7 @@
     <ClInclude Include="GammatoneFilter.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="GlobalInhibitor.h" />
+    <ClInclude Include="Group.h" />
     <ClInclude Include="GroupingNetwork.h" />
     <ClInclude Include="GroupingOscillator.h" />
     <ClInclude Include="HanningWindow.h" />
@@ -120,6 +121,7 @@
     <ClCompile Include="FilterBank.cpp" />
     <ClCompile Include="GammatoneFilter.cpp" />
     <ClCompile Include="GlobalInhibitor.cpp" />
+    <ClCompile Include="Group.cpp" />
     <ClCompile Include="GroupingNetwork.cpp" />
     <ClCompile Include="GroupingOscillator.cpp" />
     <ClCompile Include="HanningWindow.cpp" />

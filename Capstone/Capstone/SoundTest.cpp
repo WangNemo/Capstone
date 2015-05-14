@@ -37,9 +37,11 @@ void SoundTest::run() {
 				//FILE* mixF = fopen(std::string(name + " (mixed).wav").c_str(), "wb");
 				//fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 				//fclose(mixF);
+				
 
 				Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
 				Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
+				
 				LEGION* lo = new LEGION(coresdfa);
 				lo->run();
 				lo->markLargestSegment();
