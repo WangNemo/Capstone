@@ -28,6 +28,9 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 					(*legion.segments)[segNum]->incrementAgree();
 					//neuralGrid[channel][frame]->fundamentalFreqencyMatch = true;
 				}
+				else {
+					(*legion.segments)[segNum]->incrementDisagree();
+				}
 			}
 			else {
 				//neuralGrid[channel][frame] = deadOscillator;
@@ -75,7 +78,6 @@ void GroupingNetwork::run() {
 
 	//while (nextLargestSegment != nullptr) {
 		group();
-	groups->push_back(new Group());
 		numGroups++;
 	//};
 

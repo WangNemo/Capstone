@@ -55,7 +55,8 @@ bool Segment::overlapsWith(Segment& other){
 	return (other.minFrame < minFrame && minFrame < other.maxFrame) ||
 		   (other.minFrame < maxFrame && maxFrame < other.maxFrame) ||
 		   (minFrame < other.minFrame && other.minFrame < maxFrame) ||
-		   (minFrame < other.maxFrame && other.maxFrame < maxFrame);
+		   (minFrame < other.maxFrame && other.maxFrame < maxFrame) ||
+		   (minFrame == other.minFrame && maxFrame == other.maxFrame);
 }
 
 Segment::~Segment()
