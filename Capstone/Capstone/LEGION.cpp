@@ -121,18 +121,25 @@ void LEGION::run() {
 
 void LEGION::allStep(int spiked) {
 	Segment* segment = new Segment(spiked);
+	bool stepped = false;
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		for (int frame = 0; frame < FRAMES; frame++) {
-			if (neuralGrid[channel][frame]->excitement >= SPIKE_THRESHOLD) {
+			if (neuralGrid[channel][frame]->isSpiking()) {
 				// store channel and frame in segment
 				segment->add(new RowColumn(channel, frame));
 				segmentGrid->set(channel, frame, neuralGrid[channel][frame]->segment);
 				neuralGrid[channel][frame]->reset();
 			}
 			else {
-				neuralGrid[channel][frame]->step();
+				if (!stepped) {
+					neuralGrid[channel][frame]->step();
+					stepped = neuralGrid[channel][frame]->excitement >= SPIKE_THRESHOLD;
+				}
 			}
 		}
+	}
+	if (segment->inserted < spiked) {
+		print "NOT ENOUGH IN SEG\t" << spiked - segment->inserted endl;
 	}
 	(*segments).push_back(segment);
 }

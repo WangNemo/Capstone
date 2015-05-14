@@ -103,7 +103,7 @@ void GroupingNetwork::run() {
 			}
 		}
 		double ratio = abs((float)spiking) / abs(notSpiking);
-		double exit = (notSpiking == 0 ? true : (ratio > .5 ? SPIKING : MINIMUM_ACTIVITY));
+		double exit = (notSpiking == 0 ? true : (ratio > .50 ? SPIKING : MINIMUM_ACTIVITY));
 		for (int pair = 0; pair < seg.segmentSize; pair++) {
 			neuralGrid[seg.segment[pair]->row][seg.segment[pair]->col]->excitement = exit;
 		}

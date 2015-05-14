@@ -4,9 +4,8 @@ class GroupingOscillator;
 
 class Segment
 {
-private:
-	int inserted = 0;
 public:
+	int inserted = 0;
 	int segmentSize;
 	int active = 0;
 	RowColumn** segment;
