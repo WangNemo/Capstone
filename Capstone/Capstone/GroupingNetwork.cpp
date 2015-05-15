@@ -25,6 +25,7 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 				int time = legion.correlogram.fundamentialFrequencyTime[frame];
 				if ((*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0] > freqMatchThreshold)  {
 					//match++;
+					//print(*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0] endl;
 					(*legion.segments)[segNum]->incrementAgree();
 					//neuralGrid[channel][frame]->fundamentalFreqencyMatch = true;
 				}
@@ -37,6 +38,9 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 			}
 		}
 	}
+
+	//print alive endl;
+	//print match endl;
 
 	int largestSize = 0;
 	for (int i = 0; i < legion.numSegments; i++) {

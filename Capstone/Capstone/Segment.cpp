@@ -47,6 +47,7 @@ void Segment::incrementDisagree(){
 }
 
 void Segment::decide() {
+	//print "Agree: " << agree << "\tdisagree: " << disagree << "\ttotal: " << segmentSize << "\tratio: " << (float)agree / segmentSize endl;
 	fundamentalFreqencyMatch = agree > disagree;
 }
 

@@ -103,7 +103,7 @@ namespace staticTools{
 
 	Signal* readWav(std::string& fileName) {
 		FILE* file = fopen(fileName.c_str(), "rb");
-		print file << fileName endl;
+		//print file << fileName endl;
 		int dataSize = seekToData(file);
 		dataSize = dataSize / 2; // for 8 bit ints
 		short* data = new short[dataSize];

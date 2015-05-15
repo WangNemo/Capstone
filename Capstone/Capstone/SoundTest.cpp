@@ -16,8 +16,13 @@ void SoundTest::run() {
 	resultStream << "\tForeground Energy\tForeground Noise\tBackground Energy\tBackground Noise" endl;
 
 	int sounds = soundNames.size();
+	int test = 0;
+	int tests = (((float)sounds - 1) / 2) * sounds;
 	for (int one = 0; one < sounds; one++) {
 		for (int two = one + 1; two < sounds; two++) {
+			//print((float)test / tests) endl;
+			float percentDone = ((int)round((((float)test / tests) * 10000))) / 100;
+			print "\t\t\tDone: " << percentDone << "%" endl;
 			std::string name = resultDir + "/" + soundNames[one] + " + " + soundNames[two];
 			print name endl;
 			//if (name == "results/high c.wav + Tone low.wav") {
@@ -30,10 +35,10 @@ void SoundTest::run() {
 				signal2->trim(44100);
 
 				Signal* mixed = staticTools::combine(*signal1, *signal2);
-				//mixed->normalize();
+				
 				////delete signal1;
 				////delete signal2;
-
+				//mixed->normalize();
 				//FILE* mixF = fopen(std::string(name + " (mixed).wav").c_str(), "wb");
 				//fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 				//fclose(mixF);
@@ -59,6 +64,13 @@ void SoundTest::run() {
 
 				SeparationResult* result = errorResults(name, *signal1, *signal2, mixed, level2->foreground, level2->background);
 				resultStream << name << "\t" << result->toString() endl;
+
+				//print name << result->mean endl;
+				mixed->normalize();
+				FILE* mixF = fopen(std::string(name + " (mixed).wav").c_str(), "wb");
+				fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
+				fclose(mixF);
+
 				/*print "error " << round(result->mean) << "%" endl;;
 				print "foreground\t\tbackground" endl;
 				print "energy\tnoise\tenergy\tnoise" endl;
@@ -72,6 +84,7 @@ void SoundTest::run() {
 				delete level2;
 				delete result;
 				print "" endl;
+				test++;
 			//}
 		}
 	}
@@ -91,9 +104,6 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 	Signal* mixedResynth = SignalGrid::resynthesize(*mixed, foregroundMask->COLUMNS, foregroundMask->ROWS, mixed->SAMPLES, mixed->SAMPLE_RATE, .020*signal1.SAMPLE_RATE, .010*signal1.SAMPLE_RATE);
 	mixedResynth->save(std::string("TestResynth.wav"));
 	double max = mixedResynth->getMax();
-	if (max > 1) {
-		print "OH NO, MAX IS BIGGER, I THINK THINGS WILL BREAK" endl;
-	}
 	double maxAmplitude = 1.0 / max;
 
 	print maxAmplitude endl;
