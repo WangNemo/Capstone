@@ -44,7 +44,7 @@ void GammatoneFilter::filterComplex(Complex& shiftedSample) {
 		+ GammatoneFilter::exp2 * GammatoneFilter::priorResults[1].imaginary;
 }
 
-Signal* GammatoneFilter::filter(Signal& signal) {
+Signal* GammatoneFilter::filter(Signal& signal, bool envelope) {
 	//print frequencyCenter << '\t' << radianSize / ((PI * 2) / signal.SAMPLE_RATE) endl;
 	Signal* filteredSignal = new Signal(signal.SAMPLES, signal.SAMPLE_RATE);//new double[samples];
 
@@ -60,10 +60,13 @@ Signal* GammatoneFilter::filter(Signal& signal) {
 
 		filterComplex(filteredSample);
 
-		// shift signal back (only real needed)
-		double shiftedBack =
-			filteredSample.real * freqShift.real +
-			filteredSample.imaginary * freqShift.imaginary;
+		// shift signal back
+		double shiftedBack = /*envelope ?
+				sqrt(filteredSample.real * filteredSample.real +
+				filteredSample.imaginary * filteredSample.imaginary)
+			:*/
+				filteredSample.real * freqShift.real +
+				filteredSample.imaginary * freqShift.imaginary;
 
 		delete filteredSamplePtr;
 

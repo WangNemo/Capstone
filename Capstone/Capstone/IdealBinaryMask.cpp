@@ -76,13 +76,13 @@ Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, bool normalize) {
 Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, Signal* signal, bool normalize) {
 
 	FilterBank bank(mask->ROWS, Cochleagram::MIN_FREQ, Cochleagram::MAX_FREQ, 44100);
-	SignalBank* mixedBank = bank.filter(*signal);
+	SignalBank* mixedBank = bank.filter(*signal, false);
 
 
 	for (int i = 0; i < mask->ROWS; i++) {
 		(*mixedBank)[i].reverse();
 
-		(*mixedBank).add((*(bank.bank[i])).filter((*mixedBank)[i]), i);
+		(*mixedBank).add((*(bank.bank[i])).filter((*mixedBank)[i], false), i);
 		(*mixedBank)[i].reverse();
 	}
 

@@ -23,6 +23,7 @@ public:
 	int largestSegment = -1;
 	int numInLargestSegment = -1;
 	double crossCorrelationThreshold = .95;
+	double crossCorrelationThresholdHigh = .825;
 	Correlogram& correlogram;
 	//Connection*** timeConnections;
 	//Connection*** freqConnections;

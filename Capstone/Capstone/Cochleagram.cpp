@@ -26,7 +26,7 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	delete bank;
 
 	Meddis* meddis = new Meddis();
-	cochleagram = meddis->filter(*basilarMembrane);
+	cochleagram = meddis->filter(*basilarMembrane, CHANNELS - 1);// 54);
 	for (int i = 0; i < CHANNELS; i++) {
 		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) endl;
 		(*cochleagram)[i].zeroMeanStandardVariance();

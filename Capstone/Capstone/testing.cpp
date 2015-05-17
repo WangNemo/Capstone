@@ -8,7 +8,7 @@ namespace test{
 	void testGammatoneFilter() {
 		Signal* randomWave = staticTools::makeWave(44100, 44100, 100);
 		GammatoneFilter filter(100, erb(100) * BW_CORRECTION, 44100);
-		Signal* myFilterResults = filter.filter(*randomWave);
+		Signal* myFilterResults = filter.filter(*randomWave, true);
 		double* otherFilterResults = mexFunction(randomWave->signal, 44100, 100, 44100);
 		for (int i = 0; i < 44100; i++) {
 			double my = (*myFilterResults)[i];
@@ -30,7 +30,7 @@ namespace test{
 		FilterBank bank(128, 80, 5500, sampleRate);
 		Meddis meddis;
 		SignalBank* basilarMembrane = bank.filter(*signal);
-		SignalBank* cochleagram = meddis.filter(*basilarMembrane);
+		SignalBank* cochleagram = meddis.filter(*basilarMembrane, channels - 1);
 		double** correctCoch = meddis.unmodifiedFilter(*basilarMembrane, sampleRate, channels, samples);
 		for (int i = 0; i < channels; i++) {
 			for (int j = 0; j < samples; j++) {

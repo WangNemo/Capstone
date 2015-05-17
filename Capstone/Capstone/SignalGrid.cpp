@@ -113,7 +113,15 @@ Signal* SignalGrid::resynthesize(boolGrid& mask) {
 
 Signal* SignalGrid::resynthesize(Signal& signal, int frames, int channels, int samples, int sampleRate, int frameSize, int overlap){
 	FilterBank bank(channels, Cochleagram::MIN_FREQ, Cochleagram::MAX_FREQ, 44100);
-	SignalBank* siggyb = bank.filter(signal);
+	SignalBank* siggyb = bank.filter(signal, false);
+
+	for (int i = 0; i < channels; i++) {
+		(*siggyb)[i].reverse();
+
+		(*siggyb).add((*(bank.bank[i])).filter((*siggyb)[i], false), i);
+		(*siggyb)[i].reverse();
+	}
+
 	SignalGrid* siggyGrid = new SignalGrid(*siggyb, frameSize, overlap);
 	bool** bools = new bool*[channels];
 	for (int channel = 0; channel < channels; channel++) {

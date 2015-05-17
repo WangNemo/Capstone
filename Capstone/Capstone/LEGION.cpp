@@ -40,7 +40,7 @@ void LEGION::createConnections() {
 		for (int frame = 0; frame < FRAMES; frame++) {
 			if (frame < FRAMES - 1) {
 				double weight = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame + 1][channel])
-					> crossCorrelationThreshold ? 1 : 0;
+					> (channel >= 54 ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
 
 				//Connection* timeConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
 				//timeConnections[channel][frame] = timeConnection;
@@ -53,7 +53,7 @@ void LEGION::createConnections() {
 			}
 			if (channel < CHANNELS - 1) {
 				double weight = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame][channel + 1])
-					> crossCorrelationThreshold ? 1 : 0;
+					> (channel >= 54 ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
 
 				//Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
 				//freqConnections[channel][frame] = freqConnection;

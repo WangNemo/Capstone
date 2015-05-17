@@ -129,7 +129,7 @@ double Signal::crossCorrelate(Signal& other) {
 double Signal::getCorrelation(int startingSample, Signal& window, int lag) {
 	double sample = 0;
 	for (int i = 0; i < window.SAMPLES; i++) {
-		sample += signal[i + startingSample] * signal[startingSample + i + lag] * window[i];
+		sample += signal[i + startingSample] * signal[startingSample + i + lag] /** window[i]*/;
 	}
 	return sample;
 }

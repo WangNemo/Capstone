@@ -22,30 +22,22 @@ FilterBank::FilterBank(int channels, int lowFreq, int highFreq, int sampleRate) 
 	delete[] erbScale;
 }
 
-SignalBank* FilterBank::filter(Signal& signal){
+SignalBank* FilterBank::filter(Signal& signal, bool envelope){
 	//print "filterbank" endl;
  	SignalBank* channels = new SignalBank(CHANNELS, SAMPLE_RATE, signal.SAMPLES);
 	for (int i = 0; i < CHANNELS; i++) {
-		Signal* filtered = bank[i]->filter(signal); //(*bank)->filter(signal);
+		Signal* filtered = bank[i]->filter(signal, envelope && i > envelopeBoundary); //(*bank)->filter(signal);
 		channels->add(filtered, i);
 	}
 	return channels;
 }
-
-void FilterBank::filter(SignalBank& signal) {
-	for (int i = 0; i < CHANNELS; i++) {
-		Signal* filtered = (*bank)->filter(signal[i]);
-		signal.add(filtered, i);
-	}
-}
-
 
 Signal* FilterBank::reverse(SignalBank& inputBank) {
 	Signal* signal = new Signal(inputBank.SAMPLES, inputBank.SAMPLE_RATE);
 	for (int i = 0; i < CHANNELS; i++) {
 		Signal channel = inputBank[i];
 		inputBank[i].reverse();
-		inputBank.add((*bank)->filter(inputBank[i]), i);
+		inputBank.add((*bank)->filter(inputBank[i], i > envelopeBoundary), i);
 		inputBank[i].reverse();
 	}
 	return signal;

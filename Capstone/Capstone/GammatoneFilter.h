@@ -32,7 +32,7 @@ private:
 public:
 	GammatoneFilter() {};
 	GammatoneFilter(int frequencyCenter, double bandwidth, int sampleRate);
-	Signal* filter(Signal& signal);
+	Signal* filter(Signal& signal, bool envelope);
 	void filterInplace(Signal& signal);
 	~GammatoneFilter();
 };

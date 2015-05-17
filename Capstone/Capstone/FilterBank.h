@@ -13,12 +13,12 @@ private:
 	int erbScaleToFreq(double erb);
 	double* logSpacedErbScale(double minErb, double maxErb);
 public:
+	int envelopeBoundary = 54; // 800 hz
 	GammatoneFilter** bank;
 	int CHANNELS, LOW, HIGH, SAMPLE_RATE;
 
 	FilterBank(int channels, int lowFreq, int highFreq, int sampleRate);
-	SignalBank* filter(Signal& signal);
-	void filter(SignalBank& signal);
+	SignalBank* filter(Signal& signal, bool envelope = true);
 	Signal* reverse(SignalBank& inputBank);
 	~FilterBank();
 };

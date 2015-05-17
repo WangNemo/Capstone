@@ -16,7 +16,7 @@ private:
 	const double TRANSMITTERS = 1;
 public:
 	Meddis() {};
-	SignalBank* filter(SignalBank& bm);
+	SignalBank* filter(SignalBank& bm, int limit);
 	double** unmodifiedFilter(SignalBank& bm, int sampleRate, int channels, int samples);
 	~Meddis();
 };
