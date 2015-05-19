@@ -22,6 +22,7 @@ public:
 	int numSegments = 0;
 	int largestSegment = -1;
 	int numInLargestSegment = -1;
+	int highFreqThreshold = 30;
 	double crossCorrelationThreshold = .95;
 	double crossCorrelationThresholdHigh = .825;
 	Correlogram& correlogram;

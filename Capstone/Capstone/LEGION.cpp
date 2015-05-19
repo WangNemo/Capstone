@@ -19,7 +19,7 @@ void LEGION::initializeGrid() {
 		neuralGrid[channel] = new Oscillator*[FRAMES];
 		for (int frame = 0; frame < FRAMES; frame++) {
 			double randa = rand();
-			double randX = randa / RAND_MAX + MINIMUM_ACTIVITY;
+			double randX = /*randa / RAND_MAX +*/ MINIMUM_ACTIVITY;
 			neuralGrid[channel][frame] = new Oscillator(randX,
 				(*correlogram.T_FGrid)[frame][channel][0] > correlogram.activityThreshold ? .2 : -5);
 		}
@@ -36,11 +36,12 @@ void LEGION::createConnections() {
 		//timeConnections[channel] = new Connection*[correlogram.FRAMES - 1];
 		//if (channel < CHANNELS - 1)
 			//freqConnections[channel] = new Connection*[correlogram.FRAMES];
-
+		double correctValue = 1 - channel * .002;
 		for (int frame = 0; frame < FRAMES; frame++) {
 			if (frame < FRAMES - 1) {
+				
 				double weight = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame + 1][channel])
-					> (channel >= 54 ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+					>= correctValue/*(channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
 
 				//Connection* timeConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
 				//timeConnections[channel][frame] = timeConnection;
@@ -53,7 +54,8 @@ void LEGION::createConnections() {
 			}
 			if (channel < CHANNELS - 1) {
 				double weight = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame][channel + 1])
-					> (channel >= 54 ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+					>= correctValue/*(channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
+					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
 
 				//Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
 				//freqConnections[channel][frame] = freqConnection;

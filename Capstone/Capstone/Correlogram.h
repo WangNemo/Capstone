@@ -6,7 +6,7 @@
 class Correlogram
 {
 public:
-	double activityThreshold = .60;
+	double activityThreshold = .80;
 
 	SignalGrid* T_FGrid;
 	int* fundamentialFrequencyTime;

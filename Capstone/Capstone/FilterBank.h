@@ -13,7 +13,7 @@ private:
 	int erbScaleToFreq(double erb);
 	double* logSpacedErbScale(double minErb, double maxErb);
 public:
-	int envelopeBoundary = 54; // 800 hz
+	int envelopeBoundary = 35; // 800 hz
 	GammatoneFilter** bank;
 	int CHANNELS, LOW, HIGH, SAMPLE_RATE;
 
