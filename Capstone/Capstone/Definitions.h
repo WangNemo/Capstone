@@ -99,6 +99,19 @@ public:
 		}
 		delete[] grid;
 	}
+
+	void toFile(std::string path) {
+		std::fstream os(path, std::ios::out);
+		for (int i = ROWS - 1; i >= 0; --i)
+		{
+			for (int j = 0; j < COLUMNS; ++j)
+			{
+				os << (*this)(i, j);
+				os << "\t";
+			}
+			os << "\n";
+		}
+	}
 };
 
 class intGrid {
@@ -127,17 +140,14 @@ public:
 		grid[row][col] = value;
 	}
 
-	void toFile(std::string path, int width = 1) {
+	void toFile(std::string path) {
 		std::fstream os(path, std::ios::out);
 		for (int i = ROWS - 1; i >= 0; --i)
 		{
 			for (int j = 0; j < COLUMNS; ++j)
 			{
-				int length = std::to_string((*this)(i, j)).length();
 				os << (*this)(i, j);
-				for (int x = 0; x < width - length; x++) {
-					os << " ";
-				}
+				os << "\t";
 			}
 			os << "\n";
 		}
@@ -183,6 +193,19 @@ public:
 			delete[] grid[i];
 		}
 		delete[] grid;
+	}
+
+	void toFile(std::string path) {
+		std::fstream os(path, std::ios::out);
+		for (int i = ROWS - 1; i >= 0; --i)
+		{
+			for (int j = 0; j < COLUMNS; ++j)
+			{
+				os << (*this)(i, j);
+				os << "\t";
+			}
+			os << "\n";
+		}
 	}
 };
 

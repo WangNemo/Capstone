@@ -12,19 +12,23 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 	//int alive = 0;
 	//int match = 0;
 	//deadOscillator = new GroupingOscillator();
+	int totalAgreement = 0;
+	int totalUnits = 0;
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		//neuralGrid[channel] = new GroupingOscillator*[FRAMES];
 		for (int frame = 0; frame < FRAMES; frame++) {
 			int segNum = legion.neuralGrid[channel][frame]->segment;
 			if (segNum >= 0) {
-				//alive++;
+				totalUnits++;
 				//neuralGrid[channel][frame] = new GroupingOscillator(segNum >= 0 ? .2 + (/*legion.neuralGrid[channel][frame]->largestSegment ? .01 :*/ 0) : -100, *(*legion.segments)[segNum]);
 				/*if (legion.neuralGrid[channel][frame]->largestSegment) {
 					neuralGrid[channel][frame]->largest = true;
 				}*/
 				int time = legion.correlogram.fundamentialFrequencyTime[frame];
+				double match = (*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0];
+				//print match endl;
 				if ((*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0] > freqMatchThreshold)  {
-					//match++;
+					totalAgreement++;
 					//print(*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0] endl;
 					(*legion.segments)[segNum]->incrementAgree();
 					//neuralGrid[channel][frame]->fundamentalFreqencyMatch = true;
@@ -42,12 +46,20 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 	//print alive endl;
 	//print match endl;
 
+	//for (int i = 0; i < legion.numSegments; i++) {
+	//	Segment* seg = (*legion.segments)[i];
+
+	//}
+
+	double averageAgreement = ((double)totalAgreement) / totalUnits;
+	print "Average Agreement: " << averageAgreement endl;
 	int largestSize = 0;
 	for (int i = 0; i < legion.numSegments; i++) {
 		Segment* seg = (*legion.segments)[i];
-		seg->decide();
-		if (seg->segmentSize > largestSize) {
-			largestSize = seg->segmentSize;
+		//print seg->segmentSize endl;
+		seg->decide(averageAgreement);
+		if (seg->length > largestSize) {
+			largestSize = seg->length;
 			nextLargestSegment = seg;
 		}
 	}
@@ -172,8 +184,8 @@ void GroupingNetwork::group() {
 	for (int i = 0; i < legion.numSegments; i++) {
 		Segment* seg = (*legion.segments)[i];
 		if (!seg->grouped) {
-			if (seg->segmentSize > largestSize) {
-				largestSize = seg->segmentSize;
+			if (seg->length > largestSize) {
+				largestSize = seg->length;
 				nextLargestSegment = seg;
 			}
 			if (largestSegment->overlapsWith(*seg)) {

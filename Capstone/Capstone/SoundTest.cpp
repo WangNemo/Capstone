@@ -33,6 +33,7 @@ void SoundTest::run() {
 				Signal* signal2 = staticTools::readWav(full2);
 				signal1->trim(44100);
 				signal2->trim(44100);
+				//print full2 endl;
 
 				Signal* mixed = staticTools::combine(*signal1, *signal2);
 				
@@ -46,10 +47,20 @@ void SoundTest::run() {
 
 				Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
 				Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
+				boolGrid* activeMask = coresdfa.toBinaryMask();
+				activeMask->toFile(name + "_Active.txt");
 				
 				LEGION* lo = new LEGION(coresdfa);
 				lo->run();
 				lo->markLargestSegment();
+
+				lo->saveSegmentGrid(name + "segmentGrid.txt");
+				/*for (int i = 0; i < lo->numSegments; i++) {
+					boolGrid* mask = lo->segmentsAsMask(i);
+					IdealBinaryMask::saveIdealBinaryMask(std::to_string(i) + "_mask.wav", mask, mixed);
+				}*/
+
+
 				//IdealBinaryMask::saveIdealBinaryMask("LEGION.wav", lo->segmentsAsMask(), mixed);
 
 				GroupingNetwork* level2 = new GroupingNetwork(*lo);
@@ -62,17 +73,21 @@ void SoundTest::run() {
 				//IdealBinaryMask::saveIdealBinaryMask(name + " (foreground).wav", level2->foreground, mixed);
 
 
+
 				SeparationResult* result = errorResults(name, *signal1, *signal2, mixed, level2->foreground, level2->background);
 				resultStream << name << "\t" << result->toString() endl;
 
-				//print name << result->mean endl;
 				mixed->normalize();
 				FILE* mixF = fopen(std::string(name + " (mixed).wav").c_str(), "wb");
 				fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 				fclose(mixF);
 
-				/*print "error " << round(result->mean) << "%" endl;;
-				print "foreground\t\tbackground" endl;
+				print "result " << result->mean endl;
+
+
+
+
+				/*print "foreground\t\tbackground" endl;
 				print "energy\tnoise\tenergy\tnoise" endl;
 				print result->foregroundEnergy << "\t" << result->foregroundNoise << "\t";
 				print result->backgroundEnergy << "\t" << result->backgroundNoise << "\t" endl;*/
@@ -82,7 +97,7 @@ void SoundTest::run() {
 				delete mixed;
 				delete lo;
 				delete level2;
-				delete result;
+				//delete result;
 				print "" endl;
 				test++;
 			//}
@@ -106,7 +121,7 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 	double max = mixedResynth->getMax();
 	double maxAmplitude = 1.0 / max;
 
-	print maxAmplitude endl;
+	//print maxAmplitude endl;
 	delete mixedResynth;
 
 	bool normalize = false;

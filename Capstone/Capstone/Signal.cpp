@@ -44,14 +44,14 @@ void Signal::zeroMeanStandardVariance() {
 
 	double average = avgInArray(signal, SAMPLES);
 
-	if (abs(average) > .01) {
+	if (abs(average) > 0) {
 		for (int i = 0; i < SAMPLES; i++) {
 			signal[i] -= average;
 		}
 	}
-
+	average = avgInArray(signal, SAMPLES);
 	double standardDerivation = staticTools::standardDeviation(*this, average);
-	if (abs(standardDerivation) > .01) {
+	if (abs(standardDerivation) > 0) {
 		for (int i = 0; i < SAMPLES; i++) {
 			signal[i] /= standardDerivation;
 		}

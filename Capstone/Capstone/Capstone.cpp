@@ -84,7 +84,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	LEGION* lo = new LEGION(coresdfa);
 	lo->run();
 	lo->markLargestSegment();
-	IdealBinaryMask::saveIdealBinaryMask("LEGION.wav", lo->segmentsAsMask(), mixed);
+	//IdealBinaryMask::saveIdealBinaryMask("LEGION.wav", lo->segmentsAsMask(), mixed);
 
 	GroupingNetwork* level2 = new GroupingNetwork(*lo);
 	level2->run();

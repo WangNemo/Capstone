@@ -120,7 +120,7 @@ boolGrid* crossCorrelationSegmentation::getBinaryMask(int group) {
 
 void crossCorrelationSegmentation::writeSegmentText(std::string name)
 {
-	segmentGrid->toFile(name, 5);
+	segmentGrid->toFile(name);
 }
 
 crossCorrelationSegmentation::~crossCorrelationSegmentation()

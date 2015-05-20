@@ -19,7 +19,7 @@ void LEGION::initializeGrid() {
 		neuralGrid[channel] = new Oscillator*[FRAMES];
 		for (int frame = 0; frame < FRAMES; frame++) {
 			double randa = rand();
-			double randX = /*randa / RAND_MAX +*/ MINIMUM_ACTIVITY;
+			double randX = randa / RAND_MAX + MINIMUM_ACTIVITY;
 			neuralGrid[channel][frame] = new Oscillator(randX,
 				(*correlogram.T_FGrid)[frame][channel][0] > correlogram.activityThreshold ? .2 : -5);
 		}
@@ -32,17 +32,76 @@ void LEGION::createConnections() {
 	//timeConnections = new Connection**[correlogram.CHANNELS];
 	//freqConnections = new Connection**[correlogram.CHANNELS - 1];
 
+
+	//int count = 0;
+	//double total = 0;
+	//double totalChanoff = 0;
+	//for (int channel = 0; channel < CHANNELS; channel++) {
+	//	//timeConnections[channel] = new Connection*[correlogram.FRAMES - 1];
+	//	//if (channel < CHANNELS - 1)
+	//		//freqConnections[channel] = new Connection*[correlogram.FRAMES];
+	//	//double correctValue = 1 - channel * .002;
+	//	for (int frame = 0; frame < FRAMES; frame++) {
+	//		if (frame < FRAMES - 1) {
+	//			double crossCorrelation = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame + 1][channel]);
+	//			if (crossCorrelation > .1) {
+	//				print crossCorrelation <<'\t' << channel endl;
+	//				count++;
+	//				total += crossCorrelation;
+	//				totalChanoff += channel;// (1 - crossCorrelation);
+	//			}
+	//			//double weight = crossCorrelation
+	//			//	//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+	//			//	> crossCorrelationThresholdHigh ? 1 : 0;
+	//			////Connection* timeConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
+	//			////timeConnections[channel][frame] = timeConnection;
+	//			//if (weight > 0) {
+	//			//	neuralGrid[channel][frame]->right = neuralGrid[channel][frame + 1];
+	//			//	neuralGrid[channel][frame]->wRight = weight;
+	//			//	neuralGrid[channel][frame + 1]->left = neuralGrid[channel][frame];
+	//			//	neuralGrid[channel][frame + 1]->wLeft = weight;
+	//			//}
+	//		}
+	//		if (channel < CHANNELS - 1) {
+	//			double crossCorrelation = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame][channel + 1]);
+	//			if (crossCorrelation > .1) {
+	//				print crossCorrelation << '\t' << channel endl;
+	//				count++;
+	//				total += crossCorrelation;
+	//				totalChanoff += channel;//(1 - crossCorrelation);
+	//			}
+	//			//double weight = crossCorrelation
+	//			//	//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+	//			//	> crossCorrelationThresholdHigh ? 1 : 0;
+
+	//			//Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
+	//			//freqConnections[channel][frame] = freqConnection;
+	//			/*if (weight > 0) {
+	//				neuralGrid[channel][frame]->down = neuralGrid[channel + 1][frame];
+	//				neuralGrid[channel][frame]->wDown = weight;
+	//				neuralGrid[channel + 1][frame]->up = neuralGrid[channel][frame];
+	//				neuralGrid[channel + 1][frame]->wUp = weight;
+	//			}*/
+	//		}
+	//	}
+	//}
+	//double average = total / count;
+	//double avgChan = totalChanoff / count;
+	//print "total: " << average endl;
+	int dead = 0;
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		//timeConnections[channel] = new Connection*[correlogram.FRAMES - 1];
 		//if (channel < CHANNELS - 1)
-			//freqConnections[channel] = new Connection*[correlogram.FRAMES];
-		double correctValue = 1 - channel * .002;
+		//freqConnections[channel] = new Connection*[correlogram.FRAMES];
+		//double correctValue = 1 - channel * .002;
 		for (int frame = 0; frame < FRAMES; frame++) {
 			if (frame < FRAMES - 1) {
-				
-				double weight = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame + 1][channel])
-					>= correctValue/*(channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
-
+				double crossCorrelation = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame + 1][channel]);
+				//if (crossCorrelation > 0) print crossCorrelation endl;
+				if (crossCorrelation < .001) dead++;
+				double weight = crossCorrelation
+					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+			>(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
 				//Connection* timeConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
 				//timeConnections[channel][frame] = timeConnection;
 				if (weight > 0) {
@@ -53,9 +112,11 @@ void LEGION::createConnections() {
 				}
 			}
 			if (channel < CHANNELS - 1) {
-				double weight = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame][channel + 1])
-					>= correctValue/*(channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
+				double crossCorrelation = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame][channel + 1]);
+				if (crossCorrelation < .001) dead++;
+				double weight = crossCorrelation
 					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+			>(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
 
 				//Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
 				//freqConnections[channel][frame] = freqConnection;
@@ -68,6 +129,7 @@ void LEGION::createConnections() {
 			}
 		}
 	}
+	print "DEAD: " << dead endl;
 }
 
 void LEGION::findLeaders() {
@@ -101,24 +163,29 @@ void LEGION::run() {
 	bool spiked = true;
 	do {
 		Oscillator* next = maxExcitement();
-		spiked = next->hasSpiked;
-		if (!spiked) {
-			int spikes = next->spike(numSegments);
-			if (spikes < minGroup) {
-				next->kill();
-			}
-			else {
-				if (spikes > numInLargestSegment) {
-					numInLargestSegment = spikes;
-					largestSegment = numSegments;
+		if (next == nullptr) {
+			spiked = true;
+		}
+		else {
+			spiked = next->hasSpiked;
+			if (!spiked) {
+				int spikes = next->spike(numSegments);
+				if (spikes < minGroup) {
+					next->kill();
 				}
-				allStep(spikes);
-				numSegments++;
+				else {
+					if (spikes > numInLargestSegment) {
+						numInLargestSegment = spikes;
+						largestSegment = numSegments;
+					}
+					allStep(spikes);
+					numSegments++;
+				}
 			}
 		}
 	} while (!spiked);
 	print "segments: " << numSegments endl;
-	saveSegmentGrid("LEGION.txt");
+	//saveSegmentGrid("LEGION.txt");
 }
 
 void LEGION::allStep(int spiked) {
@@ -159,12 +226,12 @@ void LEGION::markLargestSegment() {
 
 }
 
-boolGrid* LEGION::segmentsAsMask() {
+boolGrid* LEGION::segmentsAsMask(int segment) {
 	bool** grid = new bool*[CHANNELS];
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		grid[channel] = new bool[FRAMES];
 		for (int frame = 0; frame < FRAMES; frame++) {
-			grid[channel][frame] = (*segmentGrid)(channel, frame) >= 0;
+			grid[channel][frame] = (*segmentGrid)(channel, frame) == segment;
 		}
 	}
 	return new boolGrid(grid, CHANNELS, FRAMES);
@@ -172,7 +239,7 @@ boolGrid* LEGION::segmentsAsMask() {
 
 
 void LEGION::saveSegmentGrid(std::string location) {
-	segmentGrid->toFile(location, 5);
+	segmentGrid->toFile(location);
 }
 
 LEGION::~LEGION()

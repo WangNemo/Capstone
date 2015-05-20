@@ -22,9 +22,9 @@ public:
 	int numSegments = 0;
 	int largestSegment = -1;
 	int numInLargestSegment = -1;
-	int highFreqThreshold = 30;
+	int highFreqThreshold = 54;
 	double crossCorrelationThreshold = .95;
-	double crossCorrelationThresholdHigh = .825;
+	double crossCorrelationThresholdHigh = .85;
 	Correlogram& correlogram;
 	//Connection*** timeConnections;
 	//Connection*** freqConnections;
@@ -35,7 +35,7 @@ public:
 	LEGION(Correlogram& correlogram);
 	void run();
 	void allStep(int spiked);
-	boolGrid* segmentsAsMask();
+	boolGrid* segmentsAsMask(int segment);
 	void saveSegmentGrid(std::string location);
 	void markLargestSegment();
 	~LEGION();

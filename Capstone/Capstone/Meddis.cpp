@@ -14,7 +14,7 @@ SignalBank* Meddis::filter(SignalBank& bm, int limit)
 	//% inner hair cell transduction
 	SignalBank* meddisResult = new SignalBank(bm.CHANNELS, bm.SAMPLE_RATE, bm.SAMPLES);
 	//SignalBank& meddisResult = *meddisResultPtr;
-	for (int channel = 0; channel </*= limit*/ bm.CHANNELS; channel++) {
+	for (int channel = 0; channel <= limit /*bm.CHANNELS*/; channel++) {
 		Signal* sig = new Signal(bm.SAMPLES, bm.SAMPLE_RATE);
 		meddisResult->add(sig, channel);
 		//Signal& signal = *sig;
@@ -48,13 +48,13 @@ SignalBank* Meddis::filter(SignalBank& bm, int limit)
 			result[sample] = cleftContents * FIRING_PROBABILITY;
 		}
 	}
-	//for (int i = limit + 1; i < bm.CHANNELS; i++) {
-	//	Signal* sig = new Signal(bm.SAMPLES, bm.SAMPLE_RATE);
-	//	meddisResult->add(sig, i);
-	//	for (int sample = 0; sample < bm.SAMPLES; sample++) {
-	//		(*meddisResult)[i][sample] = bm[i][sample];
-	//	}
-	//}
+	for (int i = limit + 1; i < bm.CHANNELS; i++) {
+		Signal* sig = new Signal(bm.SAMPLES, bm.SAMPLE_RATE);
+		meddisResult->add(sig, i);
+		for (int sample = 0; sample < bm.SAMPLES; sample++) {
+			(*meddisResult)[i][sample] = bm[i][sample];
+		}
+	}
 	return meddisResult;
 }
 

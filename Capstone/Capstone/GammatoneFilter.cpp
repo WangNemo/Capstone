@@ -61,10 +61,10 @@ Signal* GammatoneFilter::filter(Signal& signal, bool envelope) {
 		filterComplex(filteredSample);
 
 		// shift signal back
-		double shiftedBack = /*envelope ?
+		double shiftedBack = envelope ?
 				sqrt(filteredSample.real * filteredSample.real +
 				filteredSample.imaginary * filteredSample.imaginary)
-			:*/
+			:
 				filteredSample.real * freqShift.real +
 				filteredSample.imaginary * freqShift.imaginary;
 

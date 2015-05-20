@@ -18,6 +18,7 @@ void Segment::add(RowColumn* pair) {
 	else {
 		print "Too many in seg" endl;
 	}
+	length = maxFrame - minFrame;
 }
 
 //int Segment::numActive(GroupingOscillator*** neuralGrid) {
@@ -46,10 +47,21 @@ void Segment::incrementDisagree(){
 	disagree++;
 }
 
-void Segment::decide() {
-	//print "Agree: " << agree << "\tdisagree: " << disagree << "\ttotal: " << segmentSize << "\tratio: " << (float)agree / segmentSize endl;
-	fundamentalFreqencyMatch = agree > disagree;
+void Segment::decide(double agreementRequirement) {
+	if (segmentSize > 100)
+	print /*"Agree: " << agree << "\tdisagree: " << disagree <<*/"Length: " << length << "\ttotal: " << segmentSize << "\tratio: " << (float)agree / segmentSize endl;
+	//print agree << '\t' << disagree endl;
+	fundamentalFreqencyMatch = ((double) agree) / segmentSize > agreementRequirement;
 }
+
+double Segment::agreementRatio() {
+	return (double)agree / segmentSize;
+}
+
+//double Segment::power() {
+//	double total = 0;
+//
+//}
 
 
 bool Segment::overlapsWith(Segment& other){

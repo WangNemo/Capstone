@@ -38,7 +38,7 @@ boolGrid* Correlogram::toBinaryMask() {
 	for (int row = 0; row < T_FGrid->CHANNELS; row++) {
 		binaryMask[row] = new bool[T_FGrid->FRAMES];
 		for (int col = 0; col < T_FGrid->FRAMES; col++) {
-			binaryMask[row][col] = (*T_FGrid)[col][row][0] > 0;
+			binaryMask[row][col] = (*T_FGrid)[col][row][0] > .5;
 		}
 	}
 	boolGrid* idealBinaryMask1 = new boolGrid(binaryMask, T_FGrid->CHANNELS, T_FGrid->FRAMES);
