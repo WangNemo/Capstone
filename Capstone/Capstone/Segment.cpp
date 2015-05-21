@@ -48,7 +48,7 @@ void Segment::incrementDisagree(){
 }
 
 void Segment::decide(double agreementRequirement) {
-	if (segmentSize > 100)
+	//if (segmentSize > 100)
 	print /*"Agree: " << agree << "\tdisagree: " << disagree <<*/"Length: " << length << "\ttotal: " << segmentSize << "\tratio: " << (float)agree / segmentSize endl;
 	//print agree << '\t' << disagree endl;
 	fundamentalFreqencyMatch = ((double) agree) / segmentSize > agreementRequirement;

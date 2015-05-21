@@ -36,7 +36,8 @@ void SoundTest::run() {
 				//print full2 endl;
 
 				Signal* mixed = staticTools::combine(*signal1, *signal2);
-				
+				mixed->normalize();
+
 				////delete signal1;
 				////delete signal2;
 				//mixed->normalize();
@@ -77,7 +78,6 @@ void SoundTest::run() {
 				SeparationResult* result = errorResults(name, *signal1, *signal2, mixed, level2->foreground, level2->background);
 				resultStream << name << "\t" << result->toString() endl;
 
-				mixed->normalize();
 				FILE* mixF = fopen(std::string(name + " (mixed).wav").c_str(), "wb");
 				fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
 				fclose(mixF);
@@ -108,21 +108,26 @@ void SoundTest::run() {
 
 double SoundTest::energyLoss(Signal& missing, Signal& ideal) {
 	double idealSum = ideal.squareSum();
-	double ratio = idealSum == 0 ? 1 : missing.squareSum() / idealSum;
-	if (ratio > 1) {
-		int a = 5;
+	double present = missing.squareSum();
+	double ratio = idealSum == 0 ? 1 :  present / idealSum;
+	print ratio endl;
+	if (abs(ratio - .41258) < .001) {
+		print "\t" << present << "\t" << idealSum endl;
+		print "\t" << missing.SAMPLES << "\t" << ideal.SAMPLES endl;
+		print "\t" << missing.getMean() << "\t" << ideal.getMean() endl;
 	}
 	return ratio > 1 ? 1 : ratio;
 }
 
 SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Signal& signal2, Signal* mixed, boolGrid* foregroundMask, boolGrid* backgroundMask) {
-	Signal* mixedResynth = SignalGrid::resynthesize(*mixed, foregroundMask->COLUMNS, foregroundMask->ROWS, mixed->SAMPLES, mixed->SAMPLE_RATE, .020*signal1.SAMPLE_RATE, .010*signal1.SAMPLE_RATE);
-	mixedResynth->save(std::string("TestResynth.wav"));
-	double max = mixedResynth->getMax();
-	double maxAmplitude = 1.0 / max;
+	//Signal* mixedResynth = SignalGrid::resynthesize(*mixed, foregroundMask->COLUMNS, foregroundMask->ROWS, mixed->SAMPLES, mixed->SAMPLE_RATE, .020*signal1.SAMPLE_RATE, .010*signal1.SAMPLE_RATE);
+	//mixedResynth->save(std::string("TestResynth.wav"));
+	//double max = mixedResynth->getMax();
+	//print max endl;
+	//double maxAmplitude = max;// 1.0 / max;
 
 	//print maxAmplitude endl;
-	delete mixedResynth;
+	//delete mixedResynth;
 
 	bool normalize = false;
 
@@ -135,33 +140,29 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 
 	
 	IdealBinaryMask mask(signal1, signal2);
-	//std::fstream of1("ibm1.txt", std::ios::out);
-	//mask.writeBinaryMask(of1, mask.idealBinaryMask1);
-	//std::fstream of2("ibm2.txt", std::ios::out);
-	//mask.writeBinaryMask(of2, mask.idealBinaryMask2);
-	//mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2 , maxAmplitude);
-	//mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1 , maxAmplitude);
+
+
+	std::fstream of1("ibm1.txt", std::ios::out);
+	mask.writeBinaryMask(of1, mask.idealBinaryMask1);
+	std::fstream of2("ibm2.txt", std::ios::out);
+	mask.writeBinaryMask(of2, mask.idealBinaryMask2);
+	mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
+	mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);
 
 	Signal* mask1 = mask.applyIdealBinaryMask(mask.idealBinaryMask1, normalize);
-	mask1->normalize(maxAmplitude);
 	mask1->save(std::string("mask1.wav"));
 	Signal* mask2 = mask.applyIdealBinaryMask(mask.idealBinaryMask2, normalize);
-	mask2->normalize(maxAmplitude);
 	mask2->save(std::string("mask2.wav"));
 
 	boolGrid* Mask1IntersectForeground = mask.idealBinaryMask1->intersect(*foregroundMask);
 	boolGrid* Mask2IntersectForeground = mask.idealBinaryMask2->intersect(*foregroundMask);
 	Signal* foreground1 = IdealBinaryMask::applyIdealBinaryMask(Mask1IntersectForeground, mixed, normalize);
-	foreground1->normalize(maxAmplitude);
 	Signal* foreground2 = IdealBinaryMask::applyIdealBinaryMask(Mask2IntersectForeground, mixed, normalize);
-	foreground2->normalize(maxAmplitude);
 
 	boolGrid* Mask1IntersectBackground = mask.idealBinaryMask1->intersect(*backgroundMask);
 	boolGrid* Mask2IntersectBackground = mask.idealBinaryMask2->intersect(*backgroundMask);
 	Signal* background1 = IdealBinaryMask::applyIdealBinaryMask(Mask1IntersectBackground, mixed, normalize);
-	background1->normalize(maxAmplitude);
 	Signal* background2 = IdealBinaryMask::applyIdealBinaryMask(Mask2IntersectBackground, mixed, normalize);
-	background2->normalize(maxAmplitude);
 
 	double energyFore1 = energyLoss(*foreground1, *mask1);
 	double energyFore2 = energyLoss(*foreground2, *mask2);

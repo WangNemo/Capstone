@@ -27,6 +27,7 @@ public:
 	double crossCorrelate(Signal& other);
 	double squareSum();
 	double getMax();
+	double getMean();
 	int sampleOfHighestPeak(int millis);
 	~Signal();
 };

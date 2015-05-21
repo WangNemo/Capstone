@@ -14,6 +14,7 @@
 #include <fstream>
 #include "Signal.h"
 #include <vector>
+#include <windows.h>
 
 #define MAX(x,y)     ( ( x ) > ( y ) ? ( x ) : ( y ) )
 #define MIN(x,y)     ( ( x ) < ( y ) ? ( x ) : ( y ) )

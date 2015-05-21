@@ -65,7 +65,7 @@ IdealBinaryMask::IdealBinaryMask(Signal& signal1, Signal& signal2) : signal1(sig
 
 Signal* IdealBinaryMask::applyIdealBinaryMask(boolGrid* mask, bool normalize) {
 	Signal* mixed = staticTools::combine(signal1, signal2);
-	if (normalize)
+	//if (normalize)
 		mixed->normalize();
 
 	Signal* result = applyIdealBinaryMask(mask, mixed, normalize);

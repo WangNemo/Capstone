@@ -154,6 +154,11 @@ double Signal::getMax() {
 	return largest;
 }
 
+double Signal::getMean() {
+	return avgInArray(signal, SAMPLES);
+}
+
+
 int Signal::sampleOfHighestPeak(int millis) {
 	int start = (millis * SAMPLE_RATE) / 1000;
 	double max = -100;

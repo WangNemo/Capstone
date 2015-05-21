@@ -117,7 +117,6 @@ void LEGION::createConnections() {
 				double weight = crossCorrelation
 					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
 			>(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
-
 				//Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
 				//freqConnections[channel][frame] = freqConnection;
 				if (weight > 0) {
