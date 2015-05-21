@@ -12,6 +12,17 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 	//int alive = 0;
 	//int match = 0;
 	//deadOscillator = new GroupingOscillator();
+	for (int channel = 0; channel < CHANNELS; channel++) {
+		for (int frame = 0; frame < FRAMES; frame++) {
+			int time = legion.correlogram.fundamentialFrequencyTime[frame];
+			(*legion.correlogram.T_FGrid)[frame][channel][time] = legion.neuralGrid[channel][frame]->segment < 0 ? -1 : (*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0];
+		}
+	}
+
+	setFreqTreshold();
+
+
+
 	int totalAgreement = 0;
 	int totalUnits = 0;
 	for (int channel = 0; channel < CHANNELS; channel++) {
@@ -25,9 +36,9 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 					neuralGrid[channel][frame]->largest = true;
 				}*/
 				int time = legion.correlogram.fundamentialFrequencyTime[frame];
-				double match = (*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0];
+				double match = (*legion.correlogram.T_FGrid)[frame][channel][time];
 				//print match endl;
-				if ((*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0] > freqMatchThreshold)  {
+				if (match > freqMatchThreshold)  {
 					totalAgreement++;
 					//print(*legion.correlogram.T_FGrid)[frame][channel][time] / (*legion.correlogram.T_FGrid)[frame][channel][0] endl;
 					(*legion.segments)[segNum]->incrementAgree();
@@ -51,8 +62,9 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 
 	//}
 
-	double averageAgreement = ((double)totalAgreement) / totalUnits;
+	double averageAgreement = ((double)totalAgreement) / totalUnits + .004;
 	print "Average Agreement: " << averageAgreement endl;
+	print "FreqMatchTrheshold: " << freqMatchThreshold endl;
 	int largestSize = 0;
 	for (int i = 0; i < legion.numSegments; i++) {
 		Segment* seg = (*legion.segments)[i];
@@ -88,6 +100,47 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 	//	}
 	//}
 }
+
+void GroupingNetwork::setFreqTreshold() {
+	double max = 1;
+	double min = 0;
+	double currentThreshold = .5;
+	double currentAgreement = getAgreementPercent(currentThreshold);
+	double targetAgreement = .5;
+	double threshold = .0000001;
+
+	while (abs(currentAgreement - targetAgreement) > threshold && currentThreshold > threshold  && currentThreshold < max - threshold) {
+		print currentThreshold << '\t' << currentAgreement endl;
+		if (currentAgreement > targetAgreement) {
+			min = currentThreshold;
+		}
+		else {
+			max = currentThreshold;
+		}
+		currentThreshold = (min + max) / 2;
+		currentAgreement = getAgreementPercent(currentThreshold);
+	}
+	freqMatchThreshold = currentThreshold;
+}
+
+double GroupingNetwork::getAgreementPercent(double matchThreshold){
+	int totalAgreement = 0;
+	int totalUnits = 0;
+	for (int channel = 0; channel < CHANNELS; channel++) {
+		for (int frame = 0; frame < FRAMES; frame++) {
+			int time = legion.correlogram.fundamentialFrequencyTime[frame];
+			double match = (*legion.correlogram.T_FGrid)[frame][channel][time];
+			if (legion.neuralGrid[channel][frame]->segment >= 0) {
+				totalUnits++;
+				if (match > matchThreshold)  {
+					totalAgreement++;
+				}
+			}
+		}
+	}
+	return ((double)totalAgreement) / totalUnits;
+}
+
 
 
 void GroupingNetwork::run() {

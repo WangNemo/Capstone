@@ -17,7 +17,7 @@ private:
 public:
 	int CHANNELS;
 	int FRAMES;
-	int minGroup = 5;
+	int minGroup = 10;
 	int leaderNeighbors = 1;
 	int numSegments = 0;
 	int largestSegment = -1;
