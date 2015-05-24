@@ -81,7 +81,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	//boolGrid* mask41 = coresdfa.toBinaryMask();
 	//IdealBinaryMask::writeBinaryMask(ofsas, mask41);
 
-	LEGION* lo = new LEGION(coresdfa);
+	LEGION* lo = new LEGION(coresdfa, "");
 	lo->run();
 	lo->markLargestSegment();
 	//IdealBinaryMask::saveIdealBinaryMask("LEGION.wav", lo->segmentsAsMask(), mixed);

@@ -2,12 +2,12 @@
 #include "LEGION.h"
 
 
-LEGION::LEGION(Correlogram& correlogram) : FRAMES(correlogram.T_FGrid->FRAMES), CHANNELS(correlogram.T_FGrid->CHANNELS), correlogram(correlogram)
+LEGION::LEGION(Correlogram& correlogram, std::string name) : FRAMES(correlogram.T_FGrid->FRAMES), CHANNELS(correlogram.T_FGrid->CHANNELS), correlogram(correlogram)
 {
 	segments = new std::vector<Segment*>();
 	segmentGrid = new intGrid(CHANNELS, FRAMES, -1);
 	initializeGrid();
-	createConnections();
+	createConnections(name);
 	findLeaders();
 }
 
@@ -27,7 +27,7 @@ void LEGION::initializeGrid() {
 }
 
 
-void LEGION::createConnections() {
+void LEGION::createConnections(std::string name) {
 	print "linking" endl;
 	//timeConnections = new Connection**[correlogram.CHANNELS];
 	//freqConnections = new Connection**[correlogram.CHANNELS - 1];
@@ -88,6 +88,10 @@ void LEGION::createConnections() {
 	//double average = total / count;
 	//double avgChan = totalChanoff / count;
 	//print "total: " << average endl;
+
+	std::fstream vertCons(name + " vertcons.txt", std::ios::out);
+	std::fstream horCons(name + " horcons.txt", std::ios::out);
+
 	int dead = 0;
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		//timeConnections[channel] = new Connection*[correlogram.FRAMES - 1];
@@ -97,11 +101,12 @@ void LEGION::createConnections() {
 		for (int frame = 0; frame < FRAMES; frame++) {
 			if (frame < FRAMES - 1) {
 				double crossCorrelation = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame + 1][channel]);
+				vertCons << crossCorrelation << " ";
 				//if (crossCorrelation > 0) print crossCorrelation endl;
 				if (crossCorrelation < .001) dead++;
 				double weight = crossCorrelation
 					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
-			>(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+				> .97 - pow(channel, 2) / pow(350, 2) - channel / 4267/*(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
 				//Connection* timeConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
 				//timeConnections[channel][frame] = timeConnection;
 				if (weight > 0) {
@@ -113,10 +118,11 @@ void LEGION::createConnections() {
 			}
 			if (channel < CHANNELS - 1) {
 				double crossCorrelation = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame][channel + 1]);
+				horCons << crossCorrelation << " ";
 				if (crossCorrelation < .001) dead++;
 				double weight = crossCorrelation
 					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
-			>(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
+				>  .97 - pow(channel, 2) / pow(350, 2) - channel / 4267/*(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
 				//Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
 				//freqConnections[channel][frame] = freqConnection;
 				if (weight > 0) {
@@ -127,6 +133,7 @@ void LEGION::createConnections() {
 				}
 			}
 		}
+		vertCons endl;
 	}
 	print "DEAD: " << dead endl;
 }

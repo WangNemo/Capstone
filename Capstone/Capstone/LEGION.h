@@ -11,7 +11,7 @@ class LEGION
 {
 private:
 	void initializeGrid();
-	void createConnections();
+	void createConnections(std::string name);
 	void findLeaders();
 	Oscillator* maxExcitement();
 public:
@@ -24,7 +24,7 @@ public:
 	int numInLargestSegment = -1;
 	int highFreqThreshold = 54;
 	double crossCorrelationThreshold = .95;
-	double crossCorrelationThresholdHigh = .85;
+	double crossCorrelationThresholdHigh = .7;
 	Correlogram& correlogram;
 	//Connection*** timeConnections;
 	//Connection*** freqConnections;
@@ -32,7 +32,7 @@ public:
 	intGrid* segmentGrid;
 	std::vector<Segment*>*  segments;
 
-	LEGION(Correlogram& correlogram);
+	LEGION(Correlogram& correlogram, std::string name);
 	void run();
 	void allStep(int spiked);
 	boolGrid* segmentsAsMask(int segment);

@@ -62,7 +62,7 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 
 	//}
 
-	double averageAgreement = ((double)totalAgreement) / totalUnits + .004;
+	double averageAgreement = ((double)totalAgreement) / totalUnits;// +.004;
 	print "Average Agreement: " << averageAgreement endl;
 	print "FreqMatchTrheshold: " << freqMatchThreshold endl;
 	int largestSize = 0;
@@ -241,7 +241,7 @@ void GroupingNetwork::group() {
 				largestSize = seg->length;
 				nextLargestSegment = seg;
 			}
-			if (largestSegment->overlapsWith(*seg)) {
+			//if (largestSegment->overlapsWith(*seg)) {
 				seg->grouped = true;
 				if (largestSegment->fundamentalFreqencyMatch == seg->fundamentalFreqencyMatch) {
 					group->addForeground(seg);
@@ -249,7 +249,7 @@ void GroupingNetwork::group() {
 				else {
 					group->addBackground(seg);
 				}
-			}
+			//}
 		}
 	}
 

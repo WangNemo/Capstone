@@ -51,7 +51,7 @@ void SoundTest::run() {
 				boolGrid* activeMask = coresdfa.toBinaryMask();
 				activeMask->toFile(name + "_Active.txt");
 				
-				LEGION* lo = new LEGION(coresdfa);
+				LEGION* lo = new LEGION(coresdfa, name);
 				lo->run();
 				lo->markLargestSegment();
 
@@ -142,9 +142,9 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 	IdealBinaryMask mask(signal1, signal2);
 
 
-	std::fstream of1("ibm1.txt", std::ios::out);
+	std::fstream of1(name + " ibm1.txt", std::ios::out);
 	mask.writeBinaryMask(of1, mask.idealBinaryMask1);
-	std::fstream of2("ibm2.txt", std::ios::out);
+	std::fstream of2(name + " ibm2.txt", std::ios::out);
 	mask.writeBinaryMask(of2, mask.idealBinaryMask2);
 	mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
 	mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);
