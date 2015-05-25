@@ -61,6 +61,7 @@ GroupingNetwork::GroupingNetwork(LEGION& legion)
 	//	Segment* seg = (*legion.segments)[i];
 
 	//}
+	//print totalUnits endl;
 
 	double averageAgreement = ((double)totalAgreement) / totalUnits;// +.004;
 	print "Average Agreement: " << averageAgreement endl;
@@ -110,7 +111,7 @@ void GroupingNetwork::setFreqTreshold() {
 	double threshold = .0000001;
 
 	while (abs(currentAgreement - targetAgreement) > threshold && currentThreshold > threshold  && currentThreshold < max - threshold) {
-		print currentThreshold << '\t' << currentAgreement endl;
+		//print currentThreshold << '\t' << currentAgreement endl;
 		if (currentAgreement > targetAgreement) {
 			min = currentThreshold;
 		}

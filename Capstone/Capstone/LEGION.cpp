@@ -18,9 +18,7 @@ void LEGION::initializeGrid() {
 	for (int channel = 0; channel < CHANNELS; channel++) {
 		neuralGrid[channel] = new Oscillator*[FRAMES];
 		for (int frame = 0; frame < FRAMES; frame++) {
-			double randa = rand();
-			double randX = randa / RAND_MAX + MINIMUM_ACTIVITY;
-			neuralGrid[channel][frame] = new Oscillator(randX,
+			neuralGrid[channel][frame] = new Oscillator(MINIMUM_ACTIVITY,
 				(*correlogram.T_FGrid)[frame][channel][0] > correlogram.activityThreshold ? .2 : -5);
 		}
 	}
@@ -134,6 +132,7 @@ void LEGION::createConnections(std::string name) {
 			}
 		}
 		vertCons endl;
+		horCons endl;
 	}
 	print "DEAD: " << dead endl;
 }
@@ -148,7 +147,7 @@ void LEGION::findLeaders() {
 			}
 		}
 	}
-	print "leaders: " << leaders endl;
+	//print "leaders: " << leaders endl;
 }
 
 Oscillator* LEGION::maxExcitement() {
@@ -171,6 +170,7 @@ void LEGION::run() {
 		Oscillator* next = maxExcitement();
 		if (next == nullptr) {
 			spiked = true;
+			print "ended by null" endl;
 		}
 		else {
 			spiked = next->hasSpiked;
@@ -188,6 +188,12 @@ void LEGION::run() {
 					numSegments++;
 				}
 			}
+			//else {
+			//	print next->excitement endl;
+			//	print next->segment endl;
+			//	print next->totalWeight() endl;
+			//	print "has spiked" endl;
+			//}
 		}
 	} while (!spiked);
 	print "segments: " << numSegments endl;
