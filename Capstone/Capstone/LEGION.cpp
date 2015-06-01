@@ -92,10 +92,7 @@ void LEGION::createConnections(std::string name) {
 
 	int dead = 0;
 	for (int channel = 0; channel < CHANNELS; channel++) {
-		//timeConnections[channel] = new Connection*[correlogram.FRAMES - 1];
-		//if (channel < CHANNELS - 1)
-		//freqConnections[channel] = new Connection*[correlogram.FRAMES];
-		//double correctValue = 1 - channel * .002;
+		double accuracyReq = accuracyRequirement(channel);
 		for (int frame = 0; frame < FRAMES; frame++) {
 			if (frame < FRAMES - 1) {
 				double crossCorrelation = (*correlogram.T_FGrid)[frame][channel].crossCorrelate((*correlogram.T_FGrid)[frame + 1][channel]);
@@ -104,7 +101,7 @@ void LEGION::createConnections(std::string name) {
 				if (crossCorrelation < .001) dead++;
 				double weight = crossCorrelation
 					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
-				> .97 - pow(channel, 2) / pow(350, 2) - channel / 4267/*(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
+				> accuracyReq/*(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
 				//Connection* timeConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel][frame + 1]);
 				//timeConnections[channel][frame] = timeConnection;
 				if (weight > 0) {
@@ -120,7 +117,7 @@ void LEGION::createConnections(std::string name) {
 				if (crossCorrelation < .001) dead++;
 				double weight = crossCorrelation
 					//> (channel >= highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold) ? 1 : 0;
-				>  .97 - pow(channel, 2) / pow(350, 2) - channel / 4267/*(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
+				>  accuracyReq/*(channel > highFreqThreshold ? crossCorrelationThresholdHigh : crossCorrelationThreshold)*/ ? 1 : 0;
 				//Connection* freqConnection = new Connection(weight, neuralGrid[channel][frame], neuralGrid[channel + 1][frame]);
 				//freqConnections[channel][frame] = freqConnection;
 				if (weight > 0) {
@@ -135,6 +132,10 @@ void LEGION::createConnections(std::string name) {
 		horCons endl;
 	}
 	print "DEAD: " << dead endl;
+}
+
+double LEGION::accuracyRequirement(int channel) {
+	return .98 - pow(channel, 2) / pow(350, 2) - channel / 4267;
 }
 
 void LEGION::findLeaders() {

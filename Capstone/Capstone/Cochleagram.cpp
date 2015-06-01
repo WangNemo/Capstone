@@ -16,7 +16,6 @@ Cochleagram::Cochleagram(Signal& signal, int sampleRate)
 	}*/
 
 	cochleagram = basilarMembrane;
-
 	for (int i = 0; i < CHANNELS; i++) {
 		//print minInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << maxInArray((*cochleagram)[i].signal, signal.SAMPLES) << '\t' << avgInArray((*cochleagram)[i].signal, signal.SAMPLES) endl;
 		//(*cochleagram)[i].normalize();

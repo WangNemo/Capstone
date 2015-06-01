@@ -97,7 +97,7 @@ void SoundTest::run() {
 				delete mixed;
 				delete lo;
 				delete level2;
-				//delete result;
+				delete result;
 				print "" endl;
 				test++;
 			//}
@@ -131,6 +131,8 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 
 	bool normalize = false;
 
+	foregroundMask->toFile(name + " foregroundMask.txt");
+	backgroundMask->toFile(name + " backgroundMask.txt");
 	Signal* foreground = IdealBinaryMask::applyIdealBinaryMask(foregroundMask, mixed);
 	Signal* background = IdealBinaryMask::applyIdealBinaryMask(backgroundMask, mixed);
 	//foreground->normalize(maxAmplitude);
@@ -146,8 +148,8 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 	mask.writeBinaryMask(of1, mask.idealBinaryMask1);
 	std::fstream of2(name + " ibm2.txt", std::ios::out);
 	mask.writeBinaryMask(of2, mask.idealBinaryMask2);
-	mask.saveIdealBinaryMask("testMask2.wav", mask.idealBinaryMask2);
-	mask.saveIdealBinaryMask("testMask1.wav", mask.idealBinaryMask1);
+	mask.saveIdealBinaryMask(name + " ibm1.wav", mask.idealBinaryMask2);
+	mask.saveIdealBinaryMask(name + " ibm2.wav", mask.idealBinaryMask1);
 
 	Signal* mask1 = mask.applyIdealBinaryMask(mask.idealBinaryMask1, normalize);
 	mask1->save(std::string("mask1.wav"));

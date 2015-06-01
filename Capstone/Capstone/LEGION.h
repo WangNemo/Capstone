@@ -13,6 +13,7 @@ private:
 	void initializeGrid();
 	void createConnections(std::string name);
 	void findLeaders();
+	double accuracyRequirement(int channel);
 	Oscillator* maxExcitement();
 public:
 	int CHANNELS;
