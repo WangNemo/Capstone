@@ -135,7 +135,7 @@ void LEGION::createConnections(std::string name) {
 }
 
 double LEGION::accuracyRequirement(int channel) {
-	return .98 - pow(channel, 2) / pow(350, 2) - channel / 4267;
+	return .97 - pow(channel, 2) / pow(350, 2) - channel / 4267;
 }
 
 void LEGION::findLeaders() {

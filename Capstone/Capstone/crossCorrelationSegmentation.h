@@ -7,16 +7,18 @@ class crossCorrelationSegmentation
 {
 private:
 	void traverse(int row, int col);
-	double crossCorrelation(Signal& one, Signal& two);
 public:
 	const int UNASSIGNED = -1;
 
-	SignalGrid& correlogram;
+	//SignalGrid& correlogram;
+	boolGrid& booleanGrid;
 	intGrid* segmentGrid;
 	int groups = 0;
 
-	crossCorrelationSegmentation(SignalGrid& correlogram);
+	crossCorrelationSegmentation(boolGrid& grid);
 	boolGrid* getBinaryMask(int group);
+	int getLargestSegment();
+	int segmentSize(int group);
 	void writeSegmentText(std::string name);
 	~crossCorrelationSegmentation();
 };

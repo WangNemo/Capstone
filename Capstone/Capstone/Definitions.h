@@ -113,6 +113,17 @@ public:
 			os << "\n";
 		}
 	}
+
+	int countOver(double threshold) {
+		int count = 0;
+		for (int i = 0; i < ROWS; i++) {
+			for (int j = 0; j < COLUMNS; j++) {
+				if(grid[i][j] > threshold)
+					count++;
+			}
+		}
+		return count;
+	}
 };
 
 class intGrid {
@@ -176,6 +187,7 @@ public:
 
 	boolGrid* intersect(boolGrid& other) {
 		boolGrid* result = nullptr;
+
 		if (ROWS == other.ROWS && COLUMNS == other.COLUMNS) {
 			bool** newGrid = new bool*[ROWS];
 			for (int row = 0; row < ROWS; row++) {
@@ -187,6 +199,14 @@ public:
 			result = new boolGrid(newGrid, ROWS, COLUMNS);
 		}
 		return result;
+	}
+
+	void invert() {
+		for (int row = 0; row < ROWS; row++) {
+			for (int col = 0; col < COLUMNS; col++) {
+				grid[row][col] = !grid[row][col];
+			}
+		}
 	}
 
 	~boolGrid(){

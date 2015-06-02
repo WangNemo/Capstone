@@ -5,6 +5,7 @@
 #include "GroupingNetwork.h"
 #include "Cochleagram.h"
 #include "IdealBinaryMask.h"
+#include "ToneChecker.h"
 
 SoundTest::SoundTest(std::string soundDir, std::string resultDir) : soundDir(soundDir), resultDir(resultDir)
 {
@@ -48,25 +49,42 @@ void SoundTest::run() {
 
 				Cochleagram displaydsfa(*mixed, mixed->SAMPLE_RATE);
 				Correlogram coresdfa(*displaydsfa.cochleagram, 20, 10);
-				boolGrid* activeMask = coresdfa.toBinaryMask();
-				activeMask->toFile(name + "_Active.txt");
-				
-				LEGION* lo = new LEGION(coresdfa, name);
-				lo->run();
-				lo->markLargestSegment();
+				ToneChecker tc(coresdfa);
 
-				lo->saveSegmentGrid(name + "segmentGrid.txt");
-				/*for (int i = 0; i < lo->numSegments; i++) {
-					boolGrid* mask = lo->segmentsAsMask(i);
-					IdealBinaryMask::saveIdealBinaryMask(std::to_string(i) + "_mask.wav", mask, mixed);
-				}*/
+				boolGrid* foreground;
+				boolGrid* background;
+				if (tc.isSpecial()) {
+					print "TONE FOUND" endl;
+					foreground = tc.getForeground();
+					background = tc.getBackground();
+				}
+				else {
+
+					boolGrid* activeMask = coresdfa.toBinaryMask();
+					activeMask->toFile(name + "_Active.txt");
+
+					LEGION* lo = new LEGION(coresdfa, name);
+					lo->run();
+					lo->markLargestSegment();
+
+					lo->saveSegmentGrid(name + "segmentGrid.txt");
+					/*for (int i = 0; i < lo->numSegments; i++) {
+						boolGrid* mask = lo->segmentsAsMask(i);
+						IdealBinaryMask::saveIdealBinaryMask(std::to_string(i) + "_mask.wav", mask, mixed);
+						}*/
 
 
-				//IdealBinaryMask::saveIdealBinaryMask("LEGION.wav", lo->segmentsAsMask(), mixed);
+					//IdealBinaryMask::saveIdealBinaryMask("LEGION.wav", lo->segmentsAsMask(), mixed);
 
-				GroupingNetwork* level2 = new GroupingNetwork(*lo);
-				level2->run();
+					GroupingNetwork* level2 = new GroupingNetwork(*lo);
+					level2->run();
 
+					foreground = level2->foreground;
+					background = level2->background;
+
+					delete lo;
+					delete level2;
+				}
 
 
 
@@ -75,31 +93,31 @@ void SoundTest::run() {
 
 
 
-				SeparationResult* result = errorResults(name, *signal1, *signal2, mixed, level2->foreground, level2->background);
-				resultStream << name << "\t" << result->toString() endl;
+			SeparationResult* result = errorResults(name, *signal1, *signal2, mixed, foreground, background);
+			resultStream << name << "\t" << result->toString() endl;
 
-				FILE* mixF = fopen(std::string(name + " (mixed).wav").c_str(), "wb");
-				fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
-				fclose(mixF);
+			FILE* mixF = fopen(std::string(name + " (mixed).wav").c_str(), "wb");
+			fwrite(mixed->signal, sizeof(double), mixed->SAMPLES, mixF);
+			fclose(mixF);
 
-				print "result " << result->mean endl;
-
-
+			print "result " << result->mean endl;
 
 
-				/*print "foreground\t\tbackground" endl;
-				print "energy\tnoise\tenergy\tnoise" endl;
-				print result->foregroundEnergy << "\t" << result->foregroundNoise << "\t";
-				print result->backgroundEnergy << "\t" << result->backgroundNoise << "\t" endl;*/
 
-				delete signal1;
-				delete signal2;
-				delete mixed;
-				delete lo;
-				delete level2;
-				delete result;
-				print "" endl;
-				test++;
+
+			/*print "foreground\t\tbackground" endl;
+			print "energy\tnoise\tenergy\tnoise" endl;
+			print result->foregroundEnergy << "\t" << result->foregroundNoise << "\t";
+			print result->backgroundEnergy << "\t" << result->backgroundNoise << "\t" endl;*/
+
+			delete signal1;
+			delete signal2;
+			delete mixed;
+			delete result;
+			delete foreground;
+			delete background;
+			print "" endl;
+			test++;
 			//}
 		}
 	}
@@ -133,6 +151,7 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 
 	foregroundMask->toFile(name + " foregroundMask.txt");
 	backgroundMask->toFile(name + " backgroundMask.txt");
+
 	Signal* foreground = IdealBinaryMask::applyIdealBinaryMask(foregroundMask, mixed);
 	Signal* background = IdealBinaryMask::applyIdealBinaryMask(backgroundMask, mixed);
 	//foreground->normalize(maxAmplitude);
@@ -157,6 +176,7 @@ SeparationResult* SoundTest::errorResults(std::string name, Signal& signal1, Sig
 	mask2->save(std::string("mask2.wav"));
 
 	boolGrid* Mask1IntersectForeground = mask.idealBinaryMask1->intersect(*foregroundMask);
+
 	boolGrid* Mask2IntersectForeground = mask.idealBinaryMask2->intersect(*foregroundMask);
 	Signal* foreground1 = IdealBinaryMask::applyIdealBinaryMask(Mask1IntersectForeground, mixed, normalize);
 	Signal* foreground2 = IdealBinaryMask::applyIdealBinaryMask(Mask2IntersectForeground, mixed, normalize);

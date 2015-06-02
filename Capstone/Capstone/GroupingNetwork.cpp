@@ -299,6 +299,5 @@ GroupingNetwork::~GroupingNetwork()
 	groups->clear();
 	delete groups;
 
-	delete foreground;
-	delete background;
+
 }
