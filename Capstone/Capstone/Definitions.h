@@ -118,7 +118,7 @@ public:
 		int count = 0;
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLUMNS; j++) {
-				if(grid[i][j] > threshold)
+				if(grid[i][j] >= threshold)
 					count++;
 			}
 		}
