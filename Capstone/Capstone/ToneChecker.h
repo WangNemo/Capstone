@@ -6,12 +6,12 @@
 class ToneChecker
 {
 private:
-	double lowToneMin = .992;
+	double lowToneMin = .9911;
 	double lowToneMax = .9954;
-	double midToneMin = .973;
-	double midToneMax = .977;
-	double highToneMin = .8767;
-	double highToneMax = .8809;
+	double midToneMin = .9725;
+	double midToneMax = .9775;
+	double highToneMin = .876;
+	double highToneMax = .8815;
 	double minChangeReq = 950;
 	double specialMin, specialMax, largest = 0;
 	Correlogram& correlogram;
@@ -30,4 +30,3 @@ public:
 	boolGrid* getBackground();
 	~ToneChecker();
 };
-
